@@ -306,17 +306,17 @@ def _separateGrides(stripe):
         stripe = stripe.transpose()
     h, w = stripe.shape
 
-    _stripe = cv2.resize(stripe, (w//3, h//3))
-    cv2.imshow('stripe', _stripe)
-    cv2.waitKey(0)
+    # _stripe = cv2.resize(stripe, (w//3, h//3))
+    # cv2.imshow('stripe', _stripe)
+    # cv2.waitKey(0)
 
     bw_line = (np.sum(stripe > 128, axis=0)) > (h // 2)
 
     #### Smooth
-    t = 0
-    while bw_line[t] == True:
-        bw_line[t] = False
-        t += 1
+    # t = 0
+    # while bw_line[t] == True:
+    #     bw_line[t] = False
+    #     t += 1
     for i in range(1, w-1):
         if bw_line[i] != bw_line[i+1] and bw_line[i] != bw_line[i-1] and bw_line[i-1] == bw_line[i+1]:
             bw_line[i] = bw_line[i-1]
@@ -344,13 +344,19 @@ def getGridlinePositions(binary_image, contours, centers):
 
     x1, y1, w1, h1 = bounding_rects[0]
     x2, y2, w2, h2 = bounding_rects[1]
-    stripe = binary_image[y1+h1: y2, x1+int(0.15*(w1+w2)) : x1+int(0.35*(w1+w2))]
+    stripe = binary_image[y1+h1: y2-1, x1+int(0.15*(w1+w2)) : x1+int(0.35*(w1+w2))]
     horizontal = list(map(lambda r: r+y1+h1, _separateGrides(stripe)))
     print ("stripe.shape:{}".format(stripe.shape))
     print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
     return horizontal, vertical
 
-
-
+def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
+    '''
+    given a binary image, return the rectangular area of grids in
+    from ROW_r -> ROW_{r+h}, COLUMN_c -> COLUMN_{c+w}
+    '''
+    y1, y2 = horizontal_pos[r], horizontal_pos[r + h]
+    x1, x2 = vertical_pos[c], vertical_pos[c + w]
+    return binary_image[y1:y2, x1:x2]
 
 

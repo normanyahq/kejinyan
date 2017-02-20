@@ -10,6 +10,7 @@ for i in range(1, 5):
     h, w = binary_image.shape
 
     horizontal_pos, vertical_pos = getGridlinePositions(binary_image, contours, centers)
+    name = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 0, 2, 5)
 
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
     for c in vertical_pos:
@@ -19,5 +20,6 @@ for i in range(1, 5):
 
     color_image = cv2.resize(color_image, (w//3, h//3))
     cv2.imshow('color_image', color_image)
+    cv2.imshow('name', name)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
