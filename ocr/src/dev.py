@@ -3,10 +3,10 @@ import cv2
 from processor.sheethandler.fullpage import recognizeSheet
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
 for i in range(5):
-    # grayscale_image = cv2.imread('data/QR_2B_Answersheet-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/detect_{}.jpg'.format(i))
-    grayscale_image = cv2.imread('data/multiple_choice.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/multiple_choice.jpg'.format(i))
+    grayscale_image = cv2.imread('data/QR_2B_Answersheet-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/detect_{}.jpg'.format(i))
+    # grayscale_image = cv2.imread('data/multiple_choice.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/multiple_choice.jpg'.format(i))
 
     _, binary_image = cv2.threshold(grayscale_image, 50, 255,
                                     cv2.THRESH_BINARY_INV)

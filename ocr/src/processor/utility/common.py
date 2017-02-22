@@ -1,5 +1,6 @@
 import random
-
+import datetime
+import string
 
 def getSquareDist(p1, p2):
     return (int(p1[0])-int(p2[0])) ** 2 + (int(p1[1])-int(p2[1]))**2
