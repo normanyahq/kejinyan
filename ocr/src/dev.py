@@ -3,8 +3,11 @@ import cv2
 from processor.sheethandler.fullpage import recognizeSheet
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
 for i in range(5):
-    grayscale_image = cv2.imread('data/QR_2B_Answersheet-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/detect_{}.jpg'.format(i))
+    # grayscale_image = cv2.imread('data/QR_2B_Answersheet-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/detect_{}.jpg'.format(i))
+    grayscale_image = cv2.imread('data/multiple_choice.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/multiple_choice.jpg'.format(i))
+
     _, binary_image = cv2.threshold(grayscale_image, 50, 255,
                                     cv2.THRESH_BINARY_INV)
 
@@ -23,8 +26,8 @@ for i in range(5):
     for r in horizontal_pos:
         cv2.line(color_image, (0, r), (w-1, r), (0, 255, 0), thickness=10)
 
-    color_image = cv2.resize(color_image, (w//3, h//3))
-    cv2.imshow('color_image', color_image)
-    cv2.imshow('name', name)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # color_image = cv2.resize(color_image, (w//3, h//3))
+    # cv2.imshow('color_image', color_image)
+    # cv2.imshow('name', name)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
