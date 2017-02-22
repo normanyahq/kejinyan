@@ -4,10 +4,7 @@ import cv2
 import wand.image
 import PIL.Image
 import numpy as np
-
-def _sqr_dist(p1, p2):
-    return (int(p1[0])-int(p2[0])) ** 2 + (int(p1[1])-int(p2[1]))**2
-
+from .common import getSquareDist
 
 def pdf2jpg(file_path, resolution=300, save_path=None):
     '''
@@ -105,9 +102,9 @@ def getQRCornerContours(gray_image):
             while j+1 != len(contours):
                 k = j + 1
                 while k != len(contours):
-                    tri_edge_sqr = [_sqr_dist(centers[i], centers[k]),
-                        _sqr_dist(centers[i], centers[j]),
-                        _sqr_dist(centers[j], centers[k])]
+                    tri_edge_sqr = [getSquareDist(centers[i], centers[k]),
+                        getSquareDist(centers[i], centers[j]),
+                        getSquareDist(centers[j], centers[k])]
                     tri_edge_sqr.sort()
                     if abs(tri_edge_sqr[0] + tri_edge_sqr[1] - tri_edge_sqr[2]) < min_err:
                         min_err = abs(tri_edge_sqr[0] + tri_edge_sqr[1] - tri_edge_sqr[2])
@@ -136,13 +133,13 @@ def getQRCornerContours(gray_image):
         for t1 in range(len(contours)):
             t2 = (t1 + 1) % len(contours)
             t3 = (t2 + 1) % len(contours)
-            diff = abs(_sqr_dist(centers[t1], centers[t2]) 
-                + _sqr_dist(centers[t1], centers[t3]) 
-                - _sqr_dist(centers[t2], centers[t3]))
+            diff = abs(getSquareDist(centers[t1], centers[t2]) 
+                + getSquareDist(centers[t1], centers[t3]) 
+                - getSquareDist(centers[t2], centers[t3]))
             print ("centers: {}".format(centers))
-            print ("t1->t2:{}\nt1->t3:{}\nt2->t3:{}".format(_sqr_dist(centers[t1], centers[t2]) ,
-                _sqr_dist(centers[t1], centers[t3]) ,
-                _sqr_dist(centers[t2], centers[t3])))
+            print ("t1->t2:{}\nt1->t3:{}\nt2->t3:{}".format(getSquareDist(centers[t1], centers[t2]) ,
+                getSquareDist(centers[t1], centers[t3]) ,
+                getSquareDist(centers[t2], centers[t3])))
             if min_err > diff:
                 min_err = diff
                 right_angle_index = t1
@@ -350,6 +347,16 @@ def getGridlinePositions(binary_image, contours, centers):
     print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
     return horizontal, vertical
 
+def getBlackRatio(grid):
+    '''
+    return the ratio of black pixels
+    Track only 36% (60% * 60%) area in the center
+    '''
+    h, w = grid.shape
+    dh, dw = h//5, w//5
+    grid = grid[dh:h-dh, dw:w-dw]
+    return np.sum((grid>128).flatten()) / grid.size
+
 def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
     '''
     given a binary image, return the rectangular area of grids in
@@ -359,4 +366,37 @@ def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
     x1, x2 = vertical_pos[c], vertical_pos[c + w]
     return binary_image[y1:y2, x1:x2]
 
+def getRatioFromStripe(stripe, num_choice, multiple=False):
+    '''
+    given stripe, and number of choice, return the black pixel ratio sequence
+    of the stripe
+    '''
+    if stripe.shape[0] > stripe.shape[1]:
+        stripe = stripe.transpose()
+    h, w = stripe.shape
+    grid_len = w // num_choice
+    result = list()
 
+    # cv2.imshow('stripe', stripe)
+    # cv2.waitKey(0)
+    
+    for i in range(num_choice):
+        grid = stripe[:, i*grid_len : (i+1)*grid_len]
+        result.append(getBlackRatio(grid))
+    return result
+
+def getDigitFromSequence(sequence, T=0.4):
+    '''
+    given sequence array, return argmax(sequence) if a value
+    larger than threshold T exists
+    '''
+    return str(np.argmax(sequence)) if np.max(sequence) > T else "-"
+
+def getAnswerFromSequence(sequence, T=0.4):
+    '''
+    given sequence array, return all index i's which ratio_i's are 
+    larger than threshold T
+    '''
+    Choices = "ABCDEFGHIJK"
+    result = "".join([Choices[i] for i in range(len(sequence)) if sequence[i] > T])
+    return result if result else "-"
