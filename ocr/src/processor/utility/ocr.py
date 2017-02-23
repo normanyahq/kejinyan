@@ -74,15 +74,16 @@ def getQRCornerContours(gray_image):
         return result
 
         
-    def filter_with_shape(contours, err_t=1.05):
+    def filter_with_shape(contours, err_t=1.1):
         '''
         remove squares whose min bouding rect is not like square
         '''
         ratios = list()
         for i in range(len(contours)):
             rect = cv2.boundingRect(contours[i])
-            # print (rect)
+            print (rect)
             ratios.append(max(rect[3], rect[2]) / min(rect[3], rect[2]))
+        print (ratios)
         valid_index = filter(lambda i: ratios[i] <=err_t, range(len(contours)))
         contours = [contours[i] for i in valid_index]
         return contours
@@ -165,7 +166,6 @@ def getQRCornerContours(gray_image):
     # otherwise it will be too large
     size_threshold = np.mean(map(lambda x: len(x), contours))   
     valid_index = filter(lambda x: contours_depth[x] == 6, range(len(contours)))
-
     contours = [contours[i] for i in valid_index]
     contours = filter(lambda x: len(x) > size_threshold, contours)
 
@@ -173,9 +173,18 @@ def getQRCornerContours(gray_image):
 
     contours = filter_with_shape(contours)
 
+    print("number of contour before filter of positions: {}".format(len(contours)))
+
     # Find best triplet which can form a right triangle
     if len(contours) > 3:
         contours = filter_with_positions(contours)
+    print("number of contour after filter of positions: {}".format(len(contours)))
+
+    # color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+    # cv2.drawContours(color_image, contours, -1, (0, 0, 255), 3)
+    # color_image = cv2.resize(color_image, (color_image.shape[1]//3, color_image.shape[0]//3))
+    # cv2.imshow('contours', color_image)
+    # cv2.waitKey(0)
 
     contours = rearrange_contours(contours)
     # centers = list(map(lambda c: getPixelListCenter(c), contours))
@@ -189,22 +198,28 @@ def adjustOrientation(gray_image, save_path=None):
     given an answer sheet, return an copy which is rotated to the correct orientation,
     contours of three corner blocks and four corner positions in (col, row) tuple
     '''
-    def rotateCoordinate(x, y, w, h, degree):
+    def rotateCoordinate(x, y, w, h, degree, paper_orientation_changed=False):
         _x, _y = x - w // 2, h // 2 - y
         angle = degree / 180 * np.pi
         # print ("_x:{}, _y:{}, angle:{}".format(_x, _y, angle))
-        r_x = int(_x * np.cos(angle) - _y * np.sin(angle)) + w // 2
-        r_y = h // 2 - int(_y * np.cos(angle) + _x * np.sin(angle)) 
+        if not paper_orientation_changed:
+            r_x = int(_x * np.cos(angle) - _y * np.sin(angle)) + w // 2
+            r_y = h // 2 - int(_y * np.cos(angle) + _x * np.sin(angle)) 
+        else:
+            r_x = int(_x * np.cos(angle) - _y * np.sin(angle)) + h // 2
+            r_y = w // 2 - int(_y * np.cos(angle) + _x * np.sin(angle)) 
+
         return (r_x, r_y)
 
 
-    def rotateContour(contour, w, h, degree):
+    def rotateContour(contour, w, h, degree, paper_orientation_changed=False):
         # print ("before:{}".format(contour[:10]))
 
         # print ("contour: {}".format(contour))
 
         # weird storage format
-        result = np.array([[list(rotateCoordinate(c[0][0], c[0][1], w, h, degree))] for c in contour])
+        result = np.array([[list(rotateCoordinate(c[0][0], c[0][1], w, h, degree, paper_orientation_changed))] \
+            for c in contour])
         # result = np.array(list(map(lambda c: [list(rotateCoordinate)], contour))) 
         
         # print ("after:{}".format(result[:10]))
@@ -236,26 +251,36 @@ def adjustOrientation(gray_image, save_path=None):
     print ("orientation test: x={}, y={}".format(x, y))
 
     degree = 0
+    paper_orientation_changed = False # landscape <-> portrait 
     if x > 0 and y > 0:
-        degree = 270
+        degree = 90
+        paper_orientation_changed = True
     elif x > 0 and y < 0:
         degree = 180
     elif x < 0 and y < 0:
-        degree = 90
+        degree = 270
+        paper_orientation_changed = True
 
     # slightly adjust orientation, making the edges vertical and horizontal
     if degree:
-        centers = [rotateCoordinate(x, y, w, h, degree) for x, y in centers]
+        centers = [rotateCoordinate(x, y, w, h, degree, paper_orientation_changed) for x, y in centers]
         gray_image = rotateImage(gray_image, degree)
+        contours = [rotateContour(contour, w, h, degree, paper_orientation_changed) for contour in contours]
+    print ("rotate degree: {}, centers: {}".format(degree, centers))
+    # cv2.imshow('xx', gray_image)
+    # cv2.waitKey(0)
 
     delta_degree = getAdjustDegree(centers)
-    centers = [rotateCoordinate(x, y, w, h, delta_degree) for x, y in centers]
+
+
 
     if delta_degree:
         gray_image = rotateImage(gray_image, delta_degree, expand=False) 
+        centers = [rotateCoordinate(x, y, w, h, delta_degree) for x, y in centers]
+        contours = [rotateContour(contour, w, h, delta_degree) for contour in contours]
+
     # Expand should be false, otherwise, we should shift centers a bit
         
-    contours = [rotateContour(contour, w, h, degree + delta_degree) for contour in contours]
 
     ######################################
     #  TODO: Affine Transform if needed  #
@@ -263,11 +288,11 @@ def adjustOrientation(gray_image, save_path=None):
 
 
 
-    return gray_image, contours, centers
+    
 
 
     # color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
-    # 
+    
     # for i, (x, y) in enumerate(centers):
     #     cv2.line(color_image, centers[i % 4], centers[(i+1) % 4], (0, 255, 0), thickness=10)
 
@@ -287,10 +312,11 @@ def adjustOrientation(gray_image, save_path=None):
     # if save_path:
     #     cv2.imwrite(save_path, color_image)
     # color_image = cv2.resize(color_image, (color_image.shape[1]//3, color_image.shape[0]//3))
-    # # cv2.imshow('edge', color_image)
-    # # cv2.waitKey(0)
-    # # cv2.destroyAllWindows()
+    # cv2.imshow('edge', color_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
+    return gray_image, contours, centers
 
 def _separateGrides(stripe):
     '''
@@ -335,6 +361,7 @@ def getGridlinePositions(binary_image, contours, centers):
     bounding_rects = list(map(cv2.boundingRect, contours))
     print ("bounding rects: {}".format(bounding_rects))
     x, y, w, h = bounding_rects[1]
+    # print (x, y, w, h, centers)
     stripe = binary_image[y + int(0.3*h) : y + int(0.7*h), x+w : centers[2][0]]
     print ("stripe.shape:{}".format(stripe.shape))
     vertical = list(map(lambda c: c+x+w, _separateGrides(stripe)))

@@ -3,7 +3,7 @@ import os
 from .common import generateFileName
 
 
-def save_image(binary_image):
+def saveToTemp(binary_image):
     dir_name = "/var/tmp/"
     file_name = generateFileName()
     save_path = os.path.join(dir_name, file_name)
