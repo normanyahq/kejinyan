@@ -1,15 +1,15 @@
 from processor.utility.ocr import *
 import cv2
-from processor.sheethandler.halfpage import recognizeSheet
+from processor.sheethandler.fullpage import recognizeSheet
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
-for i in range(4,5):
+for i in range(0,5):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
-    # grayscale_image = cv2.imread('data/QR_2B_Answersheet-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/detect_{}.jpg'.format(i))
+    grayscale_image = cv2.imread('data/QR_2B_Answersheet-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/detect_{}.jpg'.format(i))
     # grayscale_image = cv2.imread('data/multiple_choice.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/half_page.jpg'.format(i))    
-    grayscale_image = cv2.imread('data/halfpage-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/halfpage.jpg'.format(i))
+    # grayscale_image = cv2.imread('data/halfpage-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/halfpage.jpg'.format(i))
     # print ('loading done.')
 
     _, binary_image = cv2.threshold(grayscale_image, 50, 255,

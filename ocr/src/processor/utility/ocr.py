@@ -118,7 +118,7 @@ def getQRCornerContours(gray_image):
 
     def rearrange_contours(contours):
         '''
-        use polar coordinates to rearrange contours in anti-clockwise order,
+        use polar coordinates to rearrange contours in counter-clockwise order,
         and the contour on right angle is the first element in rearranged array
         '''
         centers = list(map(lambda c: getPixelListCenter(c), contours))
@@ -366,8 +366,15 @@ def getGridlinePositions(binary_image, contours, centers):
     print ("stripe.shape:{}".format(stripe.shape))
     vertical = list(map(lambda c: c+x+w, _separateGrides(stripe)))
 
-    x1, y1, w1, h1 = bounding_rects[0]
-    x2, y2, w2, h2 = bounding_rects[1]
+    # x1, y1, w1, h1 = bounding_rects[0]
+    # x2, y2, w2, h2 = bounding_rects[1]
+    
+    # considering the topleft, bottomleft corners have block,
+    # we use right and bottom lines to locate grids
+    # so that there's no conflict between corner block and black grids
+
+    x1, y1, w1, h1 = bounding_rects[2]
+    x2, y2, w2, h2 = x1, y, w, h # use approximates here.
     stripe = binary_image[y1+h1: y2-1, x1+int(0.15*(w1+w2)) : x1+int(0.35*(w1+w2))]
     horizontal = list(map(lambda r: r+y1+h1, _separateGrides(stripe)))
     print ("stripe.shape:{}".format(stripe.shape))
