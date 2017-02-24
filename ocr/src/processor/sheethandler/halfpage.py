@@ -1,6 +1,8 @@
 import cv2
 from ..utility.ocr import extractGrids, getRatioFromStripe, getDigitFromSequence, getAnswerFromSequence
 from ..utility.io import saveToTemp
+from ..settings import *
+
 
 data_section = {
     "name": (1, 0, 1, 5),
@@ -17,7 +19,8 @@ def recognizeSheet(binary_image, horizontal_pos, vertical_pos):
 
     def getNameImagePath():
         image = getNameImage()
-        return saveToTemp(image)
+        if save_to_temp:
+            return saveToTemp(image)
 
     def getIdImage(image_id):
         # TODO
@@ -56,5 +59,6 @@ def recognizeSheet(binary_image, horizontal_pos, vertical_pos):
               "answer" : recognizeAnswer(),
               "image": getNameImagePath()}
     print (result)
+    return result
 
 

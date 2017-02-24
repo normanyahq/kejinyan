@@ -1,11 +1,14 @@
 import cv2
 from ..utility.ocr import extractGrids, getRatioFromStripe, getDigitFromSequence, getAnswerFromSequence
 from ..utility.io import saveToTemp
+from ..settings import *
 
 data_section = {
-    "name": (1, 0, 1, 5),
-    "id": [(j, i, 10, 1) for j in [4, 15] for i in range(5)],
-    "question": [(i, j, 1, 5) for j in [7, 14, 21] for i in range(25)]
+    "name": (1, 0, 2, 5),
+    "id": [(j, i, 10, 1) for j in [5, 16] for i in range(6)],
+    "single_choice": [(i, j, 2, 2) for j in range(7, 26, 2) for i in range(1, 11, 3)],
+    "true_false": [(16, i, 2, 2) for i in range(7, 26, 2)],
+    "multiple_choice": [(i, j, 1, 5) for j in range(7, 26, 5)]
 }
 
 def recognizeSheet(binary_image, horizontal_pos, vertical_pos):
