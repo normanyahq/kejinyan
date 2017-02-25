@@ -9,7 +9,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 {% if processed != total %}
-    <meta http-equiv="refresh" content="20">
+    <meta http-equiv="refresh" content="3">
 {% endif %}
 
 
@@ -22,8 +22,8 @@
     </p>
     </div>
     <div class="col-md-12">
+    {% if processed %}
     <table class="table table-bordered table-striped">
-
     <tr>
         <td align=center>学号</td>
         {% for i in colnum %}
@@ -31,7 +31,7 @@
         {% endfor %}
     </tr>
     <tr>
-        <td align=center>参考答案</td>
+        <td align=center>答案</td>
         {% for answer in standard['answer'] %}
             <td align=center>{{answer}}</td>
         {% endfor %}
@@ -48,6 +48,10 @@
     {% endfor %}
     
     </table>
+    {% else %}
+    <p>正在用氪金狗眼改卷，稍安勿躁，马上就好！</p>
+
+    {% endif %}
     </div>
     </div>
     </body>

@@ -8,7 +8,7 @@
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <title>试卷上传</title>
+    <title>大清答题卡识别</title>
     </head>
     <body>
     <div class="row">
@@ -16,15 +16,29 @@
 
     <h1>试卷上传</h1>
     <form method=post enctype=multipart/form-data>
-    <div class="form-group">
-         <label for='standard'>标准答案扫描件</label><input type=file name=standard />
+    <div class="radio">
+      <label>
+        <input type="radio" name="answersheettype" value="halfpage" checked>
+        半页答题卡（35题）
+      </label>
+      <label>
+        <input type="radio" name="answersheettype" value="fullpage">
+        全页答题卡（75题）
+      </label>
+      <label>
+        <input type="radio" name="answersheettype" value="handwriting">
+        手写答题卡
+      </label>
     </div>
+
     <div class="form-group">
-         <label for='standard'>学生答题卡（可多选）</label>
+         <label for='standard'>标准答案扫描件<input type=file name=standard /></label>
+    </div>
+         <label for='standard'>学生答题卡（可多选）
          <input type=file name=answers multiple>
-     </div>
+         </label>
          <input type=submit value="上传" class="btn btn-default">
-         </div>
+     </div>
     </form>
     </div>
     </div>

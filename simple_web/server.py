@@ -12,19 +12,22 @@ import glob
 import traceback
 import json
 import time
+import psycopg2
+from pgdb import connect
+
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
 from processor.interface import recognizeJPG
-from processor.utility.ocr import pdf2jpg
+from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
 PROCESS_POOL_SIZE = 1
 
 
-DATABASE = 'database.db'
+conn_string = "host='localhost' dbname='postgres' user='heqing' password='heqing'"
 
-DATABASE_INIT = ['create table if not exists standard (token string, value string);',
-    'create table if not exists answer (token string, value string);',
-    'create table if not exists number (token string, processed int, total int);']
+DATABASE_INIT = ['create table if not exists standard (token text, value text);',
+    'create table if not exists answer (token text, value text);',
+    'create table if not exists status (token text, processed int, total int);']
 
 html = '''
     <!DOCTYPE html>
@@ -41,12 +44,14 @@ html = '''
     '''
 
 def get_db():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+    # db = getattr(g, '_database', None)
+    # if db is None:
+        # db = g._database = sqlite3.connect(DATABASE)
+        # db = g._database = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
+    db = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
     c = db.cursor()
-    # for statement in DATABASE_INIT:
-    #     c.execute(statement);
+    for statement in DATABASE_INIT:
+        c.execute(statement);
     return db
 
 
@@ -84,25 +89,27 @@ def convert_and_recognize(token, paths):
     student_path = os.path.join(task_dir, 'student')
     teacher_files = glob.glob("{}/*.jpg".format(teacher_path))
     student_files = glob.glob("{}/*.jpg".format(student_path))
-    c.execute('update number set total = ? where token = ?;',(len(student_files), token))
-    # g._database.commit()
-
     try:
         standard = recognizeJPG(teacher_files[0], "halfpage")
-        c.execute('insert into standard values (?, ?);', (token, json.dumps(standard)))
+        c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
+        db.commit()
     except:
         print "encountered error: {}".format(teacher_files[0])
         traceback.print_exc()
     for i, f in enumerate(student_files):
         try:
             result = recognizeJPG(f, "halfpage")
-            c.execute('insert into answer values (?, ?);', (token, json.dumps(result)))
+            c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
         except:
             print "encountered error: {}".format(f)
             traceback.print_exc()
-        c.execute('update number set processed=? where token=?;', (i+1, token))
+        c.execute('update status set processed=%s where token=%s;', (i+1, token))
+        db.commit()
     time.sleep(1)
-    g._database.commit()
+    db.commit()
+
+def getTotalPageNum(filepath_list):
+    return sum(map(getPDFPageNum, filepath_list))
 
 def render_result(standard, answer):
     result = list()
@@ -122,20 +129,24 @@ def render_result(standard, answer):
 @app.route('/results/<token>')
 def get_results(token):
     cur = get_db().cursor()
-    cur.execute("select processed, total from number where token = ?;", (token, ))
+    cur.execute("select processed, total from status where token = %s;", (token, ))
     processed, total = cur.fetchone()
-    cur.execute("select value from answer where token = ?;", (token,))
-    answers = list(map(lambda x: json.loads(x[0]), cur.fetchall()))
-    cur.execute("select value from standard where token = ?;", (token,))
-    standard = json.loads(cur.fetchone()[0])
-    # print standard
-    num_question = len(standard['answer'])
-    while standard['answer'][num_question-1] == '-':
-        num_question -= 1
-    # print num_question
-    standard['answer'] = standard['answer'][:num_question]
-    for answer in answers:
-        answer['answer'] = render_result(standard, answer)
+    if processed:
+        cur.execute("select value from answer where token = %s;", (token,))
+        answers = list(map(lambda x: json.loads(x[0]), cur.fetchall()))
+        cur.execute("select value from standard where token = %s;", (token,))
+        standard = json.loads(cur.fetchone()[0])
+        # print standard
+        num_question = len(standard['answer'])
+        while standard['answer'][num_question-1] == '-':
+            num_question -= 1
+        # print num_question
+        standard['answer'] = standard['answer'][:num_question]
+        for answer in answers:
+            answer['answer'] = render_result(standard, answer)
+    else:
+        standard = answers = {"answer":[], "id":""}
+        num_question = 0
     return render_template('results.html', 
         processed= processed, 
         total=total, 
@@ -148,11 +159,11 @@ def get_results(token):
 @app.route('/result/<token>')
 def get_result(token):
     cur = get_db().cursor()
-    cur.execute("select processed, total from number where token = ?;", (token, ))
+    cur.execute("select processed, total from status where token = %s;", (token, ))
     processed, total = cur.fetchone()
-    cur.execute("select value from answer where token = ?;", (token,))
+    cur.execute("select value from answer where token = %s;", (token,))
     answers = list(map(lambda x: json.loads(x[0]), cur.fetchall()))
-    cur.execute("select value from standard where token = ?;", (token,))
+    cur.execute("select value from standard where token = %s;", (token,))
     standard = json.loads(cur.fetchone()[0])
     return json.dumps({"processed": processed, "total":total, "standard": standard, "answers": answers})
 
@@ -190,8 +201,11 @@ def upload_file():
                 valid_filenames.append(os.path.join(upload_path, 'teacher', standard_name))
                 standard.save(os.path.join(upload_path, 'teacher', standard_name))
                 p = Process(target=convert_and_recognize, args=(token, valid_filenames,))
-                c = get_db().cursor()
-                c.execute("insert into number values (?, 0, ?)", (token, len(valid_filenames)))
+                db = get_db()
+                c = db.cursor()
+                c.execute("insert into status (token, processed, total) values (%s, 0, %s);", 
+                    (token, getTotalPageNum(valid_filenames[:-1]))) # the last file is standard answer
+                db.commit()
                 p.start()
             else:
                 message.append(u"没有提交有效的答题卡文件，请检查后重新上传。")

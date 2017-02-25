@@ -6,7 +6,7 @@ from ..settings import *
 
 data_section = {
     "name": (1, 0, 1, 5),
-    "id": [(4, i, 10, 1) for i in range(5)],
+    "id": [(4, i, 10, 1) for i in range(6)],
     "question": [(i, 1, 1, 5) for i in range(15, 25)] + [(i, 8, 1, 5) for i in range(25)]
 }
 
@@ -58,7 +58,6 @@ def recognizeSheet(binary_image, horizontal_pos, vertical_pos):
     result = {"id" : recognizeId(),
               "answer" : recognizeAnswer(),
               "image": getNameImagePath()}
-    print (result)
     return result
 
 

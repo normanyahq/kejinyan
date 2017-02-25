@@ -5,6 +5,22 @@ import wand.image
 import PIL.Image
 import numpy as np
 from .common import getSquareDist
+from pyPdf import PdfFileReader
+
+
+def getPDFPageNum(file_path):
+    '''
+    given a file path, return the number of pages of pdf
+    if the pdf file is invalid, return 0
+    '''
+    print ('path!!!!: ', file_path)
+    try:
+        pdf = PdfFileReader(open(file_path, 'rb'))
+        return pdf.getNumPages()
+    except:
+        import traceback
+        traceback.print_exc()
+        return 0
 
 def pdf2jpg(file_path, resolution=300, save_path=None):
     '''
@@ -424,6 +440,7 @@ def getDigitFromSequence(sequence, T=0.4):
     given sequence array, return argmax(sequence) if a value
     larger than threshold T exists
     '''
+    # print (sequence, np.argmax(sequence))
     return str(np.argmax(sequence)) if np.max(sequence) > T else "-"
 
 def getAnswerFromSequence(sequence, T=0.4):
