@@ -20,10 +20,6 @@ os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".
 from processor.interface import recognizeJPG
 from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
-PROCESS_POOL_SIZE = 1
-
-
-conn_string = "host='localhost' dbname='postgres' user='heqing' password='heqing'"
 
 DATABASE_INIT = ['create table if not exists standard (token text, value text);',
     'create table if not exists answer (token text, value text);',
@@ -89,13 +85,16 @@ def convert_and_recognize(token, paths, answersheet_type):
     student_path = os.path.join(task_dir, 'student')
     teacher_files = glob.glob("{}/*.jpg".format(teacher_path))
     student_files = glob.glob("{}/*.jpg".format(student_path))
-    try:
-        standard = recognizeJPG(teacher_files[0], answersheet_type)
+
+    standard = recognizeJPG(teacher_files[0], answersheet_type)
+
+    if standard['status'] == "success":
         c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
         db.commit()
-    except:
-        print "encountered error: {}".format(teacher_files[0])
-        traceback.print_exc()
+    else:
+        return "答卷识别出错，请重新检查后上传。如确认无误……\
+            那就是我出问题了，请把下列信息发到 psdn@qq.com" \
+            + standard['message']
     for i, f in enumerate(student_files):
         try:
             result = recognizeJPG(f, answersheet_type)
@@ -133,9 +132,9 @@ def get_results(token):
     processed, total = cur.fetchone()
     if processed:
         cur.execute("select value from answer where token = %s;", (token,))
-        answers = list(map(lambda x: json.loads(x[0]), cur.fetchall()))
+        answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         cur.execute("select value from standard where token = %s;", (token,))
-        standard = json.loads(cur.fetchone()[0])
+        standard = json.loads(cur.fetchone()[0])['result']
         # print standard
         num_question = len(standard['answer'])
         while standard['answer'][num_question-1] == '-':

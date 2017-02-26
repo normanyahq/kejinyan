@@ -55,7 +55,7 @@ def recognizeSheet(binary_image, horizontal_pos, vertical_pos):
     result = {"id" : recognizeId(),
               "answer" : recognizeAnswer(),
               "image": getNameImagePath()}
-    print (result)
+    # print (result)
     return result
 
 

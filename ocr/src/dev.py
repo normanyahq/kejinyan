@@ -43,7 +43,7 @@ for i in range(0,5):
     # name = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 0, 2, 5)
     # g1 = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 7, 1, 1)
     # g2 = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 8, 1, 1)
-    recognizeJPG("/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half_answers-3.jpg", "halfpage")
+    print recognizeJPG("/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half_answers-3.jpg", "halfpage")
     # recognizeSheet(binary_image, horizontal_pos, vertical_pos)
     # print ("g1:{}, g2:{}".format(getBlackRatio(g1), getBlackRatio(g2)))
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
