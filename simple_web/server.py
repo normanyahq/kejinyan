@@ -74,7 +74,7 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def convert_and_recognize(token, paths):
+def convert_and_recognize(token, paths, answersheet_type):
     db = get_db()
     c = db.cursor()
 
@@ -90,7 +90,7 @@ def convert_and_recognize(token, paths):
     teacher_files = glob.glob("{}/*.jpg".format(teacher_path))
     student_files = glob.glob("{}/*.jpg".format(student_path))
     try:
-        standard = recognizeJPG(teacher_files[0], "halfpage")
+        standard = recognizeJPG(teacher_files[0], answersheet_type)
         c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
         db.commit()
     except:
@@ -98,7 +98,7 @@ def convert_and_recognize(token, paths):
         traceback.print_exc()
     for i, f in enumerate(student_files):
         try:
-            result = recognizeJPG(f, "halfpage")
+            result = recognizeJPG(f, answersheet_type)
             c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
         except:
             print "encountered error: {}".format(f)
@@ -179,7 +179,7 @@ def upload_file():
     token = getToken()
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
     success = True
-    if request.method == 'POST':
+    if request.method == 'POST' and request.values['answersheettype'] in ['fullpage', 'halfpage', 'handwriting']:
         standard = request.files['standard']
         if allowed_file(standard.filename):
             valid_filenames = list()
@@ -200,7 +200,7 @@ def upload_file():
                 standard_name = secure_filename(standard.filename)
                 valid_filenames.append(os.path.join(upload_path, 'teacher', standard_name))
                 standard.save(os.path.join(upload_path, 'teacher', standard_name))
-                p = Process(target=convert_and_recognize, args=(token, valid_filenames,))
+                p = Process(target=convert_and_recognize, args=(token, valid_filenames, request.values['answersheettype']))
                 db = get_db()
                 c = db.cursor()
                 c.execute("insert into status (token, processed, total) values (%s, 0, %s);", 

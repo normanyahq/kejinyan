@@ -8,18 +8,39 @@ from .common import getSquareDist
 from pyPdf import PdfFileReader
 
 
+def binarizeImage(gray_image):
+    '''
+    Given an grayscale image, 
+    return the inversed binary image.
+        the main idea is:
+            OSTU threshold with gamma correction
+    '''
+
+    # gamma correction
+    # learned from university physics
+    # many students failed in the final test
+    # and the instructor, Shan Qiao, did it twice
+    # and saved most (all?) of us
+
+    rescale = lambda x: (25.5 * np.sqrt(x / 2.55)) 
+
+    gray_image = cv2.GaussianBlur(gray_image, (3, 3), 0)
+    ret3, th3 = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    ret3, th3 = cv2.threshold(gray_image, rescale(ret3), 255, cv2.THRESH_BINARY_INV)
+    return th3
+
+
 def getPDFPageNum(file_path):
     '''
     given a file path, return the number of pages of pdf
     if the pdf file is invalid, return 0
     '''
-    print ('path!!!!: ', file_path)
     try:
         pdf = PdfFileReader(open(file_path, 'rb'))
         return pdf.getNumPages()
     except:
         import traceback
-        traceback.print_exc()
+        traceback.format_exc()
         return 0
 
 def pdf2jpg(file_path, resolution=300, save_path=None):
@@ -97,9 +118,7 @@ def getQRCornerContours(gray_image):
         ratios = list()
         for i in range(len(contours)):
             rect = cv2.boundingRect(contours[i])
-            print (rect)
             ratios.append(max(rect[3], rect[2]) / min(rect[3], rect[2]))
-        print (ratios)
         valid_index = filter(lambda i: ratios[i] <=err_t, range(len(contours)))
         contours = [contours[i] for i in valid_index]
         return contours
@@ -153,22 +172,22 @@ def getQRCornerContours(gray_image):
             diff = abs(getSquareDist(centers[t1], centers[t2]) 
                 + getSquareDist(centers[t1], centers[t3]) 
                 - getSquareDist(centers[t2], centers[t3]))
-            print ("centers: {}".format(centers))
-            print ("t1->t2:{}\nt1->t3:{}\nt2->t3:{}".format(getSquareDist(centers[t1], centers[t2]) ,
-                getSquareDist(centers[t1], centers[t3]) ,
-                getSquareDist(centers[t2], centers[t3])))
+            # print ("centers: {}".format(centers))
+            # print ("t1->t2:{}\nt1->t3:{}\nt2->t3:{}".format(getSquareDist(centers[t1], centers[t2]) ,
+                # getSquareDist(centers[t1], centers[t3]) ,
+                # getSquareDist(centers[t2], centers[t3])))
             if min_err > diff:
                 min_err = diff
                 right_angle_index = t1
-            print ("t1: {}, t2:{}, t3: {}, diff:{}".format(t1, t2, t3, diff))
+            # print ("t1: {}, t2:{}, t3: {}, diff:{}".format(t1, t2, t3, diff))
         t = [i % len(contours) for i in range(right_angle_index, right_angle_index+len(contours))]
-        print (centers, t)
+        # print (centers, t)
 
         contours = [contours[i] for i in t]
 
         # centers = list(map(lambda c: getPixelListCenter(c), contours))
         centers = [getPixelListCenter(c) for c in contours]
-        print ("right angle index:{}, centers:{}".format(right_angle_index, centers))
+        # print ("right angle index:{}, centers:{}".format(right_angle_index, centers))
 
         return contours
 
@@ -189,12 +208,12 @@ def getQRCornerContours(gray_image):
 
     contours = filter_with_shape(contours)
 
-    print("number of contour before filter of positions: {}".format(len(contours)))
+    # print("number of contour before filter of positions: {}".format(len(contours)))
 
     # Find best triplet which can form a right triangle
     if len(contours) > 3:
         contours = filter_with_positions(contours)
-    print("number of contour after filter of positions: {}".format(len(contours)))
+    # print("number of contour after filter of positions: {}".format(len(contours)))
 
     # color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
     # cv2.drawContours(color_image, contours, -1, (0, 0, 255), 3)
@@ -247,7 +266,7 @@ def adjustOrientation(gray_image, save_path=None):
         y = [int(c[1]) for c in centers]
         d1 = np.arctan2(y[0]-y[1], x[1]-x[0]) + np.pi / 2
         d2 = np.arctan2(y[0]-y[3], x[3]-x[0])
-        print ("d1: {}, d2: {}, Adjust Degree: {}".format(d1, d2, (d1 + d2) / 2 / np.pi * 180))
+        # print ("d1: {}, d2: {}, Adjust Degree: {}".format(d1, d2, (d1 + d2) / 2 / np.pi * 180))
         return -(d1 + d2) / 2 / np.pi * 180
 
 
@@ -257,14 +276,14 @@ def adjustOrientation(gray_image, save_path=None):
 
     # append the 4th corner according to the other 3
     centers.insert(2, getLastCorner(centers))
-    print ("centers: {}".format(centers))
+    # print ("centers: {}".format(centers))
 
 
   
     h, w = gray_image.shape
     x, y = centers[0][0] - w//2, h//2 - centers[0][1]
 
-    print ("orientation test: x={}, y={}".format(x, y))
+    # print ("orientation test: x={}, y={}".format(x, y))
 
     degree = 0
     paper_orientation_changed = False # landscape <-> portrait 
@@ -281,8 +300,8 @@ def adjustOrientation(gray_image, save_path=None):
     if degree:
         centers = [rotateCoordinate(x, y, w, h, degree, paper_orientation_changed) for x, y in centers]
         gray_image = rotateImage(gray_image, degree)
-        contours = [rotateContour(contour, w, h, degree, paper_orientation_changed) for contour in contours]
-    print ("rotate degree: {}, centers: {}".format(degree, centers))
+        # contours = [rotateContour(contour, w, h, degree, paper_orientation_changed) for contour in contours]
+    # print ("rotate degree: {}, centers: {}".format(degree, centers))
     # cv2.imshow('xx', gray_image)
     # cv2.waitKey(0)
 
@@ -293,7 +312,7 @@ def adjustOrientation(gray_image, save_path=None):
     if delta_degree:
         gray_image = rotateImage(gray_image, delta_degree, expand=False) 
         centers = [rotateCoordinate(x, y, w, h, delta_degree) for x, y in centers]
-        contours = [rotateContour(contour, w, h, delta_degree) for contour in contours]
+        # contours = [rotateContour(contour, w, h, delta_degree) for contour in contours]
 
     # Expand should be false, otherwise, we should shift centers a bit
         
@@ -303,36 +322,14 @@ def adjustOrientation(gray_image, save_path=None):
     ######################################
 
 
-
-    
-
-
-    # color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
-    
-    # for i, (x, y) in enumerate(centers):
-    #     cv2.line(color_image, centers[i % 4], centers[(i+1) % 4], (0, 255, 0), thickness=10)
-
-    # for i in range(len(centers)):
-    #     # print ("contours: {}".format(contours[i]))
-    #     cv2.circle(color_image, 
-    #         centers[i], 
-    #         10, 
-    #         ((i%3==0)*255, ((i-1)%3==0)*255, ((i-2)%3==0)*255), 
-    #         thickness=10)
-
-    #     # (B, G, R)
+    # After rotation, the image is no longer binary image
+    # thus, we need to do it again
+    _, binary_image = cv2.threshold(gray_image, 128, 255,
+                                    cv2.THRESH_BINARY)
 
 
-    # cv2.drawContours(color_image, contours, -1, (0, 0, 255), 3)
-    # # color_image = rotateImage(color_image, 90)
-    # if save_path:
-    #     cv2.imwrite(save_path, color_image)
-    # color_image = cv2.resize(color_image, (color_image.shape[1]//3, color_image.shape[0]//3))
-    # cv2.imshow('edge', color_image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    return gray_image, contours, centers
+    # return gray_image, contours, centers
+    return binary_image, centers
 
 def _separateGrides(stripe):
     '''
@@ -344,10 +341,6 @@ def _separateGrides(stripe):
     if stripe.shape[0] > stripe.shape[1]:
         stripe = stripe.transpose()
     h, w = stripe.shape
-
-    # _stripe = cv2.resize(stripe, (w//3, h//3))
-    # cv2.imshow('stripe', _stripe)
-    # cv2.waitKey(0)
 
     bw_line = (np.sum(stripe > 128, axis=0)) > (h // 2)
 
@@ -375,11 +368,11 @@ def getGridlinePositions(binary_image, contours, centers):
     calculate the horizontal and vertical gridline positions
     '''
     bounding_rects = list(map(cv2.boundingRect, contours))
-    print ("bounding rects: {}".format(bounding_rects))
+    # print ("bounding rects: {}".format(bounding_rects))
     x, y, w, h = bounding_rects[1]
     # print (x, y, w, h, centers)
     stripe = binary_image[y + int(0.3*h) : y + int(0.7*h), x+w : centers[2][0]]
-    print ("stripe.shape:{}".format(stripe.shape))
+    # print ("stripe.shape:{}".format(stripe.shape))
     vertical = list(map(lambda c: c+x+w, _separateGrides(stripe)))
 
     # x1, y1, w1, h1 = bounding_rects[0]
@@ -393,8 +386,8 @@ def getGridlinePositions(binary_image, contours, centers):
     x2, y2, w2, h2 = x1, y, w, h # use approximates here.
     stripe = binary_image[y1+h1: y2-1, x1+int(0.15*(w1+w2)) : x1+int(0.35*(w1+w2))]
     horizontal = list(map(lambda r: r+y1+h1, _separateGrides(stripe)))
-    print ("stripe.shape:{}".format(stripe.shape))
-    print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
+    # print ("stripe.shape:{}".format(stripe.shape))
+    # print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
     return horizontal, vertical
 
 def getBlackRatio(grid):
@@ -440,7 +433,6 @@ def getDigitFromSequence(sequence, T=0.4):
     given sequence array, return argmax(sequence) if a value
     larger than threshold T exists
     '''
-    # print (sequence, np.argmax(sequence))
     return str(np.argmax(sequence)) if np.max(sequence) > T else "-"
 
 def getAnswerFromSequence(sequence, T=0.4):
