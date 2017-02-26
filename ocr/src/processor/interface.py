@@ -12,23 +12,23 @@ def recognizeJPG(path, sheet_type):
     Failure:
         {"status": "error", "path": "/path/to/file", "message": "error messages..."}
     '''
-    grayscale_image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    binary_image = binarizeImage(grayscale_image)
-    kernel = np.ones((3,3),np.uint8)
-    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
-    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
-
-
-    binary_image, centers = adjustOrientation(binary_image)
-    contours = getQRCornerContours(binary_image)
-
-    horizontal_pos, vertical_pos = getGridlinePositions(binary_image, contours, centers)
-
-    recognizers = {"fullpage": fullpage.recognizeSheet,
-                    "halfpage": halfpage.recognizeSheet,
-                    "handwriting": handwriting.recognizeSheet}
-    message = str()
     try:
+        grayscale_image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+        binary_image = binarizeImage(grayscale_image)
+        kernel = np.ones((3,3),np.uint8)
+        binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+        binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
+
+
+        binary_image, centers = adjustOrientation(binary_image)
+        contours = getQRCornerContours(binary_image)
+
+        horizontal_pos, vertical_pos = getGridlinePositions(binary_image, contours, centers)
+
+        recognizers = {"fullpage": fullpage.recognizeSheet,
+                        "halfpage": halfpage.recognizeSheet,
+                        "handwriting": handwriting.recognizeSheet}
+        message = str()
         result = recognizers[sheet_type](binary_image, horizontal_pos, vertical_pos)
         return {"status": 'success', "path": path, "result": result}
     except:

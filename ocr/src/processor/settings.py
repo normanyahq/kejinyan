@@ -1,2 +1,3 @@
 model_path = ""
-save_to_temp = True
+save_name = True
+name_dir = "/var/tmp/"

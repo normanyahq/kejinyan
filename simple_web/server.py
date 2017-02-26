@@ -25,19 +25,6 @@ DATABASE_INIT = ['create table if not exists standard (token text, value text);'
     'create table if not exists answer (token text, value text);',
     'create table if not exists status (token text, processed int, total int);']
 
-html = '''
-    <!DOCTYPE html>
-    <html>
-    <title>试卷上传</title>
-    <h1>试卷上传</h1>
-    <form method=post enctype=multipart/form-data>
-         <input type=file name=standard>
-         <br/>
-         <input type=file name=answers multiple>
-         <input type=submit value=上传>
-    </form>
-    </html>
-    '''
 
 def get_db():
     # db = getattr(g, '_database', None)
@@ -45,9 +32,6 @@ def get_db():
         # db = g._database = sqlite3.connect(DATABASE)
         # db = g._database = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
     db = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
-    c = db.cursor()
-    for statement in DATABASE_INIT:
-        c.execute(statement);
     return db
 
 
@@ -87,12 +71,12 @@ def convert_and_recognize(token, paths, answersheet_type):
     student_files = glob.glob("{}/*.jpg".format(student_path))
 
     standard = recognizeJPG(teacher_files[0], answersheet_type)
+    print standard
+    c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
+    db.commit()
 
-    if standard['status'] == "success":
-        c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
-        db.commit()
-    else:
-        return "答卷识别出错，请重新检查后上传。如确认无误……\
+    if standard['status'] == "error":
+        return u"答卷识别出错，请重新检查后上传。如确认无误……\
             那就是我出问题了，请把下列信息发到 psdn@qq.com" \
             + standard['message']
     for i, f in enumerate(student_files):
@@ -104,8 +88,6 @@ def convert_and_recognize(token, paths, answersheet_type):
             traceback.print_exc()
         c.execute('update status set processed=%s where token=%s;', (i+1, token))
         db.commit()
-    time.sleep(1)
-    db.commit()
 
 def getTotalPageNum(filepath_list):
     return sum(map(getPDFPageNum, filepath_list))
@@ -128,6 +110,16 @@ def render_result(standard, answer):
 @app.route('/results/<token>')
 def get_results(token):
     cur = get_db().cursor()
+    cur.execute("select value from standard where token = %s;", (token,))
+    t = cur.fetchone()
+    if t:
+        t = json.loads(t[0])
+        status = t['status']
+        if status == "error":
+            return u"答卷识别出错，请重新检查后上传。如确认无误……\
+                那就是我出问题了，请把下列信息发给俺爹牙牙，让他把我变得更强\
+                 <br /><pre>Email: psdn@qq.com QQ: 793048 </pre><br/><pre>" \
+                + t['message'] + u"</pre>"
     cur.execute("select processed, total from status where token = %s;", (token, ))
     processed, total = cur.fetchone()
     if processed:
@@ -153,18 +145,6 @@ def get_results(token):
         answers= answers,
         colnum=range(1, num_question+1))
 
-
-
-@app.route('/result/<token>')
-def get_result(token):
-    cur = get_db().cursor()
-    cur.execute("select processed, total from status where token = %s;", (token, ))
-    processed, total = cur.fetchone()
-    cur.execute("select value from answer where token = %s;", (token,))
-    answers = list(map(lambda x: json.loads(x[0]), cur.fetchall()))
-    cur.execute("select value from standard where token = %s;", (token,))
-    standard = json.loads(cur.fetchone()[0])
-    return json.dumps({"processed": processed, "total":total, "standard": standard, "answers": answers})
 
 @app.route('/uploads/download/<filename>')
 def uploaded_file(filename):
@@ -219,4 +199,9 @@ def upload_file():
 
 
 if __name__ == '__main__':
+    db = get_db()
+    c = db.cursor()
+    for statement in DATABASE_INIT:
+        c.execute(statement);
+
     app.run(debug=True)
