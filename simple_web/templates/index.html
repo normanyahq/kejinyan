@@ -1,47 +1,207 @@
-    <!DOCTYPE html>
-    <html>
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
+<!--[if !IE]><!--> <html lang="zh-cn"> <!--<![endif]-->  
 <head>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <title>大清答题卡识别</title>
-    </head>
-    <body>
-    <div class="row">
-    <div class="col-md-2 col-md-offset-4">
-
-    <h1>试卷上传</h1>
-    <form method=post enctype=multipart/form-data>
-    <div class="radio">
-      <label>
-        <input type="radio" name="answersheettype" value="halfpage" checked>
-        半页答题卡（35题）
-      </label>
-      <label>
-        <input type="radio" name="answersheettype" value="fullpage">
-        全页答题卡（75题）
-      </label>
-      <label>
-        <input type="radio" name="answersheettype" value="handwriting">
-        手写答题卡
-      </label>
-    </div>
-
-    <div class="form-group">
-         <label for='standard'>标准答案扫描件<input type=file name=standard /></label>
-    </div>
-         <label for='standard'>学生答题卡（可多选）
-         <input type=file name=answers multiple>
-         </label>
-         <input type=submit value="上传" class="btn btn-default">
-     </div>
-    </form>
-    </div>
-    </div>
-    </body>
-</html>
+    <title>Responsive website template for documentations</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">    
+    <link rel="shortcut icon" href="favicon.ico">  
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">   
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="assets/plugins/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
     
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head> 
+
+<body class="landing-page">   
+     
+    
+    <div class="page-wrapper">
+        
+        <!-- ******Header****** -->
+        <header class="header text-center">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <span aria-hidden="true" class="glyphicon glyphicon-eye-open"></span>
+                        <span class="text-bold">氪金眼</span><span class="text-highlight">答题卡识别系统</span>
+                    </h1>
+                </div><!--//branding-->
+                <div class="tagline">
+                    <p> 假氪金者，如神助也，而阅万卷。 </p>
+                    <p> 谨以此系统献给爸爸妈妈，和与他们一样战斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
+                    <p></p>
+                </div><!--//tagline-->
+                <div class="social-container">
+                    <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#downloadSheet">
+                          功能简介
+                    </button>
+                    <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#downloadSheet">
+                          了解扫描仪
+                    </button>
+
+                 </div><!--//social-container-->
+            </div><!--//container-->
+        </header><!--//header-->
+        
+        <section class="cards-section text-center">
+            <div class="container">
+                <h2 class="title">系统正在免费测试！</h2>
+                <div class="intro">
+                    <p>欢迎使用我设计的自动阅卷系统！<br/>目前功能和界面都比较简单，待核心功能完善之后，会重新设计界面并加入新功能，欢迎提供您的宝贵意见。</p>
+                    <div class="cta-container">
+                        <!-- Button trigger modal -->
+
+                        <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#uploadSheet">
+                          上传答题卡
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="uploadSheet" tabindex="-1" role="dialog" aria-labelledby="uploadSheetLabel">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">上传答题卡</h4>
+                              </div>
+                              <div class="modal-body">
+                                <form method=post enctype=multipart/form-data>
+                                    <div class="radio">
+                                      <label>
+                                        <input type="radio" name=answersheettype value="halfpage" checked>
+                                        半页答题卡（35题）
+                                      </label>
+                                      <label>
+                                        <input type="radio" name=answersheettype value="fullpage">
+                                        全页答题卡（75题）
+                                      </label>
+                                      <label>
+                                        <input type="radio" name=answersheettype value="handwriting" disabled>
+                                        手写答题卡
+                                      </label>
+                                    </div>
+
+                                    <div class="form-group">
+                                         <label for='standard'>标准答案答题卡<input type=file name=standard /></label>
+                                     </div>
+
+                                    <div class="form-group">
+
+                                         <label for='answers'>学生答题卡（可多选）
+                                         <input type=file name=answers multiple>
+                                         </label>
+                                     </div>
+                                    <div class="form-group">
+                                         <input type=submit value="上传" class="btn btn-default">
+                                     </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div><!--End Modal-->
+                        <!-- Modal -->
+                        <div class="modal fade" id="downloadSheet" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
+                          <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">功能简介</h4>
+                              </div>
+                              <div class="modal-body">
+                                    <p class="text-left">您只需要下载适合您的答题卡，用普通打印机打印。然后填涂标准答案（学号可留空），单独扫描成一个文件。 </p>
+                                    <p class="text-left">并在测验时将其余分发给学生，考试结束后扫描成一个或PDF文件。将二者一同上传，并选择正确的答题卡样式即可自动批改。</p>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">类别</th>
+                                                <th class="text-center">简介</th>
+                                                <th class="text-center">下载地址</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>半页（35题）</td>
+                                                <td>支持多选，可从中间裁开变为两张答题卡，节约纸张。</td>
+                                                <td>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>全页（75题）</td>
+                                                <td>支持多选，适合英语等选择题比较多的科目。</td>
+                                                <td>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
+                                                </td>
+                                            </tr>
+                                            <tr>    
+                                                <td>手写（混合型）</td>
+                                                <td>使用深度学习和人工神经网络的可以识别ABCD的答题卡，<strong>评卷暂未开放</strong>，敬请期待。</td>
+                                                <td>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+                                                    <a src="#" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+
+                                    </table>
+
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div><!--End Modal-->
+
+                    </div><!--//cta-container-->
+                </div><!--//intro-->
+
+
+                <div id="cards-wrapper" class="cards-wrapper row">
+                </div><!--//cards-->
+                
+            </div><!--//container-->
+        </section><!--//cards-section-->
+    </div><!--//page-wrapper-->
+    
+    <footer class="footer text-center">
+        <div class="container">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers, modified by <a href="http://heqing.me/" target="_blank">Heqing Ya</a></small>. 
+            
+        </div><!--//container-->
+    </footer><!--//footer-->
+    
+     
+    <!-- Main Javascript -->          
+    <script type="text/javascript" src="assets/plugins/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>                                                                     
+    <script type="text/javascript" src="assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
+    <script type="text/javascript" src="assets/js/main.js"></script>
+    
+</body>
+</html> 
+

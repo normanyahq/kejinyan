@@ -1,0 +1,14 @@
+{% for i in info %}
+<tr>
+    <td class="text-center">
+    <a tabindex="0" class="btn btn-lg btn-info" role="button" data-toggle="popover" data-trigger="focus" title="姓名" data-content="<img src='/name/{{i[4]}}' width=100%>">{{i[0]}}
+    </a>
+
+    </td>
+
+    <td class="text-center" style="vertical-align: middle;">{{i[1]}} / {{i[2]}}</td>
+    <td class="text-center" style="vertical-align: middle;">
+        {{i[3]}}
+    </td>
+</tr>
+{% endfor %}

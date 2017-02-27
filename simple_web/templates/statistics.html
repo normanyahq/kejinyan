@@ -1,0 +1,20 @@
+    {% for p in params %}
+    <tr>
+        <th scope="row" class='text-center'> 
+            {{p[4]}}
+        </th>
+        <td class='text-center'>
+        {{p[0]}} / {{p[1]}}
+        </td>
+        <td class='text-center'>
+            <progress value="{{p[2]}}" max="100"></progress>
+        </td>
+        <td class='text-center'>
+            {% for t in p[5] %}
+                <a tabindex="0" class="btn btn-xs btn-info" role="button" data-toggle="popover" data-trigger="focus" title="姓名" data-content="<img src='/name/{{t[1]}}' width=100%>">{{t[0]}}
+                </a>
+
+            {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}

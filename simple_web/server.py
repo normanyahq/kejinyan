@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 import os
-from flask import Flask, request, url_for, send_from_directory, render_template
+from flask import Flask, request, url_for, send_from_directory, render_template, make_response
 from werkzeug import secure_filename
 import sqlite3
 from flask import g
@@ -25,6 +26,16 @@ DATABASE_INIT = ['create table if not exists standard (token text, value text);'
     'create table if not exists answer (token text, value text);',
     'create table if not exists status (token text, processed int, total int);']
 
+def countQuestion(standard):
+    # print standard
+    standard = standard["result"]['answer']
+    num_question = len(standard)
+    while standard[num_question-1] == '-':
+        num_question -= 1
+    return num_question
+
+
+
 
 def get_db():
     # db = getattr(g, '_database', None)
@@ -44,6 +55,9 @@ ALLOWED_EXTENSIONS = set(['pdf'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'file_storage')
+app.config['ASSETS_FOLDER'] = os.path.join(os.getcwd(), 'templates', 'assets')
+app.config['NAME_FOLDER'] = os.path.join('/var/tmp/')
+
 os.system("mkdir -p {}".format(app.config['UPLOAD_FOLDER']))
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
@@ -71,7 +85,6 @@ def convert_and_recognize(token, paths, answersheet_type):
     student_files = glob.glob("{}/*.jpg".format(student_path))
 
     standard = recognizeJPG(teacher_files[0], answersheet_type)
-    print standard
     c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
     db.commit()
 
@@ -106,10 +119,115 @@ def render_result(standard, answer):
         result.append('<span style="color:{}">{}</span>'.format(color, student_choice[i].replace('-', "?")))
     return result
 
+@app.route('/csv/<token>')
+def returnCSV(token):
+    cur = get_db().cursor()
+    cur.execute("select value from answer where token = %s;", (token,))
+    _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+    cur.execute("select value from standard where token = %s;", (token,))
+    standard = json.loads(cur.fetchone()[0])['result']
+    result = [(u'答案',) +  tuple(standard['answer'])]
+    header = (u'学号',) + tuple([unicode(i+1) for i in range(len(standard['answer']))])
+    for ans in _answers:
+        result.append((ans['id'],) + tuple(ans['answer']))
+    return render_template('table.html', info=result, header=header)
+    
+
+
+@app.route('/favicon.ico')
+def returnFavicon():
+    return send_from_directory("templates", "favicon.ico")
+
+@app.route('/progress/<token>')
+def getProgress(token):
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("select processed, total from status where token = %s;", (token, ))
+    t = cur.fetchone()
+    processed, total = t if t else (0, 1)
+    return json.dumps({"processed": processed, "total":total, "percentage": 100  * processed / total})
+
+
+@app.route('/render/<token>')
+def renderResults(token):
+    def render_ratio(params, num_question):
+        '''
+        render param list [(correct, total, ratio, width, serial_number), ...]
+        '''
+        return render_template('statistics.html', params=params)
+
+    def render_students(correctness):
+        '''
+        correctness: [(id, num_correct, num_question, err_list), ...]
+        '''
+        result = render_template('scores.html', info=correctness)
+        return result
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("select value from standard where token = %s;", (token,))
+    standard = cur.fetchone()
+    if not standard:
+        return json.dumps({"empty": True})
+    else:
+        cur.execute("select value from answer where token = %s;", (token,))
+        _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+        # print _answers
+        standard = json.loads(standard[0])
+        # print standard
+        correct_ratio = list()
+        answers = list()
+        num_question = countQuestion(standard)
+        correctness = list()
+        if _answers:
+            for i in range(num_question):
+                # print standard, _answers
+                correct_count = sum(map(lambda x: x['answer'][i]==standard['result']['answer'][i], _answers))
+                student_mistake_index = [index for index in range(len(_answers))  \
+                    if _answers[index]['answer'][i] != standard['result']['answer'][i]]
+                student_mistake_info = [(_answers[k]['id'], 
+                    os.path.basename(_answers[k]['name_image'])) for k in student_mistake_index]
+                correct_ratio.append((correct_count, 
+                    len(_answers), 
+                    100 * correct_count / len(_answers), 
+                    10 + 90 * correct_count / len(_answers),
+                    i+1,
+                    student_mistake_info))
+            for student in _answers:
+                num_correct = 0
+                err_list = list()
+                for i in range(num_question):
+                    if student['answer'][i] != standard['result']['answer'][i]:
+                        err_list.append(i+1)
+                    else:
+                        num_correct += 1
+                err_list = u", ".join(map(lambda x: unicode(x), err_list))
+                correctness.append((student['id'], 
+                    num_correct, 
+                    num_question, 
+                    err_list, 
+                    os.path.basename(student['name_image'])))
+        # print render_ratio(correct_ratio, num_question)
+        return json.dumps({"stats": render_ratio(correct_ratio, num_question), 
+            "scores": render_students(correctness)})
+
+@app.route('/name/<filename>')
+def getNameImage(filename):
+    return send_from_directory(app.config['NAME_FOLDER'], filename)
+
+
+@app.route('/assets/<path:filename>')
+def getAssets(filename):
+    path = os.path.join(app.config['ASSETS_FOLDER'], filename)
+    dirname = os.path.dirname(path)
+    file_name = os.path.basename(path)
+    return send_from_directory(dirname, file_name)
+
 
 @app.route('/results/<token>')
 def get_results(token):
-    cur = get_db().cursor()
+    db = get_db()
+    cur = db.cursor()
     cur.execute("select value from standard where token = %s;", (token,))
     t = cur.fetchone()
     if t:
@@ -121,28 +239,28 @@ def get_results(token):
                  <br /><pre>Email: psdn@qq.com QQ: 793048 </pre><br/><pre>" \
                 + t['message'] + u"</pre>"
     cur.execute("select processed, total from status where token = %s;", (token, ))
-    processed, total = cur.fetchone()
+    t = cur.fetchone()
+    processed, total = t if t else (0, 1)
     if processed:
         cur.execute("select value from answer where token = %s;", (token,))
         answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         cur.execute("select value from standard where token = %s;", (token,))
-        standard = json.loads(cur.fetchone()[0])['result']
+        standard = json.loads(cur.fetchone()[0])
         # print standard
-        num_question = len(standard['answer'])
-        while standard['answer'][num_question-1] == '-':
-            num_question -= 1
-        # print num_question
-        standard['answer'] = standard['answer'][:num_question]
+        num_question = countQuestion(standard)
+        standard['answer'] = standard['result']['answer'][:num_question]
         for answer in answers:
             answer['answer'] = render_result(standard, answer)
     else:
         standard = answers = {"answer":[], "id":""}
         num_question = 0
-    return render_template('results.html', 
+    db.close()
+    return render_template('re.html', 
         processed= processed, 
         total=total, 
         standard=standard, 
         answers= answers,
+        token=token,
         colnum=range(1, num_question+1))
 
 

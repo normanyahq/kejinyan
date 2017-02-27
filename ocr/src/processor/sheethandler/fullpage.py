@@ -18,6 +18,8 @@ def recognizeSheet(binary_image, horizontal_pos, vertical_pos):
 
     def getNameImagePath():
         image = getNameImage()
+        _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
+
         return saveToDir(image, settings.name_dir)
 
     def getIdImage(image_id):
