@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->  
+<head>
+    <title>Responsive website template for documentations</title>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">    
+    <link rel="shortcut icon" href="/favicon.ico">  
+    <link href='/assets/css/fontstyle.css' rel='stylesheet' type='text/css'>
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css">   
+    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="/assets/plugins/prism/prism.css">
+    <link rel="stylesheet" href="/assets/plugins/elegant_font/css/style.css">
+    
+    <!-- Theme CSS -->
+    <link id="theme-style" rel="stylesheet" href="/assets/css/styles.css">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head> 
+
+<body class="landing-page">
+    <div class="page-wrapper">
+        <!-- ******Header****** -->
+        <header id="header" class="header">
+            <div class="container">
+                <div class="branding">
+                    <h1 class="logo">
+                        <a href="#">
+                            <span aria-hidden="true" class="glyphicon glyphicon-eye-open"></span>
+                            <span class="text-bold">氪金眼</span><span class="text-highlight">答题卡识别系统</span>
+                        </a>
+                    </h1>
+                </div><!--//branding-->
+                <ol class="breadcrumb">
+                    <li><a href="/">首页</a></li>
+                    <li class="active">批阅结果</li>
+                    <li class="active"><a onclick="window.print();">打印</a></li>
+                    <li class="active"><a href="/table/{{token}}" target="_blank">原始数据</a></li>
+
+                </ol>
+            </div><!--//container-->
+        </header><!--//header-->
+        <div class="doc-wrapper">
+            <div class="container">
+                <div class="doc-body">
+
+                    <div class="modal fade" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+                            <h4 class="modal-title" id="myModalLabel">处理进度</h4>
+                          </div>
+                          <div class="modal-body">
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-success" id="progress" role="progressbar" aria-valuenow="70"
+                              aria-valuemin="0" aria-valuemax="100" style="width:1%">
+                                1%
+                              </div>
+                            </div>
+                          <div class="modal-body">
+                            <p>如果长时间没动静，可能是我懵了</p>
+                            <p>请把上传文件的文件发送给我爹，让我变得更强壮！
+                            </p>
+                            <p>Email: psdn@qq.com</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                        <div class="content-content">
+                            <ul class="nav nav-tabs">
+                              <li class="active"><a data-toggle="tab" href="#scores">学生成绩</a></li>
+                              <li><a data-toggle="tab" href="#stats">卷面统计</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                              <div id="scores" class="tab-pane fade in active">
+                                <table class="table">
+                                <thead>
+                                    <th class="text-center">学号</th>                                    
+                                    <th class="text-center">正确题数 / 总题数</th>
+                                    <th class="text-center">出错题目</th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                              </div>
+                              <div id="stats" class="tab-pane fade">
+                              <table class="table">
+                                <thead>
+                                    <th class="text-center">题号</th>                                    
+                                    <th class="text-center">正确人数 / 总人数</th>
+                                    <th class="text-center">条状图</th>
+                                    <th class="text-center">出错学生</th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+
+                              </div>
+                            </div>
+
+                        </div><!--//content-inner-->
+                </div><!--//doc-body-->              
+            </div><!--//container-->
+        </div><!--//doc-wrapper-->
+        
+    </div><!--//page-wrapper-->
+    
+    <footer id="footer" class="footer text-center">
+        <div class="container">
+            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
+            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" targe="_blank">Xiaoying Riley</a> for developers, modified by <a href="http://heqing.me/" targe="_blank">Heqing Ya</a> </small>
+            
+        </div><!--//container-->
+    </footer><!--//footer-->
+    
+     
+    <!-- Main Javascript -->          
+
+
+
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="/assets/plugins/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/plugins/prism/prism.js"></script>    
+    <script type="text/javascript" src="/assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>                                                                
+    <script type="text/javascript" src="/assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
+    <script type="text/javascript" src="/assets/js/main.js"></script>
+    <script type="text/javascript" src="/assets/js/chart.js"></script>
+
+
+    <script>
+        $(document).ready(function(){
+          $("#progressModal").modal({backdrop: "static"});
+          var progresspump = setInterval(function(){
+            /* query the completion percentage from the server */
+            $.getJSON("/progress/{{ token }}", function(data){
+                $.getJSON("/render/{{ token }}", function(code){
+                    $("#stats tbody").html(code["stats"]);
+                    $("#scores tbody").html(code["scores"]);            
+                    $('[data-toggle="popover"]').popover({
+                        html: true,
+                    });
+                    // var ratio_list = new Array();
+
+                    // for (i=0; i<code.stats.length; i++)
+                    //     ratio_list.push({name: i+1, value: code.stats[i][2]});
+                    // console.log(ratio_list);
+                    // renderChart(ratio_list);
+                });
+              if(data.percentage < 99.999) {
+                $("#progressModal").modal("show");
+                /* update the progress bar width */
+                var percentage = data.percentage + 5;
+                percentage = percentage.toFixed(2);
+                $("#progress").css('width',percentage+'%');
+                /* and display the numeric value */
+                $("#progress").html(percentage+'%');
+              }
+              else {
+                /* test to see if the job has completed */
+
+                clearInterval(progresspump);
+                // $("#progressouter").removeClass("active");
+                $("#progressModal").modal("hide");
+
+              }
+            })
+          }, 1000);});
+
+
+    </script>
+
+</body>
+</html> 
+
