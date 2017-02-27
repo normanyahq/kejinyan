@@ -13,8 +13,8 @@ import glob
 import traceback
 import json
 import time
-import psycopg2
-from pgdb import connect
+from psycopg2 import connect
+# from pgdb import connect
 
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
@@ -43,7 +43,7 @@ def get_db():
     # if db is None:
         # db = g._database = sqlite3.connect(DATABASE)
         # db = g._database = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
-    db = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
+    db = connect(database='postgres', host='localhost', user='heqingy', password='heqingy')
     return db
 
 
