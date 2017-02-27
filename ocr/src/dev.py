@@ -5,13 +5,13 @@ from processor import recognizeJPG
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
 for i in range(0,5):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
-    grayscale_image = cv2.imread('/Users/Norman//git/Answer-Sheet-OCR/ocr/data/ycb/2017-02-25-09-55-11-01_1-{}.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/simple_web/file_storage/20170226231046CMgkngQiER/student/full_example-2.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     # _, binary_image = cv2.threshold(grayscale_image, 200, 255,
     #                                 cv2.THRESH_BINARY_INV)
     # print _, binary_image
     binary_image = binarizeImage(grayscale_image)
-    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//3, binary_image.shape[0]//3)))
-    cv2.waitKey(0)
+    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//4, binary_image.shape[0]//4)))
+    # cv2.waitKey(0)
 
     cv2.imwrite('tmp/ycb_{}.jpg'.format(i), binary_image)
     kernel = np.ones((3,3),np.uint8)
@@ -19,11 +19,11 @@ for i in range(0,5):
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
 
-    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//3, binary_image.shape[0]//3)))
+    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//4, binary_image.shape[0]//4)))
     cv2.imwrite('tmp/ycb_{}.jpg'.format(i), binary_image)
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
     binary_image, centers = adjustOrientation(binary_image, 'tmp/detect_{}.jpg'.format(i))
-    contours = getQRCornerContours(binary_image)
+    contours = getQRCornerContours(binary_image, True)
     # grayscale_image = cv2.imread('data/multiple_choice.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/multiple_choice.jpg'.format(i))    
     # grayscale_image = cv2.imread('data/halfpage-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
@@ -43,7 +43,7 @@ for i in range(0,5):
     # name = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 0, 2, 5)
     # g1 = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 7, 1, 1)
     # g2 = extractGrids(binary_image, horizontal_pos, vertical_pos, 0, 8, 1, 1)
-    print recognizeJPG("/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half_answers-3.jpg", "halfpage")
+    print recognizeJPG("data/full_standard.jpg", "fullpage")
     # recognizeSheet(binary_image, horizontal_pos, vertical_pos)
     # print ("g1:{}, g2:{}".format(getBlackRatio(g1), getBlackRatio(g2)))
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)

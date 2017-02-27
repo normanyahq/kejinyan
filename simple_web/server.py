@@ -24,7 +24,8 @@ from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
 DATABASE_INIT = ['create table if not exists standard (token text, value text);',
     'create table if not exists answer (token text, value text);',
-    'create table if not exists status (token text, processed int, total int);']
+    'create table if not exists status (token text, processed int, total int);',
+    'create table if not exists error_list (path text, message text);' ]
 
 def countQuestion(standard):
     # print standard
@@ -89,16 +90,13 @@ def convert_and_recognize(token, paths, answersheet_type):
     db.commit()
 
     if standard['status'] == "error":
-        return u"答卷识别出错，请重新检查后上传。如确认无误……\
-            那就是我出问题了，请把下列信息发到 psdn@qq.com" \
-            + standard['message']
+        c.execute("insert into error_list values (%s, %s);", (standard['path'], standard['message'])) 
+        db.commit()
     for i, f in enumerate(student_files):
-        try:
-            result = recognizeJPG(f, answersheet_type)
-            c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
-        except:
-            print "encountered error: {}".format(f)
-            traceback.print_exc()
+        result = recognizeJPG(f, answersheet_type)
+        c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
+        if result['status'] =='error':
+            c.execute("insert into error_list values (%s, %s);", (result['path'], result['message'])) 
         c.execute('update status set processed=%s where token=%s;', (i+1, token))
         db.commit()
 
@@ -116,20 +114,21 @@ def render_result(standard, answer):
         color = "red"
         if correct_choice[i] == student_choice[i]: 
             color = "green"
-        result.append('<span style="color:{}">{}</span>'.format(color, student_choice[i].replace('-', "?")))
+        result.append(''.format(color, student_choice[i].replace('-', "?")))
     return result
 
-@app.route('/csv/<token>')
-def returnCSV(token):
+@app.route('/table/<token>')
+def returnTable(token):
     cur = get_db().cursor()
     cur.execute("select value from answer where token = %s;", (token,))
     _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
     cur.execute("select value from standard where token = %s;", (token,))
     standard = json.loads(cur.fetchone()[0])['result']
-    result = [(u'答案',) +  tuple(standard['answer'])]
+    result = [(u'答案',) +  tuple([(standard['answer'][i], '') for i in range(len(standard['answer']))])]
     header = (u'学号',) + tuple([unicode(i+1) for i in range(len(standard['answer']))])
     for ans in _answers:
-        result.append((ans['id'],) + tuple(ans['answer']))
+        result.append((ans['id'],) + tuple([(ans['answer'][i], 
+            'green' if ans['answer'][i] == standard['answer'][i] else 'red') for i in range(len(standard['answer']))]))
     return render_template('table.html', info=result, header=header)
     
 
@@ -207,6 +206,7 @@ def renderResults(token):
                     num_question, 
                     err_list, 
                     os.path.basename(student['name_image'])))
+            correctness.sort()
         # print render_ratio(correct_ratio, num_question)
         return json.dumps({"stats": render_ratio(correct_ratio, num_question), 
             "scores": render_students(correctness)})
@@ -255,7 +255,7 @@ def get_results(token):
         standard = answers = {"answer":[], "id":""}
         num_question = 0
     db.close()
-    return render_template('re.html', 
+    return render_template('result.html', 
         processed= processed, 
         total=total, 
         standard=standard, 
@@ -292,12 +292,19 @@ def upload_file():
                 else:
                     message.append(u"答题卡文件：{} 由于后缀名不合法已被忽略，请上传pdf文件。".format(f.filename))
             if valid_filenames:
-                message.insert(0, u"标准答案文件：{} 上传成功，正在处理中……".format(standard.filename))
                 os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
                 standard_name = secure_filename(standard.filename)
                 valid_filenames.append(os.path.join(upload_path, 'teacher', standard_name))
                 standard.save(os.path.join(upload_path, 'teacher', standard_name))
-                p = Process(target=convert_and_recognize, args=(token, valid_filenames, request.values['answersheettype']))
+
+                if getPDFPageNum(valid_filenames[-1]) == 1:
+                    message.insert(0, u"标准答案文件：{} 上传成功，正在处理中……".format(standard.filename))
+                else:
+                    message.insert(0, u"标准答案文件：{} 超过一页，任取一页识别……".format(standard.filename))
+                p = Process(target=convert_and_recognize, 
+                    args=(token, 
+                        valid_filenames, 
+                        request.values['answersheettype']))
                 db = get_db()
                 c = db.cursor()
                 c.execute("insert into status (token, processed, total) values (%s, 0, %s);", 
@@ -321,5 +328,5 @@ if __name__ == '__main__':
     c = db.cursor()
     for statement in DATABASE_INIT:
         c.execute(statement);
-
+    db.commit()
     app.run(debug=True)

@@ -18,7 +18,6 @@
 <![endif]-->
 
 
-
 </head>
     <body>
     <div class="row">
@@ -30,9 +29,12 @@
                 {% endfor %}
             </tr>
                 {% for student in info %}
+
                 <tr>
-                    {% for grid in student %}
-                    <td class="text-center">{{grid}}</td>
+                    <td class="text-center">{{student[0]}}</td>
+
+                    {% for grid in student[1:] %}
+                            <td class="text-center"><span style="color:{{grid[1]}}">{{grid[0]}}</span></td>
                     {% endfor %}
                 </tr>
                 {% endfor %}

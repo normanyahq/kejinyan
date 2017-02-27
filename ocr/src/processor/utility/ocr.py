@@ -40,7 +40,7 @@ def getPDFPageNum(file_path):
         return pdf.getNumPages()
     except:
         import traceback
-        traceback.format_exc()
+        traceback.print_exc()
         return 0
 
 def pdf2jpg(file_path, resolution=300, save_path=None):
@@ -82,7 +82,7 @@ def getPixelListCenter(pixels):
     '''
     return tuple(np.mean(pixels, axis=0).astype('uint32')[0])
 
-def getQRCornerContours(gray_image):
+def getQRCornerContours(gray_image, t=False):
     '''
     given binary image, return the pixel lists of their contours:
     '''
@@ -192,6 +192,8 @@ def getQRCornerContours(gray_image):
         return contours
 
     image_edge = cv2.Canny(gray_image, 100, 200)
+    kernel = np.ones((3,3),np.uint8)
+    image_edge = cv2.dilate(image_edge, kernel, iterations=2)
     contours, hierarchy = cv2.findContours(image_edge.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
 
@@ -199,14 +201,28 @@ def getQRCornerContours(gray_image):
 
     # must be calculated before any filtering,
     # otherwise it will be too large
-    size_threshold = np.mean(map(lambda x: len(x), contours))   
+    # size_threshold = np.mean(map(lambda x: len(x), contours))   
+    color_image = cv2.cvtColor(image_edge, cv2.COLOR_GRAY2BGR)
+
+    # if t:
+    #     print ("start")
+    #     for i in range(len(contours)):
+    #         cv2.drawContours(color_image, [contours[i]], -1, (0, 255, 0), thickness=1)
+    #         cv2.imshow('contour', cv2.resize(color_image, (color_image.shape[1]//3, color_image.shape[0]//3)))
+    #         cv2.waitKey(0)
+    #         print (i, "depth:", contours_depth[i])
+    #         cv2.imwrite('tmp/canny_{}.jpg'.format(i), color_image)
+    #     print (len(contours))
+
+    
+    # cv2.imshow('canny', image_edge)
+    # cv2.imwrite('tmp/canny.jpg', image_edge)
     valid_index = filter(lambda x: contours_depth[x] == 6, range(len(contours)))
     contours = [contours[i] for i in valid_index]
-    contours = filter(lambda x: len(x) > size_threshold, contours)
-
-
+    # contours = filter(lambda x: len(x) > size_threshold, contours)
 
     contours = filter_with_shape(contours)
+
 
     # print("number of contour before filter of positions: {}".format(len(contours)))
 
@@ -324,8 +340,8 @@ def adjustOrientation(gray_image, save_path=None):
 
     # After rotation, the image is no longer binary image
     # thus, we need to do it again
-    _, binary_image = cv2.threshold(gray_image, 128, 255,
-                                    cv2.THRESH_BINARY)
+    _, binary_image = cv2.threshold(gray_image, 0, 255,
+                                    cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
 
     # return gray_image, contours, centers
@@ -367,6 +383,7 @@ def getGridlinePositions(binary_image, contours, centers):
     '''
     calculate the horizontal and vertical gridline positions
     '''
+    # print (len(contours))
     bounding_rects = list(map(cv2.boundingRect, contours))
     # print ("bounding rects: {}".format(bounding_rects))
     x, y, w, h = bounding_rects[1]
