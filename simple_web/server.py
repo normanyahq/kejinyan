@@ -14,7 +14,6 @@ import traceback
 import json
 import time
 from psycopg2 import connect
-# from pgdb import connect
 
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
@@ -329,4 +328,4 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", threaded=True)
