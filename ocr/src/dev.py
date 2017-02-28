@@ -55,7 +55,7 @@ for i in range(0,5):
         cv2.line(color_image, (0, r), (w-1, r), (0, 255, 0), thickness=10)
 
     color_image = cv2.resize(color_image, (w//3, h//3))
-    # cv2.imshow('gray', color_image)
+    cv2.imshow('gray', color_image)
     # cv2.imshow('name', name)
-    # cv2.waitKey(0)
+    cv2.waitKey(1)
     # cv2.destroyAllWindows()
