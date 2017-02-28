@@ -194,7 +194,7 @@ def getQRCornerContours(gray_image, t=False):
     image_edge = cv2.Canny(gray_image, 100, 200)
     kernel = np.ones((3,3),np.uint8)
     image_edge = cv2.dilate(image_edge, kernel, iterations=2)
-    contours, hierarchy = cv2.findContours(image_edge.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    _, contours, hierarchy = cv2.findContours(image_edge.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
 
     contours_depth = getContourDepth(hierarchy[0])
