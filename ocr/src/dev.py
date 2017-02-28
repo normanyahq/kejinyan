@@ -10,7 +10,7 @@ for i in range(0,5):
     #                                 cv2.THRESH_BINARY_INV)
     # print _, binary_image
     binary_image = binarizeImage(grayscale_image)
-    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//4, binary_image.shape[0]//4)))
+    # cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//4, binary_image.shape[0]//4)))
     # cv2.waitKey(0)
 
     cv2.imwrite('tmp/ycb_{}.jpg'.format(i), binary_image)
@@ -19,7 +19,7 @@ for i in range(0,5):
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
     binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_OPEN, kernel)
 
-    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//4, binary_image.shape[0]//4)))
+    # cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//4, binary_image.shape[0]//4)))
     cv2.imwrite('tmp/ycb_{}.jpg'.format(i), binary_image)
     # cv2.waitKey(0)
     binary_image, centers = adjustOrientation(binary_image, 'tmp/detect_{}.jpg'.format(i))
@@ -32,9 +32,9 @@ for i in range(0,5):
     # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/handwritten.jpg'.format(i))
     # print ('loading done.')
 
-    cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//3, binary_image.shape[0]//3)))
+    # cv2.imshow('gray', cv2.resize(binary_image, (binary_image.shape[1]//3, binary_image.shape[0]//3)))
     cv2.imwrite('tmp/handwritten.jpg', binary_image)
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
 
     h, w = binary_image.shape
     cv2.imwrite('/var/tmp/binary_image.jpg', binary_image)
@@ -55,7 +55,7 @@ for i in range(0,5):
         cv2.line(color_image, (0, r), (w-1, r), (0, 255, 0), thickness=10)
 
     color_image = cv2.resize(color_image, (w//3, h//3))
-    cv2.imshow('gray', color_image)
+    # cv2.imshow('gray', color_image)
     # cv2.imshow('name', name)
-    cv2.waitKey(0)
+    # cv2.waitKey(0)
     # cv2.destroyAllWindows()
