@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
-<!--[if !IE]><!--> <html lang="zh-cn"> <!--<![endif]-->  
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="zh-cn"> <!--<![endif]-->
 <head>
     <title>氪金眼答题卡识别系统</title>
     <!-- Meta -->
@@ -9,15 +9,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="">    
-    <link rel="shortcut icon" href="favicon.ico">  
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="favicon.ico">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <!-- Global CSS -->
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">   
-    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
     <link rel="stylesheet" href="assets/plugins/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
-    
+
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -25,13 +25,13 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-</head> 
+</head>
 
-<body class="landing-page">   
-     
-    
+<body class="landing-page">
+
+
     <div class="page-wrapper">
-        
+
         <!-- ******Header****** -->
         <header class="header text-center">
             <div class="container">
@@ -43,21 +43,23 @@
                 </div><!--//branding-->
                 <div class="tagline">
                     <p> 假氪金者，如神助也，而阅万卷。 </p>
-                    <p> 谨以此系统献给爸爸妈妈，和与他们一样战斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
+                    <p> 谨以此系统献给爸爸妈妈，</p>
+                    <p> 越来越懒只想铲屎的集翔吴，</p>
+                    <p> 和与他们一样战斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
                     <p></p>
                 </div><!--//tagline-->
                 <div class="social-container">
                     <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#downloadSheet">
                           功能简介
                     </button>
-                    <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#scannerIntroduction">
+                    <!--<button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#scannerIntroduction">
                           了解扫描仪
-                    </button>
+                    </button>-->
 
                  </div><!--//social-container-->
             </div><!--//container-->
         </header><!--//header-->
-        
+
         <section class="cards-section text-center">
             <div class="container">
                 <h2 class="title">系统正在免费测试！</h2>
@@ -119,6 +121,32 @@
 
 
                         <!-- Modal -->
+                        <div class="modal fade" id="haveATry" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
+                          <div class="modal-dialog modal-md" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">尝试一下</h4>
+                              </div>
+                              <div class="modal-body">
+                                    <p class="text-left">我们已经为你准备好了两份文件，点击下载，并回到首页点击“上传答题卡”按钮进行上传吧，就是这么简单！</p>
+                                    <p class="text-left">                                                    <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-info btn-xs">标准答案答题卡</a>
+                                      <a href="/static/half_example.pdf" target="_blank" role="button" class="btn btn-info btn-xs">学生答题卡</a>
+                                    </p>
+                                    <p class="text-left">您可以在导航栏中选择查看学生作答情况、试卷统计信息和学生原始选项。</p>
+
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div><!--End Modal-->
+
+
+
+
+                        <!-- Modal -->
                         <div class="modal fade" id="downloadSheet" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
                           <div class="modal-dialog modal-lg" role="document">
                             <div class="modal-content">
@@ -133,7 +161,7 @@
                                       <li><p class="text-left">按照参考答案填涂一张答题卡，扫描并保存，学号可留空。</p></li>
                                       <li><p class="text-left">在测验时将答题卡分发给学生，考试结束后收回并通过扫描仪扫描成一个或多个PDF文件。<strong>本系统可以识别纸张朝向，无需手动调整。</strong></p></li>
                                       <li><p class="text-left">将两个文件一同上传，并等待处理结果。</p></li>
-                                    </ol> 
+                                    </ol>
                                     <p class="text-left">您可以在导航栏中选择查看学生作答情况、试卷统计信息和学生原始选项。</p>
                                     <table class="table table-bordered">
                                         <thead>
@@ -162,7 +190,7 @@
                                                     <a href="/static/full_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
                                                 </td>
                                             </tr>
-                                            <tr>    
+                                            <tr>
                                                 <td>手写（混合型）</td>
                                                 <td>使用深度学习和人工神经网络的可以识别手写字符的答题卡，<strong>评卷功能即将上线</strong>，敬请期待！</td>
                                                 <td>
@@ -226,27 +254,63 @@
 
 
                 <div id="cards-wrapper" class="cards-wrapper row">
+                  <div class="item item-purple col-md-4 col-sm-6 col-xs-6">
+                      <div class="item-inner">
+                          <div class="icon-holder">
+                              <i class="icon glyphicon glyphicon-sunglasses
+"></i>
+                          </div><!--//icon-holder-->
+                          <h3 class="title">批改结果</h3>
+                          <p class="intro">点击查看各个学生的成绩、卷面分析和原始答案</p>
+                          <a class="link" href="/results/20170228080305MV4vmhms6z"><span></span></a>
+                      </div><!--//item-inner-->
+                  </div><!--//item-->
+                  <div class="item item-blue col-md-4 col-sm-6 col-xs-6">
+                      <div class="item-inner">
+                          <div class="icon-holder">
+                              <i class="icon glyphicon glyphicon-print
+"></i>
+                          </div><!--//icon-holder-->
+                          <h3 class="title">扫描仪</h3>
+                          <p class="intro">了解自动进纸扫描的馈纸式扫描仪</p>
+                          <a class="link" href="" data-toggle="modal" data-target="#scannerIntroduction"><span></span></a>
+                      </div><!--//item-inner-->
+                  </div><!--//item-->
+
+                  <div class="item item-pink col-md-4 col-sm-6 col-xs-6">
+                      <div class="item-inner">
+                          <div class="icon-holder">
+                              <i class="icon glyphicon glyphicon-check
+"></i>
+                          </div><!--//icon-holder-->
+                          <h3 class="title">我要试试</h3>
+                          <p class="intro">下载答题卡样例，体验提交流程，与系统来一次亲密接触</p>
+                          <a class="link" href="" data-toggle="modal" data-target="#haveATry"><span></span></a>
+                      </div><!--//item-inner-->
+                  </div><!--//item-->
+
+
+
                 </div><!--//cards-->
-                
+
             </div><!--//container-->
         </section><!--//cards-section-->
     </div><!--//page-wrapper-->
-    
+
     <footer class="footer text-center">
         <div class="container">
             <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
-            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers, modified by <a href="http://heqing.me/" target="_blank">Heqing Ya</a></small>. 
-            
+            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers, modified by <a href="http://heqing.me/" target="_blank">Heqing Ya</a></small>.
+
         </div><!--//container-->
     </footer><!--//footer-->
-    
-     
-    <!-- Main Javascript -->          
+
+
+    <!-- Main Javascript -->
     <script type="text/javascript" src="assets/plugins/jquery-1.12.3.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>                                                                     
+    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
     <script type="text/javascript" src="assets/js/main.js"></script>
-    
-</body>
-</html> 
 
+</body>
+</html>
