@@ -49,7 +49,7 @@ def get_db():
 def getToken():
     return datetime.datetime.now().strftime("%Y%m%d%H%M%S") \
         + "".join([random.choice(string.uppercase + string.lowercase + string.digits)
-                   for i in range(0, 10)]) 
+                   for i in range(0, 10)])
 
 ALLOWED_EXTENSIONS = set(['pdf'])
 
@@ -89,13 +89,13 @@ def convert_and_recognize(token, paths, answersheet_type):
     db.commit()
 
     if standard['status'] == "error":
-        c.execute("insert into error_list values (%s, %s);", (standard['path'], standard['message'])) 
+        c.execute("insert into error_list values (%s, %s);", (standard['path'], standard['message']))
         db.commit()
     for i, f in enumerate(student_files):
         result = recognizeJPG(f, answersheet_type)
         c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
         if result['status'] =='error':
-            c.execute("insert into error_list values (%s, %s);", (result['path'], result['message'])) 
+            c.execute("insert into error_list values (%s, %s);", (result['path'], result['message']))
         c.execute('update status set processed=%s where token=%s;', (i+1, token))
         db.commit()
 
@@ -111,7 +111,7 @@ def render_result(standard, answer):
         num_question -= 1
     for i in range(num_question):
         color = "red"
-        if correct_choice[i] == student_choice[i]: 
+        if correct_choice[i] == student_choice[i]:
             color = "green"
         result.append(''.format(color, student_choice[i].replace('-', "?")))
     return result
@@ -124,12 +124,14 @@ def returnTable(token):
     cur.execute("select value from standard where token = %s;", (token,))
     standard = json.loads(cur.fetchone()[0])['result']
     result = [(u'答案',) +  tuple([(standard['answer'][i], '') for i in range(len(standard['answer']))])]
+    t_result = list()
     header = (u'学号',) + tuple([unicode(i+1) for i in range(len(standard['answer']))])
     for ans in _answers:
-        result.append((ans['id'],) + tuple([(ans['answer'][i], 
+        t_result.append((ans['id'],) + tuple([(ans['answer'][i],
             'green' if ans['answer'][i] == standard['answer'][i] else 'red') for i in range(len(standard['answer']))]))
+    result.extend(sorted(t_result))
     return render_template('table.html', info=result, header=header)
-    
+
 
 
 @app.route('/favicon.ico')
@@ -183,11 +185,11 @@ def renderResults(token):
                 correct_count = sum(map(lambda x: x['answer'][i]==standard['result']['answer'][i], _answers))
                 student_mistake_index = [index for index in range(len(_answers))  \
                     if _answers[index]['answer'][i] != standard['result']['answer'][i]]
-                student_mistake_info = [(_answers[k]['id'], 
+                student_mistake_info = [(_answers[k]['id'],
                     os.path.basename(_answers[k]['name_image'])) for k in student_mistake_index]
-                correct_ratio.append((correct_count, 
-                    len(_answers), 
-                    100 * correct_count / len(_answers), 
+                correct_ratio.append((correct_count,
+                    len(_answers),
+                    100 * correct_count / len(_answers),
                     10 + 90 * correct_count / len(_answers),
                     i+1,
                     student_mistake_info))
@@ -200,14 +202,14 @@ def renderResults(token):
                     else:
                         num_correct += 1
                 err_list = u", ".join(map(lambda x: unicode(x), err_list))
-                correctness.append((student['id'], 
-                    num_correct, 
-                    num_question, 
-                    err_list, 
+                correctness.append((student['id'],
+                    num_correct,
+                    num_question,
+                    err_list,
                     os.path.basename(student['name_image'])))
             correctness.sort()
         # print render_ratio(correct_ratio, num_question)
-        return json.dumps({"stats": render_ratio(correct_ratio, num_question), 
+        return json.dumps({"stats": render_ratio(correct_ratio, num_question),
             "scores": render_students(correctness)})
 
 @app.route('/name/<filename>')
@@ -254,10 +256,10 @@ def get_results(token):
         standard = answers = {"answer":[], "id":""}
         num_question = 0
     db.close()
-    return render_template('result.html', 
-        processed= processed, 
-        total=total, 
-        standard=standard, 
+    return render_template('result.html',
+        processed= processed,
+        total=total,
+        standard=standard,
         answers= answers,
         token=token,
         colnum=range(1, num_question+1))
@@ -300,13 +302,13 @@ def upload_file():
                     message.insert(0, u"标准答案文件：{} 上传成功，正在处理中……".format(standard.filename))
                 else:
                     message.insert(0, u"标准答案文件：{} 超过一页，任取一页识别……".format(standard.filename))
-                p = Process(target=convert_and_recognize, 
-                    args=(token, 
-                        valid_filenames, 
+                p = Process(target=convert_and_recognize,
+                    args=(token,
+                        valid_filenames,
                         request.values['answersheettype']))
                 db = get_db()
                 c = db.cursor()
-                c.execute("insert into status (token, processed, total) values (%s, 0, %s);", 
+                c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
                     (token, getTotalPageNum(valid_filenames[:-1]))) # the last file is standard answer
                 db.commit()
                 p.start()
