@@ -111,7 +111,7 @@ def getQRCornerContours(gray_image, t=False):
         return result
 
         
-    def filter_with_shape(contours, err_t=1.1):
+    def filter_with_shape(contours, err_t=1.15):
         '''
         remove squares whose min bouding rect is not like square
         '''
@@ -193,7 +193,7 @@ def getQRCornerContours(gray_image, t=False):
 
     image_edge = cv2.Canny(gray_image, 100, 200)
     kernel = np.ones((3,3),np.uint8)
-    image_edge = cv2.dilate(image_edge, kernel, iterations=2)
+    image_edge = cv2.dilate(image_edge, kernel, iterations=1)
     _, contours, hierarchy = cv2.findContours(image_edge.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
 

@@ -20,7 +20,6 @@ os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".
 from processor.interface import recognizeJPG
 from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
-
 DATABASE_INIT = ['create table if not exists standard (token text, value text);',
     'create table if not exists answer (token text, value text);',
     'create table if not exists status (token text, processed int, total int);',
@@ -57,9 +56,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'file_storage')
 app.config['ASSETS_FOLDER'] = os.path.join(os.getcwd(), 'templates', 'assets')
 app.config['NAME_FOLDER'] = os.path.join('/var/tmp/')
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+
 
 os.system("mkdir -p {}".format(app.config['UPLOAD_FOLDER']))
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+#app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
 
@@ -346,6 +347,6 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+    #app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
     #app.run(host="0.0.0.0", debug=True)
     app.run(host="0.0.0.0", threaded=True)
