@@ -5,7 +5,7 @@ from processor import recognizeJPG
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
 for i in range(0,5):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
-    grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/simple_web/file_storage/20170226231046CMgkngQiER/student/full_example-2.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image = cv2.imread('data/wh_student-36.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     # _, binary_image = cv2.threshold(grayscale_image, 200, 255,
     #                                 cv2.THRESH_BINARY_INV)
     # print _, binary_image
@@ -25,7 +25,7 @@ for i in range(0,5):
     binary_image, centers = adjustOrientation(binary_image, 'tmp/detect_{}.jpg'.format(i))
     contours = getQRCornerContours(binary_image, True)
     # grayscale_image = cv2.imread('data/multiple_choice.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/multiple_choice.jpg'.format(i))    
+    # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/multiple_choice.jpg'.format(i))
     # grayscale_image = cv2.imread('data/halfpage-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     # grayscale_image, contours, centers = adjustOrientation(grayscale_image, 'tmp/halfpage.jpg'.format(i))
     # grayscale_image = cv2.imread('data/handwritten.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
