@@ -171,6 +171,15 @@ def renderResults(token):
         '''
         result = render_template('scores.html', info=correctness)
         return result
+    def row_class(correct_ratio):
+        if correct_ratio > 0.9:
+            return "success"
+        elif correct_ratio > 0.5:
+            return "info"
+        elif correct_ratio > 0.3:
+            return "warning"
+        else:
+            return "danger"
 
     db = get_db()
     cur = db.cursor()
@@ -203,7 +212,7 @@ def renderResults(token):
                 correct_ratio.append((correct_count,
                     len(_answers),
                     100 * correct_count / len(_answers),
-                    10 + 90 * correct_count / len(_answers),
+                    row_class(correct_count / len(_answers)),
                     i+1,
                     student_mistake_info))
             for student in _answers:

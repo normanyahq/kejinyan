@@ -6,8 +6,9 @@
 
     </td>
 
-    <td class="text-center" style="vertical-align: middle;">{{i[1]}} / {{i[2]}}</td>
-    <td class="text-center" style="vertical-align: middle;" >
+    <td class="text-center" style="vertical-align: middle;">{{i[1]}} ( {{i[2]}} ) </td>
+    <td class="text-center" style="vertical-align: middle;"> {{(100*i[1]/i[2]) | round(1, 'common')}}%</td>
+    <td class="text-center" style="vertical-align: middle;">
         {{i[3]}}
     </td>
 </tr>

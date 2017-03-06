@@ -1,11 +1,14 @@
     {% for p in params %}
-    <tr>
+    <tr class='{{p[3]}}'>
         <th scope="row" class='text-center'> 
             {{p[4]}}
         </th>
         <td class='text-center'>
-        {{p[0]}} / {{p[1]}}
+        {{p[0]}} ( {{p[1]}} )
         </td>
+	<td class="text-center">
+	{{(100*p[0]/p[1])|round(1, 'common')}}%
+	</td>
         <td class='text-center'>
             <progress value="{{p[2]}}" max="100"></progress>
         </td>
