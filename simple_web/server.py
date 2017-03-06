@@ -120,9 +120,17 @@ def render_result(standard, answer):
 def returnTable(token):
     cur = get_db().cursor()
     cur.execute("select value from answer where token = %s;", (token,))
-    _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+    t = cur.fetchall()
+    t = list(map(lambda x: json.loads(x[0]), t))
+    t = filter(lambda x: "result" in x, t)
+    _answers = list(map(lambda x: x['result'], t))
+    # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
     cur.execute("select value from standard where token = %s;", (token,))
     standard = json.loads(cur.fetchone()[0])['result']
+    t = len(standard['answer']) - 1
+    while standard['answer'][t] == '-':
+        t -= 1
+    standard['answer'] = standard['answer'][:t+1]
     result = [(u'答案',) +  tuple([(standard['answer'][i], '') for i in range(len(standard['answer']))])]
     t_result = list()
     header = (u'学号',) + tuple([unicode(i+1) for i in range(len(standard['answer']))])
@@ -171,7 +179,11 @@ def renderResults(token):
         return json.dumps({"empty": True})
     else:
         cur.execute("select value from answer where token = %s;", (token,))
-        _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+        t = cur.fetchall()
+        t = list(map(lambda x: json.loads(x[0]), t))
+        t = filter(lambda x: "result" in x, t)
+        _answers = list(map(lambda x: x['result'], t))
+        # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         # print _answers
         standard = json.loads(standard[0])
         # print standard
@@ -244,7 +256,11 @@ def get_results(token):
     processed, total = t if t else (0, 1)
     if processed:
         cur.execute("select value from answer where token = %s;", (token,))
-        answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+        t = cur.fetchall()
+        t = list(map(lambda x: json.loads(x[0]), t))
+        t = filter(lambda x: "result" in x, t)
+	answers = list(map(lambda x: x['result'], t))
+        # answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         cur.execute("select value from standard where token = %s;", (token,))
         standard = json.loads(cur.fetchone()[0])
         # print standard
@@ -330,4 +346,6 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
+    app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+    #app.run(host="0.0.0.0", debug=True)
     app.run(host="0.0.0.0", threaded=True)
