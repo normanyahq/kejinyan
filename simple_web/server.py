@@ -310,7 +310,8 @@ def upload_file():
             answers = request.files.getlist('answers')
             for f in answers:
                 if allowed_file(f.filename):
-                    filename = secure_filename(f.filename)
+                    # filename = secure_filename(f.filename)
+                    filename = "{}.pdf".format(getToken())
                     os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
                     f.save(os.path.join(upload_path, 'student', filename))
                     file_url = url_for('uploaded_file', filename=filename)
@@ -320,7 +321,8 @@ def upload_file():
                     message.append(u"答题卡文件：{} 由于后缀名不合法已被忽略，请上传pdf文件。".format(f.filename))
             if valid_filenames:
                 os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
-                standard_name = secure_filename(standard.filename)
+                #standard_name = secure_filename(standard.filename)
+                standard_name = "{}.pdf".format(getToken())
                 valid_filenames.append(os.path.join(upload_path, 'teacher', standard_name))
                 standard.save(os.path.join(upload_path, 'teacher', standard_name))
 
