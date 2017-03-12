@@ -20,7 +20,6 @@ os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".
 from processor.interface import recognizeJPG
 from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
-
 DATABASE_INIT = ['create table if not exists standard (token text, value text);',
     'create table if not exists answer (token text, value text);',
     'create table if not exists status (token text, processed int, total int);',
@@ -57,9 +56,11 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'file_storage')
 app.config['ASSETS_FOLDER'] = os.path.join(os.getcwd(), 'templates', 'assets')
 app.config['NAME_FOLDER'] = os.path.join('/var/tmp/')
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+
 
 os.system("mkdir -p {}".format(app.config['UPLOAD_FOLDER']))
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+#app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
 
@@ -120,9 +121,17 @@ def render_result(standard, answer):
 def returnTable(token):
     cur = get_db().cursor()
     cur.execute("select value from answer where token = %s;", (token,))
-    _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+    t = cur.fetchall()
+    t = list(map(lambda x: json.loads(x[0]), t))
+    t = filter(lambda x: "result" in x, t)
+    _answers = list(map(lambda x: x['result'], t))
+    # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
     cur.execute("select value from standard where token = %s;", (token,))
     standard = json.loads(cur.fetchone()[0])['result']
+    t = len(standard['answer']) - 1
+    while standard['answer'][t] == '-':
+        t -= 1
+    standard['answer'] = standard['answer'][:t+1]
     result = [(u'答案',) +  tuple([(standard['answer'][i], '') for i in range(len(standard['answer']))])]
     t_result = list()
     header = (u'学号',) + tuple([unicode(i+1) for i in range(len(standard['answer']))])
@@ -171,7 +180,11 @@ def renderResults(token):
         return json.dumps({"empty": True})
     else:
         cur.execute("select value from answer where token = %s;", (token,))
-        _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+        t = cur.fetchall()
+        t = list(map(lambda x: json.loads(x[0]), t))
+        t = filter(lambda x: "result" in x, t)
+        _answers = list(map(lambda x: x['result'], t))
+        # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         # print _answers
         standard = json.loads(standard[0])
         # print standard
@@ -244,7 +257,11 @@ def get_results(token):
     processed, total = t if t else (0, 1)
     if processed:
         cur.execute("select value from answer where token = %s;", (token,))
-        answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
+        t = cur.fetchall()
+        t = list(map(lambda x: json.loads(x[0]), t))
+        t = filter(lambda x: "result" in x, t)
+	answers = list(map(lambda x: x['result'], t))
+        # answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         cur.execute("select value from standard where token = %s;", (token,))
         standard = json.loads(cur.fetchone()[0])
         # print standard
@@ -330,4 +347,6 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
+    #app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
+    #app.run(host="0.0.0.0", debug=True)
     app.run(host="0.0.0.0", threaded=True)
