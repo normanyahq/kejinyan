@@ -29,7 +29,7 @@ for i in range(0,1):
 
     t = time.time()
     print "\n\nstart standard recognition...\n\n"
-    print recognizeSheet('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg', 'half')
+    print recognizeSheet('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg', 'full')
     print time.time() - t
 
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
