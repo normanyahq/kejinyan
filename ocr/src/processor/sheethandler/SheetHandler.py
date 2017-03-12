@@ -38,7 +38,6 @@ def recognizeSheet(path, sheet_type):
     contours = getQRCornerContours(binary_image)
     horizontal_pos, vertical_pos = getGridlinePositions(binary_image, contours, centers)
 
-
     def getNameImage():
         '''
         return the area of image
@@ -72,7 +71,7 @@ def recognizeSheet(path, sheet_type):
         for r, c, h, w in data_section["question"]:
             i += 1
             stripe = extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w)
-            cv2.imwrite('tmp/{}.jpg'.format(i), stripe)
+            # cv2.imwrite('tmp/{}.jpg'.format(i), stripe)
             sequence = getRatioFromStripe(stripe, 5)
             answer = getAnswerFromSequence(sequence)
             result.append(answer)

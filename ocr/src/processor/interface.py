@@ -1,5 +1,5 @@
 
-from sheethandler import sheethandler
+from sheethandler.SheetHandler import recognizeSheet
 import traceback
 
 def recognizeJPG(path, sheet_type):
@@ -11,7 +11,7 @@ def recognizeJPG(path, sheet_type):
         {"status": "error", "path": "/path/to/file", "message": "error messages..."}
     '''
     try:
-        result = sheethandler.recognizeSheet(path, sheet_type)
+        result = recognizeSheet(path, sheet_type)
         return {"status": 'success', "path": path, "result": result}
     except:
         message = traceback.format_exc()

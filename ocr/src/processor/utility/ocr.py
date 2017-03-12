@@ -7,7 +7,9 @@ import numpy as np
 from .common import getSquareDist
 from pyPdf import PdfFileReader
 
+from ..utility.common import timeit
 
+@timeit
 def binarizeImage(gray_image):
     '''
     Given an grayscale image,
@@ -68,6 +70,7 @@ def getLastCorner(centers):
     p1, p2, p3 = centers[:]
     return (p2[0]+p3[0]-p1[0], p2[1]+p3[1]-p1[1],)
 
+@timeit
 def rotateImage(gray_image, degree, expand=True):
     '''
     rotate the image clockwise by given degrees using pillow library
@@ -82,36 +85,38 @@ def getPixelListCenter(pixels):
     '''
     return tuple(np.mean(pixels, axis=0).astype('uint32')[0])
 
+@timeit
 def getQRCornerContours(gray_image, t=False):
     '''
     given binary image, return the pixel lists of their contours:
     '''
 
-
+    @timeit
     def getContourDepth(hierarchy):
-
+        result = dict()
         def _getDepth(hierarchy, i):
+            if i in result:
+                return result[i]
             Next, Previous, First_Child, Parent = 0, 1, 2, 3
-
             cur_index = hierarchy[i][First_Child]
             children_indexes = list()
             while cur_index != -1:
                 children_indexes.append(cur_index)
                 cur_index = hierarchy[cur_index][Next]
             if children_indexes:
-                return max(map(lambda x: _getDepth(hierarchy, x), children_indexes)) + 1
+                result[i] = max(map(lambda x: _getDepth(hierarchy, x), children_indexes)) + 1
             else:
-                return 1
+                result[i] = 1
+            return result[i]
 
-        result = dict()
         for i in range(len(hierarchy)):
             if i not in result:
                 result[i] = _getDepth(hierarchy, i)
 
         return result
 
-
-    def filter_with_shape(contours, err_t=1.1):
+    @timeit
+    def filter_with_shape(contours, err_t=1.15):
         '''
         remove squares whose min bouding rect is not like square
         '''
@@ -123,7 +128,7 @@ def getQRCornerContours(gray_image, t=False):
         contours = [contours[i] for i in valid_index]
         return contours
 
-
+    @timeit
     def filter_with_positions(contours):
         '''
         find three contours so that they are most similar to a right triangle
@@ -151,6 +156,7 @@ def getQRCornerContours(gray_image, t=False):
         contours = [contours[best_triplet[0]], contours[best_triplet[1]], contours[best_triplet[2]]]
         return contours
 
+    @timeit
     def rearrange_contours(contours):
         '''
         use polar coordinates to rearrange contours in counter-clockwise order,
@@ -163,7 +169,6 @@ def getQRCornerContours(gray_image, t=False):
         theta_index.sort()
         contours = [contours[i] for theta, i in theta_index]
         centers = [centers[i] for theta, i in theta_index]
-        # print ("theta_index: {}".format(theta_index))
         min_err = float('inf')
         right_angle_index = 0
         for t1 in range(len(contours)):
@@ -172,57 +177,28 @@ def getQRCornerContours(gray_image, t=False):
             diff = abs(getSquareDist(centers[t1], centers[t2])
                 + getSquareDist(centers[t1], centers[t3])
                 - getSquareDist(centers[t2], centers[t3]))
-            # print ("centers: {}".format(centers))
-            # print ("t1->t2:{}\nt1->t3:{}\nt2->t3:{}".format(getSquareDist(centers[t1], centers[t2]) ,
-                # getSquareDist(centers[t1], centers[t3]) ,
-                # getSquareDist(centers[t2], centers[t3])))
             if min_err > diff:
                 min_err = diff
                 right_angle_index = t1
-            # print ("t1: {}, t2:{}, t3: {}, diff:{}".format(t1, t2, t3, diff))
         t = [i % len(contours) for i in range(right_angle_index, right_angle_index+len(contours))]
-        # print (centers, t)
 
         contours = [contours[i] for i in t]
 
-        # centers = list(map(lambda c: getPixelListCenter(c), contours))
         centers = [getPixelListCenter(c) for c in contours]
-        # print ("right angle index:{}, centers:{}".format(right_angle_index, centers))
-
         return contours
 
     image_edge = cv2.Canny(gray_image, 100, 200)
     kernel = np.ones((3,3),np.uint8)
     image_edge = cv2.dilate(image_edge, kernel, iterations=1)
 
-    cv2.imwrite("tmp/imgae_edge.jpg", image_edge)
-
     _, contours, hierarchy = cv2.findContours(image_edge.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
 
     contours_depth = getContourDepth(hierarchy[0])
 
-    # must be calculated before any filtering,
-    # otherwise it will be too large
-    # size_threshold = np.mean(map(lambda x: len(x), contours))
-    color_image = cv2.cvtColor(image_edge, cv2.COLOR_GRAY2BGR)
 
-    # if t:
-    #     print ("start")
-    #     for i in range(len(contours)):
-    #         cv2.drawContours(color_image, [contours[i]], -1, (0, 255, 0), thickness=1)
-    #         cv2.imshow('contour', cv2.resize(color_image, (color_image.shape[1]//3, color_image.shape[0]//3)))
-    #         cv2.waitKey(0)
-    #         print (i, "depth:", contours_depth[i])
-    #         cv2.imwrite('tmp/canny_{}.jpg'.format(i), color_image)
-    #     print (len(contours))
-
-
-    # cv2.imshow('canny', image_edge)
-    # cv2.imwrite('tmp/canny.jpg', image_edge)
     valid_index = filter(lambda x: contours_depth[x] == 6, range(len(contours)))
     contours = [contours[i] for i in valid_index]
-    # contours = filter(lambda x: len(x) > size_threshold, contours)
 
     contours = filter_with_shape(contours)
 
@@ -232,26 +208,17 @@ def getQRCornerContours(gray_image, t=False):
     # Find best triplet which can form a right triangle
     if len(contours) > 3:
         contours = filter_with_positions(contours)
-    # print("number of contour after filter of positions: {}".format(len(contours)))
-
-    # color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
-    # cv2.drawContours(color_image, contours, -1, (0, 0, 255), 3)
-    # color_image = cv2.resize(color_image, (color_image.shape[1]//3, color_image.shape[0]//3))
-    # cv2.imshow('contours', color_image)
-    # cv2.waitKey(0)
 
     contours = rearrange_contours(contours)
-    # centers = list(map(lambda c: getPixelListCenter(c), contours))
-
-    # print ("center:{}, shape:{}".format(centers[0], gray_image.shape))
     return contours
 
-
+@timeit
 def adjustOrientation(binary_image, original_image, save_path=None):
     '''
     given an answer sheet, return an copy which is rotated to the correct orientation,
     contours of three corner blocks and four corner positions in (col, row) tuple
     '''
+    @timeit
     def rotateCoordinate(x, y, w, h, degree, paper_orientation_changed=False):
         _x, _y = x - w // 2, h // 2 - y
         angle = degree / 180 * np.pi
@@ -265,7 +232,7 @@ def adjustOrientation(binary_image, original_image, save_path=None):
 
         return (r_x, r_y)
 
-
+    @timeit
     def rotateContour(contour, w, h, degree, paper_orientation_changed=False):
         # print ("before:{}".format(contour[:10]))
 
@@ -412,15 +379,17 @@ def getGridlinePositions(binary_image, contours, centers):
     # print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
     return horizontal, vertical
 
-def getBlackRatio(grid):
+def getBlackRatio(grid, padding_ratio = 0.3):
     '''
     return the ratio of black pixels
     Track only 36% (60% * 60%) area in the center
     '''
     h, w = grid.shape
-    dh, dw = h//5, w//5
-    dh, dw = 0, 0
+    dh, dw = int(h * padding_ratio), int(w * padding_ratio)
     grid = grid[dh:h-dh, dw:w-dw]
+    # global count
+    # cv2.imwrite("tmp/{}_{}.jpg".format(count, np.sum((grid>128).flatten()) / grid.size), grid)
+    # count += 1
     return np.sum((grid>128).flatten()) / grid.size
 
 def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
@@ -445,7 +414,6 @@ def getRatioFromStripe(stripe, num_choice, multiple=False):
 
     # cv2.imshow('stripe', stripe)
     # cv2.waitKey(0)
-
     for i in range(num_choice):
         grid = stripe[:, i*grid_len : (i+1)*grid_len]
         result.append(getBlackRatio(grid))
@@ -463,7 +431,7 @@ def getAnswerFromSequence(sequence, T=0.4):
     given sequence array, return all index i's which ratio_i's are
     larger than threshold T
     '''
-    print (max(sequence), min(sequence), sequence)
+    # print (max(sequence), min(sequence), sequence)
     Choices = "ABCDEFGHIJK"
     result = "".join([Choices[i] for i in range(len(sequence)) if sequence[i] > T])
     return result if result else "-"

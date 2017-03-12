@@ -5,4 +5,5 @@ dev:
 	python src/dev.py
 
 clean:
-	rm data/*.jpg data/*.pdf
+	find . -name "*.pyc" -delete
+	rm tmp/*.jpg
