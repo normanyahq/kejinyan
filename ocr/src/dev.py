@@ -6,7 +6,9 @@ import time
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
 for i in range(0,1):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
-    grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    # grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+
     binary_image = binarizeImage(grayscale_image)
     cv2.imwrite('tmp/binarized.jpg'.format(i), binary_image)
     kernel = np.ones((3,3),np.uint8)
@@ -19,10 +21,17 @@ for i in range(0,1):
     h, w = binary_image.shape
     cv2.imwrite('tmp/binary_image.jpg', binary_image)
     horizontal_pos, vertical_pos = getGridlinePositions(binary_image, contours, centers)
+
     t = time.time()
     print "\n\nstart standard recognition...\n\n"
     print recognizeSheet('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half-0.jpg', 'half')
     print time.time() - t
+
+    t = time.time()
+    print "\n\nstart standard recognition...\n\n"
+    print recognizeSheet('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg', 'half')
+    print time.time() - t
+
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
     cv2.drawContours(color_image, contours, -1, (0, 255, 0), thickness=10)
 
