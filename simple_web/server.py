@@ -171,6 +171,15 @@ def renderResults(token):
         '''
         result = render_template('scores.html', info=correctness)
         return result
+    def row_class(correct_ratio):
+        if correct_ratio > 0.9:
+            return "success"
+        elif correct_ratio > 0.5:
+            return "info"
+        elif correct_ratio > 0.3:
+            return "warning"
+        else:
+            return "danger"
 
     db = get_db()
     cur = db.cursor()
@@ -203,7 +212,7 @@ def renderResults(token):
                 correct_ratio.append((correct_count,
                     len(_answers),
                     100 * correct_count / len(_answers),
-                    10 + 90 * correct_count / len(_answers),
+                    row_class(correct_count / len(_answers)),
                     i+1,
                     student_mistake_info))
             for student in _answers:
@@ -301,7 +310,8 @@ def upload_file():
             answers = request.files.getlist('answers')
             for f in answers:
                 if allowed_file(f.filename):
-                    filename = secure_filename(f.filename)
+                    # filename = secure_filename(f.filename)
+                    filename = "{}.pdf".format(getToken())
                     os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
                     f.save(os.path.join(upload_path, 'student', filename))
                     file_url = url_for('uploaded_file', filename=filename)
@@ -311,7 +321,8 @@ def upload_file():
                     message.append(u"答题卡文件：{} 由于后缀名不合法已被忽略，请上传pdf文件。".format(f.filename))
             if valid_filenames:
                 os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
-                standard_name = secure_filename(standard.filename)
+                #standard_name = secure_filename(standard.filename)
+                standard_name = "{}.pdf".format(getToken())
                 valid_filenames.append(os.path.join(upload_path, 'teacher', standard_name))
                 standard.save(os.path.join(upload_path, 'teacher', standard_name))
 
