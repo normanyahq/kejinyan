@@ -347,6 +347,5 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    #app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
     app.run(host="0.0.0.0", debug=True)
     # app.run(host="0.0.0.0", threaded=True)

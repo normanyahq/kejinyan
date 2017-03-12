@@ -124,6 +124,7 @@ def getQRCornerContours(gray_image, t=False):
         for i in range(len(contours)):
             rect = cv2.boundingRect(contours[i])
             ratios.append(max(rect[3], rect[2]) / min(rect[3], rect[2]))
+        print (sorted(ratios))
         valid_index = filter(lambda i: ratios[i] <=err_t, range(len(contours)))
         contours = [contours[i] for i in valid_index]
         return contours
@@ -195,7 +196,6 @@ def getQRCornerContours(gray_image, t=False):
     image_edge = cv2.Canny(gray_image, 100, 200)
     kernel = np.ones((3,3),np.uint8)
     image_edge = cv2.dilate(image_edge, kernel, iterations=1)
-
     _, contours, hierarchy = cv2.findContours(image_edge.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
 
@@ -418,8 +418,6 @@ def getRatioFromStripe(stripe, num_choice, multiple=False):
     grid_len = w // num_choice
     result = list()
 
-    # cv2.imshow('stripe', stripe)
-    # cv2.waitKey(0)
     for i in range(num_choice):
         grid = stripe[:, i*grid_len : (i+1)*grid_len]
         result.append(getBlackRatio(grid))
