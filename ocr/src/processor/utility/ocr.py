@@ -9,7 +9,7 @@ from pyPdf import PdfFileReader
 
 from ..utility.common import timeit
 
-@timeit
+#timeit
 def binarizeImage(gray_image):
     '''
     Given an grayscale image,
@@ -70,7 +70,7 @@ def getLastCorner(centers):
     p1, p2, p3 = centers[:]
     return (p2[0]+p3[0]-p1[0], p2[1]+p3[1]-p1[1],)
 
-@timeit
+#timeit
 def rotateImage(gray_image, degree, expand=True):
     '''
     rotate the image clockwise by given degrees using pillow library
@@ -85,13 +85,13 @@ def getPixelListCenter(pixels):
     '''
     return tuple(np.mean(pixels, axis=0).astype('uint32')[0])
 
-@timeit
+#timeit
 def getQRCornerContours(gray_image, t=False):
     '''
     given binary image, return the pixel lists of their contours:
     '''
 
-    @timeit
+    #timeit
     def getContourDepth(hierarchy):
         result = dict()
         def _getDepth(hierarchy, i):
@@ -115,8 +115,8 @@ def getQRCornerContours(gray_image, t=False):
 
         return result
 
-    @timeit
-    def filter_with_shape(contours, err_t=1.15):
+    #timeit
+    def filter_with_shape(contours, err_t=1.5):
         '''
         remove squares whose min bouding rect is not like square
         '''
@@ -128,16 +128,19 @@ def getQRCornerContours(gray_image, t=False):
         contours = [contours[i] for i in valid_index]
         return contours
 
-    @timeit
-    def filter_with_positions(contours):
+    #timeit
+    def filter_with_positions(contours, err_t=0.1):
         '''
-        find three contours so that they are most similar to a right triangle
+        find all contours triplets whose centers are most similar to a right
+        triangle:
+                abs(sqrt(a^2 + b^2) - c) < err_t
+        and pick the triplet which forms the larget triangle
         '''
         centers = list(map(lambda c: getPixelListCenter(c), contours))
 
         i, j, k = 0, 1, 2
         min_err = float('inf')
-        best_triplet = (i, j, k)
+        triplets = list()
         while i+2 != len(contours):
             j = i + 1
             while j+1 != len(contours):
@@ -147,16 +150,18 @@ def getQRCornerContours(gray_image, t=False):
                         getSquareDist(centers[i], centers[j]),
                         getSquareDist(centers[j], centers[k])]
                     tri_edge_sqr.sort()
-                    if abs(tri_edge_sqr[0] + tri_edge_sqr[1] - tri_edge_sqr[2]) < min_err:
-                        min_err = abs(tri_edge_sqr[0] + tri_edge_sqr[1] - tri_edge_sqr[2])
-                        best_triplet = (i, j, k)
+                    err = abs(tri_edge_sqr[0] + tri_edge_sqr[1] - tri_edge_sqr[2]) / tri_edge_sqr[2]
+                    if err < err_t:
+                        triplets.append((i, j, k, tri_edge_sqr[2]))
                     k += 1
                 j += 1
             i += 1
+        triplets.sort(key=lambda x: x[3]) # sort with the largest edge
+        best_triplet = triplets[-1]
         contours = [contours[best_triplet[0]], contours[best_triplet[1]], contours[best_triplet[2]]]
         return contours
 
-    @timeit
+    #timeit
     def rearrange_contours(contours):
         '''
         use polar coordinates to rearrange contours in counter-clockwise order,
@@ -212,13 +217,13 @@ def getQRCornerContours(gray_image, t=False):
     contours = rearrange_contours(contours)
     return contours
 
-@timeit
+#timeit
 def adjustOrientation(binary_image, original_image, save_path=None):
     '''
     given an answer sheet, return an copy which is rotated to the correct orientation,
     contours of three corner blocks and four corner positions in (col, row) tuple
     '''
-    @timeit
+    #timeit
     def rotateCoordinate(x, y, w, h, degree, paper_orientation_changed=False):
         _x, _y = x - w // 2, h // 2 - y
         angle = degree / 180 * np.pi
@@ -232,7 +237,7 @@ def adjustOrientation(binary_image, original_image, save_path=None):
 
         return (r_x, r_y)
 
-    @timeit
+    #timeit
     def rotateContour(contour, w, h, degree, paper_orientation_changed=False):
         # print ("before:{}".format(contour[:10]))
 
