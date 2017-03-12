@@ -21,7 +21,8 @@ SheetSectionPositions = {"half": {
 }, "full": {
         "name": (0, 0, 2, 8),
         "id": [(2, 9 + 2 * i, 10, 2) for i in range(12)],
-        "question": chain(*[getBlockProblemPositions(14 + r * 6, 0 + c * 12, 1, 2, 5, 5) for c in range(3) for r in range(5)])
+        "question": list(chain(*[getBlockProblemPositions(14 + r * 6, 0 + c * 12, 1, 2, 5, 5) for c in range(3) for r in range(5)]))
+        # be careful, itertools can be used only once
 }, "full_old": {
         "name": (1, 0, 1, 5),
         "id": [(j, i, 10, 1) for j in [4, 15] for i in range(5)],

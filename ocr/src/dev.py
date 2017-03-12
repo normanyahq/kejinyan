@@ -32,6 +32,8 @@ for i in range(0,1):
     print recognizeSheet('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg', 'full')
     print time.time() - t
 
+    print recognizeSheet('/Users/Norman/git/Answer-Sheet-OCR/simple_web/file_storage/20170312033136MnFnT0hRlA/student/full.jpg', 'full')
+
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
     cv2.drawContours(color_image, contours, -1, (0, 255, 0), thickness=10)
 

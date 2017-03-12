@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->  
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->  
-<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->  
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
 <head>
     <title>氪金眼答题卡识别系统</title>
     <!-- Meta -->
@@ -9,16 +9,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
-    <meta name="author" content="">    
-    <link rel="shortcut icon" href="/favicon.ico">  
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
     <link href='/assets/css/fontstyle.css' rel='stylesheet' type='text/css'>
     <!-- Global CSS -->
-    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css">   
-    <!-- Plugins CSS -->    
+    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <!-- Plugins CSS -->
     <link rel="stylesheet" href="/assets/plugins/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" href="/assets/plugins/prism/prism.css">
     <link rel="stylesheet" href="/assets/plugins/elegant_font/css/style.css">
-    
+
     <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="/assets/css/styles.css">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -27,7 +27,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-</head> 
+</head>
 
 <body class="landing-page">
     <div class="page-wrapper">
@@ -91,7 +91,7 @@
                               <div id="scores" class="tab-pane fade in active">
                                 <table class="table">
                                 <thead>
-                                    <th class="text-center">学号</th>                                    
+                                    <th class="text-center">学号</th>
                                     <th class="text-center">正确题数 / 总题数</th>
                                     <th class="text-center">出错题目</th>
                                 </thead>
@@ -102,7 +102,7 @@
                               <div id="stats" class="tab-pane fade">
                               <table class="table">
                                 <thead>
-                                    <th class="text-center">题号</th>                                    
+                                    <th class="text-center">题号</th>
                                     <th class="text-center">正确人数 / 总人数</th>
                                     <th class="text-center">条状图</th>
                                     <th class="text-center">出错学生</th>
@@ -115,30 +115,30 @@
                             </div>
 
                         </div><!--//content-inner-->
-                </div><!--//doc-body-->              
+                </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
-        
+
     </div><!--//page-wrapper-->
-    
+
     <footer id="footer" class="footer text-center">
         <div class="container">
             <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
             <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" targe="_blank">Xiaoying Riley</a> for developers, modified by <a href="http://heqing.me/" targe="_blank">Heqing Ya</a> </small>
-            
+
         </div><!--//container-->
     </footer><!--//footer-->
-    
-     
-    <!-- Main Javascript -->          
+
+
+    <!-- Main Javascript -->
 
 
 
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript" src="/assets/plugins/jquery-1.12.3.min.js"></script>
     <script type="text/javascript" src="/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/plugins/prism/prism.js"></script>    
-    <script type="text/javascript" src="/assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>                                                                
+    <script type="text/javascript" src="/assets/plugins/prism/prism.js"></script>
+    <script type="text/javascript" src="/assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="/assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
     <script type="text/javascript" src="/assets/js/main.js"></script>
     <script type="text/javascript" src="/assets/js/chart.js"></script>
@@ -152,16 +152,10 @@
             $.getJSON("/progress/{{ token }}", function(data){
                 $.getJSON("/render/{{ token }}", function(code){
                     $("#stats tbody").html(code["stats"]);
-                    $("#scores tbody").html(code["scores"]);            
+                    $("#scores tbody").html(code["scores"]);
                     $('[data-toggle="popover"]').popover({
                         html: true,
                     });
-                    // var ratio_list = new Array();
-
-                    // for (i=0; i<code.stats.length; i++)
-                    //     ratio_list.push({name: i+1, value: code.stats[i][2]});
-                    // console.log(ratio_list);
-                    // renderChart(ratio_list);
                 });
               if(data.percentage < 99.999) {
                 $("#progressModal").modal("show");
@@ -181,11 +175,10 @@
 
               }
             })
-          }, 1000);});
+          }, 5000);});
 
 
     </script>
 
 </body>
-</html> 
-
+</html>

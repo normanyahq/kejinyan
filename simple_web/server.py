@@ -248,8 +248,8 @@ def get_results(token):
         t = json.loads(t[0])
         status = t['status']
         if status == "error":
-            return u"答卷识别出错，请重新检查后上传。如确认无误……\
-                那就是我出问题了，请把下列信息发给俺爹牙牙，让他把我变得更强\
+            return u"答卷识别出错，请重新检查后上传。如确认无误，\
+                那就是我出问题了，请把下列信息发给俺爹，让他把我变得更强\
                  <br /><pre>Email: psdn@qq.com QQ: 793048 </pre><br/><pre>" \
                 + t['message'] + u"</pre>"
     cur.execute("select processed, total from status where token = %s;", (token, ))
@@ -294,7 +294,7 @@ def upload_file():
     token = getToken()
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
     success = True
-    if request.method == 'POST' and request.values['answersheettype'] in ['fullpage', 'halfpage', 'handwriting']:
+    if request.method == 'POST' and request.values['answersheettype'] in ['full', 'half', 'handwriting']:
         standard = request.files['standard']
         if allowed_file(standard.filename):
             valid_filenames = list()
@@ -318,7 +318,7 @@ def upload_file():
                 if getPDFPageNum(valid_filenames[-1]) == 1:
                     message.insert(0, u"标准答案文件：{} 上传成功，正在处理中……".format(standard.filename))
                 else:
-                    message.insert(0, u"标准答案文件：{} 超过一页，任取一页识别……".format(standard.filename))
+                    message.insert(0, u"标准答案文件：{} 超过一页，任取一页作为答案……".format(standard.filename))
                 p = Process(target=convert_and_recognize,
                     args=(token,
                         valid_filenames,
@@ -348,5 +348,5 @@ if __name__ == '__main__':
         c.execute(statement);
     db.commit()
     #app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
-    #app.run(host="0.0.0.0", debug=True)
-    app.run(host="0.0.0.0", threaded=True)
+    app.run(host="0.0.0.0", debug=True)
+    # app.run(host="0.0.0.0", threaded=True)
