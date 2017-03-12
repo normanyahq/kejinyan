@@ -22,6 +22,14 @@ SheetSectionPositions = {"half": {
         "name": (0, 0, 2, 8),
         "id": [(2, 9 + 2 * i, 10, 2) for i in range(12)],
         "question": chain(*[getBlockProblemPositions(14 + r * 6, 0 + c * 12, 1, 2, 5, 5) for c in range(3) for r in range(5)])
+}, "full_old": {
+        "name": (1, 0, 1, 5),
+        "id": [(j, i, 10, 1) for j in [4, 15] for i in range(5)],
+        "question": [(i, j, 1, 5) for j in [7, 14, 21] for i in range(25)]
+}, "half_old": {
+        "name": (1, 0, 1, 5),
+        "id": [(4, i, 10, 1) for i in range(6)],
+        "question": [(i, 1, 1, 5) for i in range(15, 25)] + [(i, 8, 1, 5) for i in range(25)]
 }}
 
 

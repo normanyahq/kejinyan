@@ -384,7 +384,8 @@ def getGridlinePositions(binary_image, contours, centers):
     # print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
     return horizontal, vertical
 
-def getBlackRatio(grid, padding_ratio = 0.3):
+count = 0
+def getBlackRatio(grid, padding_ratio = 0.2):
     '''
     return the ratio of black pixels
     Track only 36% (60% * 60%) area in the center
@@ -392,9 +393,9 @@ def getBlackRatio(grid, padding_ratio = 0.3):
     h, w = grid.shape
     dh, dw = int(h * padding_ratio), int(w * padding_ratio)
     grid = grid[dh:h-dh, dw:w-dw]
-    # global count
-    # cv2.imwrite("tmp/{}_{}.jpg".format(count, np.sum((grid>128).flatten()) / grid.size), grid)
-    # count += 1
+    global count
+    cv2.imwrite("tmp/{}_{}.jpg".format(count, np.sum((grid>128).flatten()) / grid.size), grid)
+    count += 1
     return np.sum((grid>128).flatten()) / grid.size
 
 def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
@@ -424,14 +425,14 @@ def getRatioFromStripe(stripe, num_choice, multiple=False):
         result.append(getBlackRatio(grid))
     return result
 
-def getDigitFromSequence(sequence, T=0.4):
+def getDigitFromSequence(sequence, T=0.5):
     '''
     given sequence array, return argmax(sequence) if a value
     larger than threshold T exists
     '''
     return str(np.argmax(sequence)) if np.max(sequence) > T else "-"
 
-def getAnswerFromSequence(sequence, T=0.4):
+def getAnswerFromSequence(sequence, T=0.5):
     '''
     given sequence array, return all index i's which ratio_i's are
     larger than threshold T

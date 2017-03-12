@@ -2,8 +2,9 @@
 .PONY: clean
 
 dev:
+	export PYTHONPATH=$(PWD)/src/
 	python src/dev.py
 
 clean:
 	find . -name "*.pyc" -delete
-	rm tmp/*.jpg
+	find ./tmp -name "*.jpg" -delete
