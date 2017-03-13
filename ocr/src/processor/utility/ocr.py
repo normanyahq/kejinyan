@@ -4,9 +4,10 @@ import cv2
 import wand.image
 import PIL.Image
 import numpy as np
+import subprocess
+
 from .common import getSquareDist
 from pyPdf import PdfFileReader
-
 from ..utility.common import timeit
 
 #timeit
@@ -45,7 +46,30 @@ def getPDFPageNum(file_path):
         traceback.print_exc()
         return 0
 
+
+
 def pdf2jpg(file_path, resolution=300, save_path=None):
+    '''
+    convert pdf into jpg.
+    if the pdf file, for example, a.pdf has more than one pages,
+    the output filenames will be named as:
+    a-00000.jpg, a-00001.jpg, a-00002.jpg, ...
+    '''
+    save_path = file_path.replace(".pdf", "")
+    command = "gs -dNOPAUSE -sDEVICE=jpeg -dBATCH -r300 -sOutputFile=a-%05d.jpg half.pdf".format()
+    params = ["gs",
+              "-dNOPAUSE",
+              "-sDEVICE=jpeg",
+              "-dBATCH",
+              "-r{}".format(resolution),
+              "-sOutputFile={}-%05d.jpg".format(save_path),
+              file_path]
+    subprocess.call(params)
+
+
+# deprecated, 10x slower than current version
+# remain for potential use in AWS lambda
+def _pdf2jpg(file_path, resolution=300, save_path=None):
     '''
     convert pdf into jpg.
     if the pdf file, for example, a.pdf has more than one pages,
