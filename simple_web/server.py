@@ -258,9 +258,11 @@ def get_results(token):
         status = t['status']
         if status == "error":
             return u"答卷识别出错，请重新检查后上传。如确认无误，\
-                那就是我出问题了，请把下列信息发给俺爹，让他把我变得更强\
+                请把此网页链接及原始文件发送给网站管理员，以便改进。\
                  <br /><pre>Email: psdn@qq.com QQ: 793048 </pre><br/><pre>" \
-                + t['message'] + u"</pre>"
+                 + u"</pre>"
+
+                # + t['message'] + u"</pre>"
     cur.execute("select processed, total from status where token = %s;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)

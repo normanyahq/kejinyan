@@ -147,37 +147,42 @@
 
 
     <script>
+        function checkResult(){
+          /* query the completion percentage from the server */
+          $.getJSON("/progress/{{ token }}", function(data){
+              $.getJSON("/render/{{ token }}", function(code){
+                  $("#stats tbody").html(code["stats"]);
+                  $("#scores tbody").html(code["scores"]);
+                  $('[data-toggle="popover"]').popover({
+                      html: true,
+                  });
+              });
+            if(data.percentage < 99.999) {
+              $("#progressModal").modal("show");
+              /* update the progress bar width */
+              var percentage = data.percentage + 5;
+              percentage = percentage.toFixed(2);
+              $("#progress").css('width',percentage+'%');
+              /* and display the numeric value */
+              $("#progress").html(percentage+'%');
+            }
+            else {
+              /* test to see if the job has completed */
+              clearInterval($.progresspump);
+              // $("#progressouter").removeClass("active");
+              $("#progressModal").modal("hide");
+
+            }
+          });
+        }
+
         $(document).ready(function(){
+
           $("#progressModal").modal({backdrop: "static"});
-          var progresspump = setInterval(function(){
-            /* query the completion percentage from the server */
-            $.getJSON("/progress/{{ token }}", function(data){
-                $.getJSON("/render/{{ token }}", function(code){
-                    $("#stats tbody").html(code["stats"]);
-                    $("#scores tbody").html(code["scores"]);
-                    $('[data-toggle="popover"]').popover({
-                        html: true,
-                    });
-                });
-              if(data.percentage < 99.999) {
-                $("#progressModal").modal("show");
-                /* update the progress bar width */
-                var percentage = data.percentage + 5;
-                percentage = percentage.toFixed(2);
-                $("#progress").css('width',percentage+'%');
-                /* and display the numeric value */
-                $("#progress").html(percentage+'%');
-              }
-              else {
-                /* test to see if the job has completed */
+          $.progresspump = setInterval(checkResult, 3000);
+          checkResult();
+        });
 
-                clearInterval(progresspump);
-                // $("#progressouter").removeClass("active");
-                $("#progressModal").modal("hide");
-
-              }
-            })
-          }, 5000);});
 
 
     </script>
