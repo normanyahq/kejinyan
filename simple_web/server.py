@@ -14,6 +14,7 @@ import traceback
 import json
 import time
 from psycopg2 import connect
+import re
 
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
@@ -298,6 +299,27 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
+@app.route('/upload/', methods=['POST'])
+def upload():
+    token = request.form['token']
+    upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
+    # token = request.data.get("token", "")
+    if re.match("^\d{14}[a-zA-Z0-9]{10}$", token):
+        print token
+        if 'standard' in request.files:
+            os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
+            request.files['standard'].save(os.path.join(upload_path, 'teacher', 'stanadard.pdf'))
+        elif 'answers' in request.files:
+            os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
+            answers = request.files.getlist('answers')
+            for i, f in enumerate(answers):
+                if allowed_file(f.filename):
+                    f.save(os.path.join(upload_path, 'student', 'student_{}.pdf'.format(i)))
+        return json.dumps({"status": 200, "message": "file sucessfully uploaded"})
+    else:
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -349,7 +371,7 @@ def upload_file():
             message.append(u"标准答案文件：{} 后缀名不合法，请选择正确的PDF文件。".format(standard.filename))
             success = False
     else:
-        return render_template('index.html')
+        return render_template('index.html', token=token)
     return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
         time=3 if success else 5)
 
@@ -360,5 +382,5 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    app.run(host="0.0.0.0", debug=True)
-    # app.run(host="0.0.0.0", threaded=True)
+    # app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", threaded=True)

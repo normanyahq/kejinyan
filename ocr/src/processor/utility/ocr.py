@@ -56,7 +56,8 @@ def pdf2jpg(file_path, resolution=300, save_path=None):
     a-00000.jpg, a-00001.jpg, a-00002.jpg, ...
     '''
     save_path = file_path.replace(".pdf", "")
-    command = "gs -dNOPAUSE -sDEVICE=jpeg -dBATCH -r300 -sOutputFile=a-%05d.jpg half.pdf".format()
+    # command example:
+    #   gs -dNOPAUSE -sDEVICE=jpeg -dBATCH -r300 -sOutputFile=a-%05d.jpg half.pdf
     params = ["gs",
               "-dNOPAUSE",
               "-sDEVICE=jpeg",
