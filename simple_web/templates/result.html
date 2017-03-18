@@ -143,7 +143,6 @@
     <script type="text/javascript" src="/assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js"></script>
     <script type="text/javascript" src="/assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
     <script type="text/javascript" src="/assets/js/main.js"></script>
-    <script type="text/javascript" src="/assets/js/chart.js"></script>
 
 
     <script>
@@ -155,6 +154,7 @@
                   $("#scores tbody").html(code["scores"]);
                   $('[data-toggle="popover"]').popover({
                       html: true,
+                      placement: 'auto',
                   });
               });
             if(data.percentage < 99.999) {

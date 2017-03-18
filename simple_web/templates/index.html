@@ -71,7 +71,7 @@
                     <div class="cta-container">
                         <!-- Button trigger modal -->
 
-                        <button type="button" class="btn btn-success btn-lg" data-toggle="modal" data-target="#uploadSheet">
+                        <button type="button" id="uploadModalButton" class="btn btn-success btn-lg" data-toggle="modal" data-target="#uploadSheet">
                           上传答题卡
                         </button>
                         <!-- Modal -->
@@ -115,6 +115,7 @@
                                      </div>
                                     <div class="form-group">
                                          <input type=submit value="提交" class="btn btn-primary">
+                                         <a class="btn btn-default" href="/?upload=true">重置</a>
                                      </div>
                                 </form>
                               </div>
@@ -324,6 +325,9 @@
     <script type="text/javascript" src="assets/js/upload.js"></script>
     <script type="text/javascript">
     $.token = "{{token}}";
+    {% if popover == True %}
+      $("#uploadModalButton").click();
+    {% endif %}
   	</script>
 
 

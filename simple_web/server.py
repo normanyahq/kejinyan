@@ -26,6 +26,9 @@ DATABASE_INIT = ['create table if not exists standard (token text, value text);'
     'create table if not exists status (token text, processed int, total int);',
     'create table if not exists error_list (path text, message text);' ]
 
+ANSWER_FILE_NAME = "standard.pdf"
+
+
 def countQuestion(standard):
     # print standard
     standard = standard["result"]['answer']
@@ -303,19 +306,18 @@ def uploaded_file(filename):
 def upload():
     token = request.form['token']
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
-    # token = request.data.get("token", "")
     if re.match("^\d{14}[a-zA-Z0-9]{10}$", token):
         print token
         if 'standard' in request.files:
             os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
-            request.files['standard'].save(os.path.join(upload_path, 'teacher', 'stanadard.pdf'))
+            request.files['standard'].save(os.path.join(upload_path, 'teacher', ANSWER_FILE_NAME))
         elif 'answers' in request.files:
             os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
             answers = request.files.getlist('answers')
             for i, f in enumerate(answers):
                 if allowed_file(f.filename):
                     f.save(os.path.join(upload_path, 'student', 'student_{}.pdf'.format(i)))
-        return json.dumps({"status": 200, "message": "file sucessfully uploaded"})
+        return json.dumps({"status": 200, "message": "file sucessfully uploaded"}), 200
     else:
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
 
@@ -324,56 +326,53 @@ def upload():
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     message = []
-    token = getToken()
+    if request.method == "GET":
+        token = getToken()
+    elif request.method == "POST":
+        token = request.values['token']
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
-    success = True
-    if request.method == 'POST' and request.values['answersheettype'] in ['full', 'half', 'handwriting']:
-        standard = request.files['standard']
-        if allowed_file(standard.filename):
-            valid_filenames = list()
-            answers = request.files.getlist('answers')
-            for f in answers:
-                if allowed_file(f.filename):
-                    # filename = secure_filename(f.filename)
-                    filename = "{}.pdf".format(getToken())
-                    os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
-                    f.save(os.path.join(upload_path, 'student', filename))
-                    file_url = url_for('uploaded_file', filename=filename)
-                    message.append(u"答题卡文件：{} 上传成功，正在处理中……".format(f.filename))
-                    valid_filenames.append(os.path.join(upload_path, 'student', filename))
-                else:
-                    message.append(u"答题卡文件：{} 由于后缀名不合法已被忽略，请上传pdf文件。".format(f.filename))
-            if valid_filenames:
-                os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
-                #standard_name = secure_filename(standard.filename)
-                standard_name = "{}.pdf".format(getToken())
-                valid_filenames.append(os.path.join(upload_path, 'teacher', standard_name))
-                standard.save(os.path.join(upload_path, 'teacher', standard_name))
+    if request.method == "GET" and request.values.get('upload') == 'true':
+        return render_template("index.html", token=token, popover=True)
+    elif request.method == 'POST' and request.values['answersheettype'] in ['full', 'half']:
+        success = True
+        task_dir = os.path.join(app.config['UPLOAD_FOLDER'], token)
 
-                if getPDFPageNum(valid_filenames[-1]) == 1:
-                    message.insert(0, u"标准答案文件：{} 上传成功，正在处理中……".format(standard.filename))
-                else:
-                    message.insert(0, u"标准答案文件：{} 超过一页，任取一页作为答案……".format(standard.filename))
-                p = Process(target=convert_and_recognize,
-                    args=(token,
-                        valid_filenames,
-                        request.values['answersheettype']))
-                db = get_db()
-                c = db.cursor()
-                c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
-                    (token, getTotalPageNum(valid_filenames[:-1]))) # the last file is standard answer
-                db.commit()
-                p.start()
+        teacher_filepath = os.path.join(task_dir, 'teacher', ANSWER_FILE_NAME)
+        student_filedir = os.path.join(task_dir, 'student')
+        try:
+            teacher_pagenum = getPDFPageNum(teacher_filepath)
+            if teacher_pagenum == 1:
+                message.append(u"标准答案文件上传成功，正在处理中……")
+            elif teacher_pagenum > 1:
+                message.append(u"标准答案文件超过一页，任取一页作为答案……")
             else:
-                message.append(u"没有提交有效的答题卡文件，请检查后重新上传。")
-                success = False
-        else:
-            message.append(u"标准答案文件：{} 后缀名不合法，请选择正确的PDF文件。".format(standard.filename))
+                message.append(u"似乎标准答案的页数为0？你别逗我啊……")
+        except IndexError:
             success = False
+            message.append("没有有效的标准答案文件，请检查后重新上传")
+        student_files = glob.glob("{}/*.pdf".format(student_filedir))
+        if success and student_files:
+            p = Process(target=convert_and_recognize,
+                args=(token,
+                    [teacher_filepath] + student_files,
+                    request.values['answersheettype']))
+            db = get_db()
+            c = db.cursor()
+            c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
+                (token, getTotalPageNum(student_files)))
+            db.commit()
+            p.start()
+            message.append(u"答题卡上传成功，正在处理中……")
+        else:
+            success = False
+            message.append(u"没有提交有效的答题卡文件，请检查后重新上传。")
+
+        pause_time = 3 if success else 5
+        return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
+            time=pause_time)
     else:
-        return render_template('index.html', token=token)
-    return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
-        time=3 if success else 5)
+        return render_template('index.html', token=token, popover=False)
+
 
 
 if __name__ == '__main__':
@@ -382,5 +381,5 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    # app.run(host="0.0.0.0", debug=True)
-    app.run(host="0.0.0.0", threaded=True)
+    app.run(host="0.0.0.0", debug=True)
+    # app.run(host="0.0.0.0", threaded=True)

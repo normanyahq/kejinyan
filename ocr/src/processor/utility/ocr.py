@@ -409,7 +409,7 @@ def getGridlinePositions(binary_image, contours, centers):
     # print ("horizontal:{}\nvertical:{}".format(horizontal, vertical))
     return horizontal, vertical
 
-count = 0
+# count = 0
 def getBlackRatio(grid, padding_ratio = 0.2):
     '''
     return the ratio of black pixels
@@ -418,9 +418,9 @@ def getBlackRatio(grid, padding_ratio = 0.2):
     h, w = grid.shape
     dh, dw = int(h * padding_ratio), int(w * padding_ratio)
     grid = grid[dh:h-dh, dw:w-dw]
-    global count
-    cv2.imwrite("tmp/{}_{}.jpg".format(count, np.sum((grid>128).flatten()) / grid.size), grid)
-    count += 1
+    # global count
+    # cv2.imwrite("tmp/{}_{}.jpg".format(count, np.sum((grid>128).flatten()) / grid.size), grid)
+    # count += 1
     return np.sum((grid>128).flatten()) / grid.size
 
 def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
