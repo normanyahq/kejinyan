@@ -306,8 +306,7 @@ def uploaded_file(filename):
 def upload():
     token = request.form['token']
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
-    if re.match("^\d{14}[a-zA-Z0-9]{10}$", token):
-        print token
+    if re.match("^\d{14}[a-zA-Z0-9]{10}$", token): # for security reasons
         if 'standard' in request.files:
             os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
             request.files['standard'].save(os.path.join(upload_path, 'teacher', ANSWER_FILE_NAME))
