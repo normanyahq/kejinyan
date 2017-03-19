@@ -382,5 +382,5 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    app.run(host="0.0.0.0", debug=True)
-    # app.run(host="0.0.0.0", threaded=True)
+    # app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", threaded=True)

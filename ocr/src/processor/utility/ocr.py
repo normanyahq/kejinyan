@@ -149,7 +149,7 @@ def getQRCornerContours(gray_image, t=False):
         for i in range(len(contours)):
             rect = cv2.boundingRect(contours[i])
             ratios.append(max(rect[3], rect[2]) / min(rect[3], rect[2]))
-        print (sorted(ratios))
+        # print (sorted(ratios))
         valid_index = filter(lambda i: ratios[i] <=err_t, range(len(contours)))
         contours = [contours[i] for i in valid_index]
         return contours
