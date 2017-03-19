@@ -15,7 +15,7 @@ import json
 import time
 from psycopg2 import connect
 import re
-
+import utility.excel
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
 from processor.interface import recognizeJPG
@@ -37,7 +37,8 @@ def countQuestion(standard):
         num_question -= 1
     return num_question
 
-
+def isValidToken(token):
+    return re.match("^\d{14}[a-zA-Z0-9]{10}$", token)
 
 
 def get_db():
@@ -123,27 +124,25 @@ def render_result(standard, answer):
 
 @app.route('/table/<token>')
 def returnTable(token):
-    cur = get_db().cursor()
-    cur.execute("select value from answer where token = %s;", (token,))
-    t = cur.fetchall()
-    t = list(map(lambda x: json.loads(x[0]), t))
-    t = filter(lambda x: "result" in x, t)
-    _answers = list(map(lambda x: x['result'], t))
-    # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
-    cur.execute("select value from standard where token = %s;", (token,))
-    standard = json.loads(cur.fetchone()[0])['result']
-    t = len(standard['answer']) - 1
-    while standard['answer'][t] == '-':
-        t -= 1
-    standard['answer'] = standard['answer'][:t+1]
-    result = [(u'答案',) +  tuple([(standard['answer'][i], '') for i in range(len(standard['answer']))])]
-    t_result = list()
-    header = (u'学号',) + tuple([unicode(i+1) for i in range(len(standard['answer']))])
-    for ans in _answers:
-        t_result.append((ans['id'],) + tuple([(ans['answer'][i],
-            'green' if ans['answer'][i] == standard['answer'][i] else 'red') for i in range(len(standard['answer']))]))
-    result.extend(sorted(t_result))
-    return render_template('table.html', info=result, header=header)
+    if not isValidToken(token):
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+
+    xlsx_path = os.path.join(app.config['UPLOAD_FOLDER'], token, 'table.xlsx')
+    if not os.path.isfile(xlsx_path):
+        cur = get_db().cursor()
+        cur.execute("select value from answer where token = %s;", (token,))
+        t = cur.fetchall()
+        t = list(map(lambda x: json.loads(x[0]), t))
+        t = filter(lambda x: "result" in x, t)
+        answers = list(map(lambda x: x['result'], t))
+        cur.execute("select value from standard where token = %s;", (token,))
+        standard = json.loads(cur.fetchone()[0])['result']
+        t = len(standard['answer']) - 1
+        while standard['answer'][t] == '-':
+            t -= 1
+        standard['answer'] = standard['answer'][:t+1]
+        utility.excel.generateXlsx(xlsx_path, standard['answer'], answers)
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], token), 'table.xlsx')
 
 
 
@@ -253,6 +252,9 @@ def getAssets(filename):
 
 @app.route('/results/<token>')
 def get_results(token):
+    if not isValidToken(token):
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+
     db = get_db()
     cur = db.cursor()
     cur.execute("select value from standard where token = %s;", (token,))
@@ -306,19 +308,19 @@ def uploaded_file(filename):
 def upload():
     token = request.form['token']
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
-    if re.match("^\d{14}[a-zA-Z0-9]{10}$", token): # for security reasons
-        if 'standard' in request.files:
-            os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
-            request.files['standard'].save(os.path.join(upload_path, 'teacher', ANSWER_FILE_NAME))
-        elif 'answers' in request.files:
-            os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
-            answers = request.files.getlist('answers')
-            for i, f in enumerate(answers):
-                if allowed_file(f.filename):
-                    f.save(os.path.join(upload_path, 'student', 'student_{}.pdf'.format(i)))
-        return json.dumps({"status": 200, "message": "file sucessfully uploaded"}), 200
-    else:
+    if not isValidToken(token):
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+
+    if 'standard' in request.files:
+        os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
+        request.files['standard'].save(os.path.join(upload_path, 'teacher', ANSWER_FILE_NAME))
+    elif 'answers' in request.files:
+        os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
+        answers = request.files.getlist('answers')
+        for i, f in enumerate(answers):
+            if allowed_file(f.filename):
+                f.save(os.path.join(upload_path, 'student', 'student_{}.pdf'.format(i)))
+    return json.dumps({"status": 200, "message": "file sucessfully uploaded"}), 200
 
 
 

@@ -43,7 +43,7 @@ def calcScore(standard_answers, student_info, credits):
         result.append(sum(t))
     return result
 
-def generateXlsx(output, standard_answers, student_info, credits):
+def generateXlsx(output, standard_answers, student_info, credits=None):
     '''
     generate an xlsx files to output path. the files has two sheets:
         1. statistics of questions
@@ -56,13 +56,14 @@ def generateXlsx(output, standard_answers, student_info, credits):
             "answer": a list of strings, the student's answers
         credits: a list of float values, the credits of each question
     '''
+    if not credits:
+        credits = [1] * len(standard_answers)
     assert len(standard_answers) == len(credits)
 
     student_info.sort(key=lambda x: x['id'])
 
     num_question = len(standard_answers)
     num_student = len(student_info)
-    correct_count = countCorrect(standard_answers, student_info)
 
     # Create a workbook and add a worksheet.
     workbook = xlsxwriter.Workbook(output)
@@ -103,7 +104,7 @@ def generateXlsx(output, standard_answers, student_info, credits):
 
     # set width of column for ID
     score_sheet.set_column(0, 0, 20)
-    score_sheet.set_column(2, num_question+1, 3)
+    score_sheet.set_column(2, num_question+1, 6)
     score_sheet.write_string(0, 0, u"学号", bold)
     score_sheet.write_string(0, 1, u"总分", bold)
 
