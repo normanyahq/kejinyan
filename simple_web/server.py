@@ -157,7 +157,18 @@ def getProgress(token):
     cur.execute("select processed, total from status where token = %s;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)
-    return json.dumps({"processed": processed, "total":total, "percentage": 100  * processed / total})
+
+    task_dir = os.path.join(app.config['UPLOAD_FOLDER'], token)
+    student_filedir = os.path.join(task_dir, 'student')
+
+    student_files = glob.glob("{}/*.jpg".format(student_filedir))
+    num_converted = len(student_files)
+
+    # we include the conversion part into progress bar, original formula is:
+    # percentage = 100 * (processed + num_converted) / (total + total)
+    return json.dumps({"processed": processed,
+                       "total":total,
+                       "percentage": 50  * (processed + num_converted) / total})
 
 
 @app.route('/render/<token>')
