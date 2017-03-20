@@ -328,9 +328,9 @@ def upload():
     elif 'answers' in request.files:
         os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
         answers = request.files.getlist('answers')
-        for i, f in enumerate(answers):
+        for f in answers:
             if allowed_file(f.filename):
-                f.save(os.path.join(upload_path, 'student', 'student_{}.pdf'.format(i)))
+                f.save(os.path.join(upload_path, 'student', 'student_{}.pdf'.format(getToken())))
     return json.dumps({"status": 200, "message": "file sucessfully uploaded"}), 200
 
 
