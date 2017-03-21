@@ -1,4 +1,16 @@
+function enable_if_true(element, condition) {
+  if(condition)
+    element.prop('disabled', false);
+}
+
+
 $(function() {
+
+  $.uploaded_standard = false;
+  $.uploaded_answers = false;
+
+  
+
   $('#standard').uploadifive({
     'uploadScript' : '/upload/',
     'buttonText'   : '选择答案文件',
@@ -12,6 +24,8 @@ $(function() {
     'onUploadComplete' : function(file, data) {
         // alert('The file ' + file.name + ' uploaded successfully.');
         $('#uploadifive-standard').remove();
+        $.uploaded_standard = true;
+        enable_if_true($('#submit'), $.uploaded_standard && $.uploaded_answers);
     }
   });
 
@@ -28,6 +42,8 @@ $(function() {
     'onUploadComplete' : function(file, data) {
         // alert('The file ' + file.name + ' uploaded successfully.');
         $('#uploadifive-answers').remove();
+        $.uploaded_answers = true;
+        enable_if_true($('#submit'), $.uploaded_standard && $.uploaded_answers);
     }
   });
 
