@@ -128,9 +128,7 @@ def returnTable(token):
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
 
     xlsx_path = os.path.join(app.config['UPLOAD_FOLDER'], token, 'table.xlsx')
-    # if not os.path.isfile(xlsx_path):
-    if True:
-        print ("WARNING!!!!DEBUG MODE!!!!")
+    if not os.path.isfile(xlsx_path):
         cur = get_db().cursor()
         cur.execute("select value from answer where token = %s;", (token,))
         t = cur.fetchall()
