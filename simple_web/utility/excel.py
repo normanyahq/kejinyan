@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
+
 import xlsxwriter
 import numpy as np
+import cv2
 
 getColName = xlsxwriter.utility.xl_col_to_name
 
@@ -54,7 +57,8 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
         student_info: a list of dictionary, dictionary items are:
             "id": a string of digits, the number of students
             "answer": a list of strings, the student's answers
-        credits: a list of float values, the credits of each question
+        credits: a list of float values, the credits of each question, all 1 by
+            default
     '''
     if not credits:
         credits = [1] * len(standard_answers)
@@ -103,19 +107,29 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
         tranposed_answer_sheet.write_formula(2, i+1, u"=答案与分值!C{}".format(i+2), center)
 
     # set width of column for ID
-    score_sheet.set_column(0, 0, 20)
-    score_sheet.set_column(2, num_question+1, 6)
-    score_sheet.write_string(0, 0, u"学号", bold)
-    score_sheet.write_string(0, 1, u"总分", bold)
+
+
+    score_sheet.set_column(3, num_question+2, 6)
+
+    score_sheet.write_string(0, 1, u"学号", bold)
+    score_sheet.write_string(0, 2, u"总分", bold)
 
     for i in range(num_question):
-        score_sheet.write_number(0, i+2, i+1, bold)
+        score_sheet.write_number(0, i+3, i+1, bold)
+
 
     for i in range(num_student):
-        score_sheet.write_string(i+1, 0, student_info[i]['id'], center)
+        # score_sheet.set_row(i+1, 10)
+        # h, w = cv2.imread(student_info[i]['name_image'], cv2.IMREAD_GRAYSCALE).shape
+        # score_sheet.insert_image("A{}".format(i+1),
+        #                          student_info[i]['name_image'],
+        #                          {'positioning': 1,
+        #                           'y_scale': 40 / h,
+        #                           'x_scale': 40 / w})
+        score_sheet.write_string(i+1, 1, student_info[i]['id'], center)
         for j in range(num_question):
-            col_name = getColName(j+2)
-            score_sheet.write_string(i+1, j+2, student_info[i]['answer'][j], center)
+            col_name = getColName(j+3)
+            score_sheet.write_string(i+1, j+3, student_info[i]['answer'][j], center)
             score_sheet.conditional_format('{}{}'.format(col_name, i+2),
                                          {'type': 'formula',
                                           'criteria': u'=EXACT(答案与分值!$B${}, ${}${})'.format(j+2, col_name, i+2),
@@ -124,24 +138,26 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
                                          {'type': 'formula',
                                           'criteria': u'=NOT(EXACT(答案与分值!$B${}, ${}${}))'.format(j+2, col_name, i+2),
                                           'format': format_wrong})
-
         score_sheet.write_formula(i+1,
-                                  1,
-                                  u'=SUMPRODUCT(--(ans_trans!B2:{}2=C{}:{}{}), ans_trans!B3:{}3)'.format(getColName(num_question),
+                                  2,
+                                  u'=SUMPRODUCT(--(ans_trans!B2:{}2=D{}:{}{}), ans_trans!B3:{}3)'.format(getColName(num_question),
                                                                                     i+2,
-                                                                                    getColName(num_question+1),
+                                                                                    getColName(num_question+2),
                                                                                     i+2,
                                                                                     getColName(num_question)),
                                   center)
 
+    score_sheet.write_string(0, 0, u"姓名", bold)
+    score_sheet.set_column(0, 0, 0)
 
+    score_sheet.set_column(1, 1, 20)
     # Excels' built-in format
     # Reference: http://xlsxwriter.readthedocs.io/format.html#format-set-num-format
     format_percentage = workbook.add_format({'align': 'center'})
     format_percentage.set_num_format(0xA)
 
     stats_sheet.write_string(0, 0, u"总人数", bold)
-    stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生成绩!A:A)-1', center)
+    stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生成绩!B:B)-1', center)
 
     stats_sheet.write_string(1, 0, u"题号", bold)
     stats_sheet.write_string(1, 1, u"答案", bold)
@@ -152,7 +168,6 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     for i in range(num_question):
         stats_sheet.write_number(i+2, 0, i+1, bold)
         stats_sheet.write_formula(i+2, 1, u'=答案与分值!B{}'.format(i+2), bold)
-
         # Extremely complicated, it took me 1 hour:
         # https://exceljet.net/formula/count-visible-rows-only-with-criteria
         visible_correct = u'=SUMPRODUCT((--(学生成绩!{}2:{}{}=ans_trans!{}2))' + \
@@ -162,16 +177,16 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
         # TODO: optimize this part
         stats_sheet.write_formula(i+2,
                                   2,
-                                  visible_correct.format(getColName(i+2),
-                                                   getColName(i+2),
+                                  visible_correct.format(getColName(i+3),
+                                                   getColName(i+3),
                                                    num_student+1,
                                                    getColName(i+1),
-                                                   getColName(i+2),
-                                                   getColName(i+2),
-                                                   getColName(i+2),
+                                                   getColName(i+3),
+                                                   getColName(i+3),
+                                                   getColName(i+3),
                                                    num_student+1,
-                                                   getColName(i+2),
-                                                   getColName(i+2),
+                                                   getColName(i+3),
+                                                   getColName(i+3),
                                                    num_student+1,),
                                   center)
 
@@ -194,16 +209,16 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
         for j, v in enumerate('ABCDE'):
             stats_sheet.write_formula(i+2,
                                       j+4,
-                                      visible_choose.format(getColName(i+2),
-                                                            getColName(i+2),
+                                      visible_choose.format(getColName(i+3),
+                                                            getColName(i+3),
                                                             num_student+1,
                                                             v,
-                                                            getColName(i+2),
-                                                            getColName(i+2),
-                                                            getColName(i+2),
+                                                            getColName(i+3),
+                                                            getColName(i+3),
+                                                            getColName(i+3),
                                                             num_student+1,
-                                                            getColName(i+2),
-                                                            getColName(i+2),
+                                                            getColName(i+3),
+                                                            getColName(i+3),
                                                             num_student+1),
                                       format_percentage)
 
