@@ -21,6 +21,7 @@ os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".
 from processor.interface import recognizeJPG
 from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
+DATABASE = 'sqlite3.db'
 DATABASE_INIT = ['create table if not exists standard (token text, value text);',
     'create table if not exists answer (token text, value text);',
     'create table if not exists status (token text, processed int, total int);',
@@ -43,10 +44,11 @@ def isValidToken(token):
 
 def get_db():
     # db = getattr(g, '_database', None)
+    db = sqlite3.connect(DATABASE)
     # if db is None:
         # db = g._database = sqlite3.connect(DATABASE)
         # db = g._database = connect(database='postgres', host='localhost:5432', user='heqing', password='heqing')
-    db = connect(database='postgres', host='localhost', user='heqingy', password='heqingy')
+    # db = connect(database='postgres', host='localhost', user='heqingy', password='heqingy')
     return db
 
 
@@ -91,18 +93,18 @@ def convert_and_recognize(token, paths, answersheet_type):
     student_files = glob.glob("{}/*.jpg".format(student_path))
 
     standard = recognizeJPG(teacher_files[0], answersheet_type)
-    c.execute('insert into standard values (%s, %s);', (token, json.dumps(standard)))
+    c.execute('insert into standard values (?, ?);', (token, json.dumps(standard)))
     db.commit()
 
     if standard['status'] == "error":
-        c.execute("insert into error_list values (%s, %s);", (standard['path'], standard['message']))
+        c.execute("insert into error_list values (?, ?);", (standard['path'], standard['message']))
         db.commit()
     for i, f in enumerate(student_files):
         result = recognizeJPG(f, answersheet_type)
-        c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
+        c.execute('insert into answer values (?, ?);', (token, json.dumps(result)))
         if result['status'] =='error':
-            c.execute("insert into error_list values (%s, %s);", (result['path'], result['message']))
-        c.execute('update status set processed=%s where token=%s;', (i+1, token))
+            c.execute("insert into error_list values (?, ?);", (result['path'], result['message']))
+        c.execute('update status set processed=? where token=?;', (i+1, token))
         db.commit()
 
 def getTotalPageNum(filepath_list):
@@ -130,12 +132,12 @@ def returnTable(token):
     xlsx_path = os.path.join(app.config['UPLOAD_FOLDER'], token, 'table.xlsx')
     if not os.path.isfile(xlsx_path):
         cur = get_db().cursor()
-        cur.execute("select value from answer where token = %s;", (token,))
+        cur.execute("select value from answer where token = ?;", (token,))
         t = cur.fetchall()
         t = list(map(lambda x: json.loads(x[0]), t))
         t = filter(lambda x: "result" in x, t)
         answers = list(map(lambda x: x['result'], t))
-        cur.execute("select value from standard where token = %s;", (token,))
+        cur.execute("select value from standard where token = ?;", (token,))
         standard = json.loads(cur.fetchone()[0])['result']
         t = len(standard['answer']) - 1
         while standard['answer'][t] == '-':
@@ -154,7 +156,7 @@ def returnFavicon():
 def getProgress(token):
     db = get_db()
     cur = db.cursor()
-    cur.execute("select processed, total from status where token = %s;", (token, ))
+    cur.execute("select processed, total from status where token = ?;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)
 
@@ -197,12 +199,12 @@ def renderResults(token):
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("select value from standard where token = %s;", (token,))
+    cur.execute("select value from standard where token = ?;", (token,))
     standard = cur.fetchone()
     if not standard:
         return json.dumps({"empty": True})
     else:
-        cur.execute("select value from answer where token = %s;", (token,))
+        cur.execute("select value from answer where token = ?;", (token,))
         t = cur.fetchall()
         t = list(map(lambda x: json.loads(x[0]), t))
         t = filter(lambda x: "result" in x, t)
@@ -268,7 +270,7 @@ def get_results(token):
 
     db = get_db()
     cur = db.cursor()
-    cur.execute("select value from standard where token = %s;", (token,))
+    cur.execute("select value from standard where token = ?;", (token,))
     t = cur.fetchone()
     if t:
         t = json.loads(t[0])
@@ -280,17 +282,17 @@ def get_results(token):
                  + u"</pre>"
 
                 # + t['message'] + u"</pre>"
-    cur.execute("select processed, total from status where token = %s;", (token, ))
+    cur.execute("select processed, total from status where token = ?;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)
     if processed:
-        cur.execute("select value from answer where token = %s;", (token,))
+        cur.execute("select value from answer where token = ?;", (token,))
         t = cur.fetchall()
         t = list(map(lambda x: json.loads(x[0]), t))
         t = filter(lambda x: "result" in x, t)
 	answers = list(map(lambda x: x['result'], t))
         # answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
-        cur.execute("select value from standard where token = %s;", (token,))
+        cur.execute("select value from standard where token = ?;", (token,))
         standard = json.loads(cur.fetchone()[0])
         # print standard
         num_question = countQuestion(standard)
@@ -370,7 +372,7 @@ def upload_file():
                     request.values['answersheettype']))
             db = get_db()
             c = db.cursor()
-            c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
+            c.execute("insert into status (token, processed, total) values (?, 0, ?);",
                 (token, getTotalPageNum(student_files)))
             db.commit()
             p.start()
