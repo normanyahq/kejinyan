@@ -69,17 +69,11 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     num_question = len(standard_answers)
     num_student = len(student_info)
 
+
+
+
     # Create a workbook and add a worksheet.
     workbook = xlsxwriter.Workbook(output)
-    answer_sheet = workbook.add_worksheet(u"答案与分值")
-    score_sheet = workbook.add_worksheet(u"学生成绩")
-    stats_sheet = workbook.add_worksheet(u"试卷统计")
-    note_sheet = workbook.add_worksheet(u"功能说明")
-
-    # Used for calculation. We cannot compare a row and a column
-    # (at least I can't find a method after searching for 3 hours)
-    tranposed_answer_sheet = workbook.add_worksheet(u"ans_trans")
-    tranposed_answer_sheet.hide()
 
     bold = workbook.add_format({'bold': 1, 'align': 'center'})
     center = workbook.add_format({'align': 'center'})
@@ -89,6 +83,22 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     format_correct = workbook.add_format({'align': 'center',
                                  'bg_color': '#C6EFCE',
                                  })
+
+
+    note_sheet = workbook.add_worksheet(u"功能说明")
+    answer_sheet = workbook.add_worksheet(u"答案与分值")
+    score_sheet = workbook.add_worksheet(u"学生成绩")
+    stats_sheet = workbook.add_worksheet(u"试卷统计")
+    name_sheet = workbook.add_worksheet(u"学号与姓名")
+
+    name_sheet.write_string(0, 0, u"学号", bold)
+    name_sheet.write_string(0, 1, u"姓名", bold)
+
+    # Used for calculation. We cannot compare a row and a column
+    # (at least I can't find a method after searching for 3 hours)
+    tranposed_answer_sheet = workbook.add_worksheet(u"ans_trans")
+    tranposed_answer_sheet.hide()
+
 
 
     answer_sheet.write_string(0, 0, u"题号", bold)
@@ -110,7 +120,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
 
 
     score_sheet.set_column(3, num_question+2, 6)
-
+    score_sheet.write_string(0, 0, u"姓名", bold)
     score_sheet.write_string(0, 1, u"学号", bold)
     score_sheet.write_string(0, 2, u"总分", bold)
 
@@ -126,6 +136,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
         #                          {'positioning': 1,
         #                           'y_scale': 40 / h,
         #                           'x_scale': 40 / w})
+        score_sheet.write_formula(i+1, 0, u"=VLOOKUP(B{}, 学号与姓名!A:B, 2)".format(i+2), center)
         score_sheet.write_string(i+1, 1, student_info[i]['id'], center)
         for j in range(num_question):
             col_name = getColName(j+3)
@@ -243,8 +254,10 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
                                    {'type': '3_color_scale',
                                     'maximum': 1,
                                     'minimum': 0})
-    note_sheet.merge_range("A1:Z1", u"1、可在“答案与分值”一表中修改每题对应分值，学生成绩会自动更新。")
-    note_sheet.merge_range("A2:Z2", u"2、可在“学生成绩”一表修改学生成绩，相关数据会自动更新。如果有识别错误（虽然不太可能发生），请把相应的答题卡文件发送到psdn@qq.com以便我分析改进。")
-    note_sheet.merge_range("A3:Z3", u"3、本表格文档经过精心设计。可通过数据选项卡中的筛选筛选特定学生（如根据学号筛选特定班级的学生），获得被筛选出学生的统计数据。")
+    note_sheet.merge_range("A1:Z1", u"1、在“答案与分值”表中修改每题对应分值，学生成绩会自动更新。")
+    note_sheet.merge_range("A2:Z2", u"2、在“学生成绩”表中使用筛选功能筛选学生（如根据学号筛选特定班级的学生），“试卷统计”中会自动更新为筛选出学生的成绩统计信息。")
+    note_sheet.merge_range("A3:Z3", u"3、在“学号与姓名”表中填入学生学号与姓名的对应关系，并在“学生成绩”表中右键取消隐藏A列，或拖动B列左侧边缘使其显示，即可看到学生对应学生的学号。")
+    note_sheet.merge_range("A4:Z4", u"4、可在“学生成绩”一表修改学生答案，相关数据会自动更新。如果有识别错误（虽然不太可能发生），请把相应的答题卡文件发送到psdn@qq.com以便我分析改进。")
+    note_sheet.merge_range("A5:Z5", u"5、若有不清楚的地方，欢迎发邮件咨询或下载相应的功能演示视频观看操作流程。")
 
     workbook.close()
