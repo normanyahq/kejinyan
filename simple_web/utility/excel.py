@@ -157,7 +157,9 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     format_percentage.set_num_format(0xA)
 
     stats_sheet.write_string(0, 0, u"总人数", bold)
-    stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生成绩!B:B)-1', center)
+    # sometimes students forget to fill in their number,
+    # column C is better in this case
+    stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生成绩!C:C)-1', center)
 
     stats_sheet.write_string(1, 0, u"题号", bold)
     stats_sheet.write_string(1, 1, u"答案", bold)
