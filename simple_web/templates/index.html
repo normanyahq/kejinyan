@@ -176,57 +176,69 @@
                                 <h4 class="modal-title" id="myModalLabel">功能简介</h4>
                               </div>
                               <div class="modal-body">
-                                    <p class="text-left">本系统的使用非常简单，只需如下步骤：</p>
+                                    <p class="text-left">本系统配合<strong>自动馈纸式扫描仪</strong>使用非常简单，只需如下步骤：</p>
                                     <ol>
                                       <li><p class="text-left">下载合适的答题卡，用普通打印机打印。</p></li>
-                                      <li><p class="text-left">按照参考答案填涂一张答题卡，扫描并保存，学号可留空。</p></li>
-                                      <li><p class="text-left">在测验时将答题卡分发给学生，考试结束后收回并通过扫描仪扫描成一个或多个PDF文件。<strong>本系统可以识别纸张朝向，无需手动调整。</strong></p></li>
-                                      <li><p class="text-left">将两个文件一同上传，并等待处理结果。</p></li>
+                                      <table class="table table-bordered">
+                                          <thead>
+                                              <tr>
+                                                  <th class="text-center">答题卡类别</th>
+                                                  <th class="text-center">简介</th>
+                                                  <th class="text-center">下载地址</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              <tr>
+                                                  <td>半页（35题）</td>
+                                                  <td>支持多选，可从中间裁开变为两张答题卡，节约纸张。</td>
+                                                  <td>
+                                                      <a href="/static/half_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
+                                                      <a href="/static/half_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+
+                                                  </td>
+                                              </tr>
+                                              <tr>
+                                                  <td>全页（75题）</td>
+                                                  <td>支持多选，适合英语等选择题比较多的科目。</td>
+                                                  <td>
+                                                      <a href="/static/full_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
+                                                      <a href="/static/full_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+                                                  </td>
+                                              </tr>
+                                              <!--
+                                              <tr>
+                                                  <td>手写（混合型）</td>
+                                                  <td>使用深度学习和人工神经网络的可以识别手写字符的答题卡，<strong>评卷功能即将上线</strong>，敬请期待！</td>
+                                                  <td>
+                                                      <a href="/static/hand_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
+                                                      <a href="/static/hand_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+                                                      <a href="/static/hand_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
+                                                  </td>
+
+                                              </tr> -->
+
+                                          </tbody>
+
+                                      </table>
+
+                                      <li>
+                                        <p class="text-left">
+                                          按照参考答案填涂一张答题卡，扫描并保存，学号可留空。
+                                          <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">标准答案填涂示例</a>
+                                        </p>
+                                      </li>
+
+                                      <li><p class="text-left">在测验时将答题卡分发给学生，考试结束后收回并通过扫描仪扫描成一个或多个PDF文件。
+                                        <a href="/static/half_example.pdf" target="_blank" role="button" class="btn btn-default btn-xs">学生答卷填涂示例</a>
+                                        <br/>
+                                        <strong>本系统可以识别纸张朝向，无需手动调整。</strong></p></li>
+                                      <li><p class="text-left">单击首页“上传答题卡”按钮，分别上传答案文件和学生答卷文件。</p></li>
+                                      <li>
+                                        <p class="text-left">上传完成后单击提交，处理完毕后即可预览成绩，或下载详细统计表格。</p>
+                                      </li>
                                     </ol>
-                                    <p class="text-left">您可以在导航栏中选择查看学生作答情况、试卷统计信息和学生原始选项。</p>
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center">答题卡类别</th>
-                                                <th class="text-center">简介</th>
-                                                <th class="text-center">下载地址</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>半页（35题）</td>
-                                                <td>支持多选，可从中间裁开变为两张答题卡，节约纸张。</td>
-                                                <td>
-                                                    <a href="/static/half_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
-                                                    <a href="/static/half_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
-                                                    <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>全页（75题）</td>
-                                                <td>支持多选，适合英语等选择题比较多的科目。</td>
-                                                <td>
-                                                    <a href="/static/full_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
-                                                    <a href="/static/full_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
-                                                    <a href="/static/full_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
-                                                </td>
-                                            </tr>
-                                            <!--
-                                            <tr>
-                                                <td>手写（混合型）</td>
-                                                <td>使用深度学习和人工神经网络的可以识别手写字符的答题卡，<strong>评卷功能即将上线</strong>，敬请期待！</td>
-                                                <td>
-                                                    <a href="/static/hand_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
-                                                    <a href="/static/hand_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
-                                                    <a href="/static/hand_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">示例</a>
-                                                </td>
-
-                                            </tr> -->
-
-                                        </tbody>
-
-                                    </table>
-                                    <p class="text-left">详细功能介绍，请下载<a href="/static/manual.pdf" class="btn btn-default btn-xs">使用手册</a></p>
+                                    <p class="text-left">要使用自定义分数、统计特定学生等高级功能，可下载<a href="/static/manual.pdf" class="btn btn-default btn-xs">使用手册</a></p>
+                                    <p class="text-left">要了解自动馈纸式扫描仪，回到首页底部，单击“了解扫描仪”。</p>
 
                               </div>
                               <div class="modal-footer">
