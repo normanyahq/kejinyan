@@ -387,7 +387,6 @@ def upload_file():
             # reserve only error message
 
         pause_time = 3 if success else 5
-        print ('end', time.time())
         return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
             time=pause_time)
     else:
