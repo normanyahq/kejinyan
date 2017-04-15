@@ -2,7 +2,7 @@
 from __future__ import division
 import os
 from flask import Flask, request, url_for, send_from_directory, render_template, make_response
-from werkzeug import secure_filename
+#from werkzeug import secure_filename
 import sqlite3
 from flask import g
 import datetime
@@ -105,8 +105,8 @@ def convert_and_recognize(token, paths, answersheet_type):
         c.execute('update status set processed=%s where token=%s;', (i+1, token))
         db.commit()
 
-def getTotalPageNum(filepath_list):
-    return sum(map(getPDFPageNum, filepath_list))
+def getPageNumList(filepath_list):
+    return [getPDFPageNum(path) for path in filepath_list]
 
 def render_result(standard, answer):
     result = list()
@@ -363,7 +363,9 @@ def upload_file():
             success = False
             message.append("没有有效的标准答案文件，请检查后重新上传")
         student_files = glob.glob("{}/*.pdf".format(student_filedir))
-        if success and student_files:
+        student_page_nums = getPageNumList(student_files)
+        total_page_num = sum(student_page_nums)
+        if success and total_page_num:
             p = Process(target=convert_and_recognize,
                 args=(token,
                     [teacher_filepath] + student_files,
@@ -371,13 +373,18 @@ def upload_file():
             db = get_db()
             c = db.cursor()
             c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
-                (token, getTotalPageNum(student_files)))
+                (token, ))
             db.commit()
             p.start()
             message.append(u"答题卡上传成功，正在处理中……")
+            invalid_file_count = student_page_nums.count(0)
+            if invalid_file_count > 0:
+                message.append(u"存在{}个无效的答题卡文件，已忽略。请检查您上传的答题卡文件。".format(invalid_file_count))
         else:
             success = False
-            message.append(u"没有提交有效的答题卡文件，请检查后重新上传。")
+            message = [u"没有提交有效的答题卡文件，请检查您提交的答题卡文件是否有效。"]
+            # displaying succeed message makes client confused
+            # reserve only error message
 
         pause_time = 3 if success else 5
         return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
@@ -393,5 +400,5 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    app.run(host="0.0.0.0", debug=True)
-    # app.run(host="0.0.0.0", threaded=True)
+    # app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", threaded=True)

@@ -5,9 +5,10 @@ import wand.image
 import PIL.Image
 import numpy as np
 import subprocess
+import re
 
 from .common import getSquareDist
-from pyPdf import PdfFileReader
+# from PyPDF2 import PdfFileReader
 from ..utility.common import timeit
 
 #timeit
@@ -32,8 +33,28 @@ def binarizeImage(gray_image):
     ret3, th3 = cv2.threshold(gray_image, rescale(ret3), 255, cv2.THRESH_BINARY_INV)
     return th3
 
-
 def getPDFPageNum(file_path):
+    '''
+    This is a fast version to get PDF Page Number
+    reutrn 0 for malformated PDF
+    '''
+    # command example:
+    # gs -dNODISPLAY -dBATCH -dNOPAUSE -o /dev/null ./half_a4.pdf \
+    #    | grep -e '^Page \d+$'\
+    #    | wc -l
+    params = ["gs",
+              "-dNOPAUSE",
+              "-o/dev/null",
+              "-dBATCH",
+              file_path]
+    result = subprocess.check_output(params)
+    return len(re.findall("Page\s\d+", result))
+
+
+
+# deprecated, will hang when the malformated file
+# is relatively large
+def _getPDFPageNum(file_path):
     '''
     given a file path, return the number of pages of pdf
     if the pdf file is invalid, return 0
