@@ -373,7 +373,7 @@ def upload_file():
             db = get_db()
             c = db.cursor()
             c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
-                (token, ))
+                (token, total_page_num))
             db.commit()
             p.start()
             message.append(u"答题卡上传成功，正在处理中……")
@@ -387,6 +387,7 @@ def upload_file():
             # reserve only error message
 
         pause_time = 3 if success else 5
+        print ('end', time.time())
         return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
             time=pause_time)
     else:
@@ -400,5 +401,5 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
-    # app.run(host="0.0.0.0", debug=True)
-    app.run(host="0.0.0.0", threaded=True)
+    app.run(host="0.0.0.0", debug=True)
+    # app.run(host="0.0.0.0", threaded=True)

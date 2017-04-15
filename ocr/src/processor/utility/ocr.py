@@ -6,7 +6,7 @@ import PIL.Image
 import numpy as np
 import subprocess
 import re
-
+import time
 from .common import getSquareDist
 # from PyPDF2 import PdfFileReader
 from ..utility.common import timeit
@@ -44,6 +44,7 @@ def getPDFPageNum(file_path):
     #    | wc -l
     params = ["gs",
               "-dNOPAUSE",
+              "-sDEVICE=nullpage", # this is a must, otherwise it will hang
               "-o/dev/null",
               "-dBATCH",
               file_path]
@@ -78,11 +79,12 @@ def pdf2jpg(file_path, resolution=300, save_path=None):
     '''
     save_path = file_path.replace(".pdf", "")
     # command example:
-    #   gs -dNOPAUSE -sDEVICE=jpeg -dBATCH -r300 -sOutputFile=a-%05d.jpg half.pdf
+    #   gs -dNOPAUSE -q -sDEVICE=jpeg -dBATCH -r300 -sOutputFile=a-%05d.jpg half.pdf
     params = ["gs",
               "-dNOPAUSE",
               "-sDEVICE=jpeg",
               "-dBATCH",
+              "-q", # run silently
               "-r{}".format(resolution),
               "-sOutputFile={}-%05d.jpg".format(save_path),
               file_path]
