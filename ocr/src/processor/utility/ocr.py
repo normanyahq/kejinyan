@@ -455,7 +455,7 @@ def extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w):
     x1, x2 = vertical_pos[c], vertical_pos[c + w]
     return binary_image[y1:y2, x1:x2]
 
-def getRatioFromStripe(stripe, num_choice, multiple=False):
+def getRatioFromStripe(stripe, num_choice=5):
     '''
     given stripe, and number of choice, return the black pixel ratio sequence
     of the stripe
