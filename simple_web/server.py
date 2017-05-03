@@ -122,7 +122,7 @@ def render_result(standard, answer):
         result.append(''.format(color, student_choice[i].replace('-', "?")))
     return result
 
-@app.route('/table/<token>')
+@app.route('/table/<token>/result.xlsx')
 def returnTable(token):
     if not isValidToken(token):
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
