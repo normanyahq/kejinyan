@@ -43,6 +43,17 @@ SheetSectionPositions = {"half": {
             + list(chain(*[getBlockProblemPositions(19, 24, 1, 2, 5, 4)])) \
             + list(chain(*[getBlockProblemPositions(28 + r * 6, 26, 1, 2, 5, 2) for r in range(2)])),
         "choice_num": [4] * 45 + [2] * 10
+}, "english": {
+        "name": (1, 0, 2, 8),
+        "id": [(3, 9 + 2 * i, 10, 2) for i in range(12)],
+        "question": list(chain(*[getBlockProblemPositions(16, 0 + c * 11, 1, 2, 5, 3, False) for c in range(3)])) \
+            + getBlockProblemPositions(21, 0, 1, 2, 5, 3, False) \
+            + list(chain(*[getBlockProblemPositions(21, 11 + c * 11, 1, 2, 5, 4, False) for c in range(2)])) \
+            + getBlockProblemPositions(27, 0, 1, 2, 5, 4, False) \
+            + getBlockProblemPositions(27, 11, 1, 2, 5, 7, False) \
+            + getBlockProblemPositions(27, 22, 1, 2, 5, 7, False) \
+            + list(chain(*[getBlockProblemPositions(36, 0 + c * 11, 1, 2, 5, 4, False) for c in range(3)])),
+        "choice_num": [3] * 20 + [4] * 15 + [7] * 5 + [4] * 20
 }}
 
 
@@ -92,7 +103,7 @@ def recognizeSheet(path, sheet_type):
         for r, c, h, w in data_section["question"]:
             i += 1
             stripe = extractGrids(binary_image, horizontal_pos, vertical_pos, r, c, h, w)
-            # cv2.imwrite('tmp/{}.jpg'.format(i), stripe)
+            # cv2.imwrite('/tmp/{}.jpg'.format(i), stripe)
             sequence = getRatioFromStripe(stripe, data_section["choice_num"][i-1])
             answer = getAnswerFromSequence(sequence)
             result.append(answer)

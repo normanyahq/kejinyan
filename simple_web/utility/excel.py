@@ -176,7 +176,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     stats_sheet.write_string(1, 1, u"答案", bold)
     stats_sheet.write_string(1, 2, u"正确人数", bold)
     stats_sheet.write_string(1, 3, u"正确比例", bold)
-    for i, v in enumerate('ABCDE'):
+    for i, v in enumerate('ABCDEFG'):
         stats_sheet.write_string(1, 4+i, u"选{}比例".format(v), bold)
     for i in range(num_question):
         stats_sheet.write_number(i+2, 0, i+1, bold)
@@ -214,18 +214,18 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
         # the number of visible students who chose choice_k
         # shit, it's even more absurdfuckingly complicated
         # I don't expect I can understand it in the future
-        visible_choose = u'=SUMPRODUCT(((学生成绩!{}2:{}{}="{}"))' + \
+        visible_choose = u'=SUMPRODUCT((ISNUMBER(SEARCH("{}", 学生成绩!{}2:{}{})))' + \
             u'*(SUBTOTAL(103,OFFSET(学生成绩!{}2,ROW(学生成绩!{}2:{}{})' + \
             u'-MIN(ROW(学生成绩!{}2:{}{})),0))))/B1'
 
         # TODO: optimize this part
-        for j, v in enumerate('ABCDE'):
+        for j, v in enumerate('ABCDEFG'):
             stats_sheet.write_formula(i+2,
                                       j+4,
-                                      visible_choose.format(getColName(i+3),
+                                      visible_choose.format(v,
+                                                            getColName(i+3),
                                                             getColName(i+3),
                                                             num_student+1,
-                                                            v,
                                                             getColName(i+3),
                                                             getColName(i+3),
                                                             getColName(i+3),

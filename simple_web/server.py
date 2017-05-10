@@ -345,7 +345,12 @@ def upload_file():
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
     if request.method == "GET" and request.values.get('upload') == 'true':
         return render_template("index.html", token=token, popover=True)
-    elif request.method == 'POST' and request.values['answersheettype'] in ['full', 'half', 'full_old', 'half_old', 'makesi']:
+    elif request.method == 'POST' and request.values['answersheettype'] in ['full',
+                                                                            'half',
+                                                                            'full_old',
+                                                                            'half_old',
+                                                                            'makesi',
+                                                                            'english']:
         success = True
         task_dir = os.path.join(app.config['UPLOAD_FOLDER'], token)
 
