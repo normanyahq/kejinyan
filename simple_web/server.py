@@ -40,6 +40,15 @@ def countQuestion(standard):
 def isValidToken(token):
     return re.match("^\d{14}[a-zA-Z0-9]{10}$", token)
 
+def isValidNameFilename(filename):
+    return re.match("^\d{14}[a-zA-Z0-9]{10}.png$", filename)
+
+def isValidAnswersheetFilename(filename):
+    print filename
+    return filename.startswith("student_") \
+        and filename.endswith(".jpg") \
+        and filename.count('.') == 1 \
+        and filename.count('/') == 0
 
 def get_db():
     # db = getattr(g, '_database', None)
@@ -145,7 +154,6 @@ def returnTable(token):
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], token), 'table.xlsx')
 
 
-
 @app.route('/favicon.ico')
 def returnFavicon():
     return send_from_directory("templates", "favicon.ico")
@@ -169,6 +177,12 @@ def getProgress(token):
     return json.dumps({"processed": processed,
                        "total":total,
                        "percentage": 50  * (processed + num_converted) / total})
+
+@app.route('/answersheet/<token>/<filename>')
+def getAnswerSheet(token, filename):
+    if not isValidAnswersheetFilename(filename):
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+    return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], token, 'student'), filename)
 
 
 @app.route('/render/<token>')
@@ -207,6 +221,12 @@ def renderResults(token):
         t = list(map(lambda x: json.loads(x[0]), t))
         t = filter(lambda x: "result" in x, t)
         _answers = list(map(lambda x: x['result'], t))
+
+        cur.execute("select path from error_list where token = %s;", (token,))
+        t = cur.fetchall()
+        print t
+        _paths = [u"<li><a target=\"_blank\" href=\"/answersheet/{}/{}\">点击查看</a></li>".format(token, os.path.basename(x[0])) for x in t if x]
+
         # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
         # print _answers
         standard = json.loads(standard[0])
@@ -246,10 +266,14 @@ def renderResults(token):
             correctness.sort()
         # print render_ratio(correct_ratio, num_question)
         return json.dumps({"stats": render_ratio(correct_ratio, num_question),
-            "scores": render_students(correctness)})
+            "scores": render_students(correctness),
+            "hasError": bool(_paths),
+            "errors": "\n".join(_paths)})
 
 @app.route('/name/<token>/<filename>')
 def getNameImage(token, filename):
+    if not isValidNameFilename(filename):
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
     dirname = os.path.join(app.config['UPLOAD_FOLDER'], token, 'name')
     return send_from_directory(dirname, filename)
 
@@ -311,10 +335,10 @@ def get_results(token):
         colnum=range(1, num_question+1))
 
 
-@app.route('/uploads/download/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+# @app.route('/uploads/download/<filename>')
+# def uploaded_file(filename):
+#     return send_from_directory(app.config['UPLOAD_FOLDER'],
+#                                filename)
 
 @app.route('/upload/', methods=['POST'])
 def upload():

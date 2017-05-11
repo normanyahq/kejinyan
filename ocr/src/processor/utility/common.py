@@ -8,10 +8,13 @@ def getSquareDist(p1, p2):
 
 
 def generateFileName():
-    return datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S_") \
-        + "".join([random.choice(string.uppercase + string.lowercase + string.digits)
-                   for i in range(0, 5)]) + ".png"
+    return getToken() + ".png"
 
+
+def getToken():
+    return datetime.datetime.now().strftime("%Y%m%d%H%M%S") \
+        + "".join([random.choice(string.uppercase + string.lowercase + string.digits)
+                   for i in range(0, 10)])
 
 
 def timeit(f):

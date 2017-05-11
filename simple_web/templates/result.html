@@ -79,6 +79,13 @@
                       </div>
                     </div>
 
+                    <div id="error_container" class="alert alert-danger" role="alert" hidden>
+                      <p>下列答题卡识别错误，请人工确认。若为软件缺陷，请联系客服并附上出错答题卡，以便改进。</p>
+                      <ul id="error_list">
+                      </ul>
+                    </div>
+
+
 
                         <div class="content-content">
                             <ul class="nav nav-tabs">
@@ -151,6 +158,10 @@
               $.getJSON("/render/{{ token }}", function(code){
                   $("#stats tbody").html(code["stats"]);
                   $("#scores tbody").html(code["scores"]);
+                  if(code['hasError']) {
+                    $("#error_list").html(code['errors']);
+                    $("#error_container").removeAttr("hidden");
+                  }
                   $('[data-toggle="popover"]').popover({
                       html: true,
                       placement: 'auto',
