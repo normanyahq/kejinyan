@@ -57,7 +57,7 @@ SheetSectionPositions = {"half": {
 }}
 
 
-def recognizeSheet(path, sheet_type):
+def recognizeSheet(path, sheet_type, name_dir):
 
     data_section = SheetSectionPositions[sheet_type]
 
@@ -79,8 +79,7 @@ def recognizeSheet(path, sheet_type):
     def getNameImagePath():
         image = getNameImage()
         # _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY_INV)
-
-        return saveToDir(image, settings.name_dir)
+        return saveToDir(image, name_dir)
 
     def getIdImage(image_id):
         # TODO

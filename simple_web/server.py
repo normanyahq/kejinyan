@@ -24,7 +24,7 @@ from processor.utility.ocr import pdf2jpg, getPDFPageNum
 DATABASE_INIT = ['create table if not exists standard (token text, value text);',
     'create table if not exists answer (token text, value text);',
     'create table if not exists status (token text, processed int, total int);',
-    'create table if not exists error_list (path text, message text);' ]
+    'create table if not exists error_list (token text, path text, message text);' ]
 
 ANSWER_FILE_NAME = "standard.pdf"
 
@@ -95,13 +95,13 @@ def convert_and_recognize(token, paths, answersheet_type):
     db.commit()
 
     if standard['status'] == "error":
-        c.execute("insert into error_list values (%s, %s);", (standard['path'], standard['message']))
+        c.execute("insert into error_list values (%s, %s, %s);", (token, standard['path'], standard['message']))
         db.commit()
     for i, f in enumerate(student_files):
-        result = recognizeJPG(f, answersheet_type)
+        result = recognizeJPG(f, answersheet_type, os.path.join(app.config['UPLOAD_FOLDER'], token, 'name'))
         c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
         if result['status'] =='error':
-            c.execute("insert into error_list values (%s, %s);", (result['path'], result['message']))
+            c.execute("insert into error_list values (%s, %s, %s);", (token, result['path'], result['message']))
         c.execute('update status set processed=%s where token=%s;', (i+1, token))
         db.commit()
 
@@ -177,13 +177,13 @@ def renderResults(token):
         '''
         render param list [(correct, total, ratio, width, serial_number), ...]
         '''
-        return render_template('statistics.html', params=params)
+        return render_template('statistics.html', params=params, token=token)
 
     def render_students(correctness):
         '''
         correctness: [(id, num_correct, num_question, err_list), ...]
         '''
-        result = render_template('scores.html', info=correctness)
+        result = render_template('scores.html', info=correctness, token=token)
         return result
     def row_class(correct_ratio):
         if correct_ratio > 0.9:
@@ -248,9 +248,10 @@ def renderResults(token):
         return json.dumps({"stats": render_ratio(correct_ratio, num_question),
             "scores": render_students(correctness)})
 
-@app.route('/name/<filename>')
-def getNameImage(filename):
-    return send_from_directory(app.config['NAME_FOLDER'], filename)
+@app.route('/name/<token>/<filename>')
+def getNameImage(token, filename):
+    dirname = os.path.join(app.config['UPLOAD_FOLDER'], token, 'name')
+    return send_from_directory(dirname, filename)
 
 
 @app.route('/assets/<path:filename>')
@@ -324,6 +325,7 @@ def upload():
 
     if 'standard' in request.files:
         os.system("mkdir -p {}".format(os.path.join(upload_path, 'teacher')))
+        os.system("mkdir -p {}".format(os.path.join(upload_path, 'name')))
         request.files['standard'].save(os.path.join(upload_path, 'teacher', ANSWER_FILE_NAME))
     elif 'answers' in request.files:
         os.system("mkdir -p {}".format(os.path.join(upload_path, 'student')))
