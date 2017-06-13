@@ -322,7 +322,7 @@ def get_results(token):
         if status == "error":
             return u"标准答案识别出错，请确认答题卡扫描件的三个定位块完整清晰，可尝试重新扫描。如仍有问题，\
                 请把此网页链接及原始文件发送给网站管理员，以便改进。\
-                 <br /><pre>Email: psdn@qq.com QQ: 793048 </pre><br/><pre>" \
+                 <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>" \
                  + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
 
                 # + t['message'] + u"</pre>"
