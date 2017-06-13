@@ -46,6 +46,19 @@ def calcScore(standard_answers, student_info, credits):
         result.append(sum(t))
     return result
 
+def getMaxAnswerOption(student_info):
+    '''
+    return the maximum option number by iterating through students' choices
+    params:
+        student_info: a list of dictionary, dictionary items are:
+            "id": a string of digits, the number of students
+            "answer": a list of strings, the student's answers
+    '''
+    result = 'A'
+    for info in student_info:
+        result = max(result, *info['answer'])
+    return result
+
 def generateXlsx(output, standard_answers, student_info, credits=None):
     '''
     generate an xlsx files to output path. the files has two sheets:
@@ -61,15 +74,14 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
             default
     '''
     if not credits:
-        credits = [1] * len(standard_answers)
+        credits = [1 if ans!= '-' else 0 for ans in standard_answers]
     assert len(standard_answers) == len(credits)
 
     student_info.sort(key=lambda x: x['id'])
-
+    max_option = getMaxAnswerOption(student_info)
+    assert len(max_option) == 1
     num_question = len(standard_answers)
     num_student = len(student_info)
-
-
 
 
     # Create a workbook and add a worksheet.
@@ -178,6 +190,9 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     stats_sheet.write_string(1, 3, u"正确比例", bold)
     for i, v in enumerate('ABCDEFG'):
         stats_sheet.write_string(1, 4+i, u"选{}比例".format(v), bold)
+        if v >= max_option:
+            break
+
     for i in range(num_question):
         stats_sheet.write_number(i+2, 0, i+1, bold)
         stats_sheet.write_formula(i+2, 1, u'=答案与分值!B{}'.format(i+2), bold)
@@ -220,6 +235,8 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
 
         # TODO: optimize this part
         for j, v in enumerate('ABCDEFG'):
+            if v > max_option:
+                break
             stats_sheet.write_formula(i+2,
                                       j+4,
                                       visible_choose.format(v,

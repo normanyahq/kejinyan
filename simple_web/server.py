@@ -43,8 +43,13 @@ def isValidToken(token):
 def isValidNameFilename(filename):
     return re.match("^\d{14}[a-zA-Z0-9]{10}.png$", filename)
 
+def isValidStandardAnswerFilename(filename):
+    return filename.startswith("standard") \
+        and filename.endswith(".jpg") \
+        and filename.count('.') == 1 \
+        and filename.count('/') == 0
+
 def isValidAnswersheetFilename(filename):
-    print filename
     return filename.startswith("student_") \
         and filename.endswith(".jpg") \
         and filename.count('.') == 1 \
@@ -113,6 +118,7 @@ def convert_and_recognize(token, paths, answersheet_type):
             c.execute("insert into error_list values (%s, %s, %s);", (token, result['path'], result['message']))
         c.execute('update status set processed=%s where token=%s;', (i+1, token))
         db.commit()
+    db.close()
 
 def getPageNumList(filepath_list):
     return [getPDFPageNum(path) for path in filepath_list]
@@ -138,7 +144,8 @@ def returnTable(token):
 
     xlsx_path = os.path.join(app.config['UPLOAD_FOLDER'], token, 'table.xlsx')
     if not os.path.isfile(xlsx_path):
-        cur = get_db().cursor()
+        db = get_db()
+        cur = db.cursor()
         cur.execute("select value from answer where token = %s;", (token,))
         t = cur.fetchall()
         t = list(map(lambda x: json.loads(x[0]), t))
@@ -151,6 +158,7 @@ def returnTable(token):
             t -= 1
         standard['answer'] = standard['answer'][:t+1]
         utility.excel.generateXlsx(xlsx_path, standard['answer'], answers)
+        db.close()
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], token), 'table.xlsx')
 
 
@@ -164,6 +172,7 @@ def getProgress(token):
     cur = db.cursor()
     cur.execute("select processed, total from status where token = %s;", (token, ))
     t = cur.fetchone()
+    db.close()
     processed, total = t if t else (0, 1)
 
     task_dir = os.path.join(app.config['UPLOAD_FOLDER'], token)
@@ -178,9 +187,21 @@ def getProgress(token):
                        "total":total,
                        "percentage": 50  * (processed + num_converted) / total})
 
+@app.route('/standardanswer/<token>')
+def getStandardAnswer(token):
+    if not isValidToken(token):
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+    answersheet_dir = os.path.join(app.config['UPLOAD_FOLDER'], token, 'teacher')
+    try:
+        answersheet_name = os.path.basename(sorted(glob.glob(answersheet_dir + '/*.jpg'))[0])
+    except:
+        answersheet_name = ''
+    return send_from_directory(answersheet_dir, answersheet_name)
+
+
 @app.route('/answersheet/<token>/<filename>')
 def getAnswerSheet(token, filename):
-    if not isValidAnswersheetFilename(filename):
+    if not isValidAnswersheetFilename(filename) or not isValidToken(token):
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], token, 'student'), filename)
 
@@ -224,7 +245,6 @@ def renderResults(token):
 
         cur.execute("select path from error_list where token = %s;", (token,))
         t = cur.fetchall()
-        print t
         _paths = [u"<li><a target=\"_blank\" href=\"/answersheet/{}/{}\">点击查看</a></li>".format(token, os.path.basename(x[0])) for x in t if x]
 
         # _answers = list(map(lambda x: json.loads(x[0])['result'], cur.fetchall()))
@@ -264,6 +284,7 @@ def renderResults(token):
                     err_list,
                     os.path.basename(student['name_image'])))
             correctness.sort()
+        db.close()
         # print render_ratio(correct_ratio, num_question)
         return json.dumps({"stats": render_ratio(correct_ratio, num_question),
             "scores": render_students(correctness),
@@ -299,10 +320,10 @@ def get_results(token):
         t = json.loads(t[0])
         status = t['status']
         if status == "error":
-            return u"答卷识别出错，请重新检查后上传。如确认无误，\
+            return u"标准答案识别出错，请确认答题卡扫描件的三个定位块完整清晰，可尝试重新扫描。如仍有问题，\
                 请把此网页链接及原始文件发送给网站管理员，以便改进。\
                  <br /><pre>Email: psdn@qq.com QQ: 793048 </pre><br/><pre>" \
-                 + u"</pre>"
+                 + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
 
                 # + t['message'] + u"</pre>"
     cur.execute("select processed, total from status where token = %s;", (token, ))
@@ -406,11 +427,12 @@ def upload_file():
             c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
                 (token, total_page_num))
             db.commit()
+            db.close()
             p.start()
             message.append(u"答题卡上传成功，正在处理中……")
             invalid_file_count = student_page_nums.count(0)
             if invalid_file_count > 0:
-                message.append(u"存在{}个无效的答题卡文件，已忽略。请检查您上传的答题卡文件。".format(invalid_file_count))
+                message.append(u"存在{}个无效的答题卡文件，已忽略这些文件。请检查您上传的答题卡文件。".format(invalid_file_count))
         else:
             success = False
             message = [u"没有提交有效的答题卡文件，请检查您提交的答题卡文件是否有效。"]
@@ -431,5 +453,6 @@ if __name__ == '__main__':
     for statement in DATABASE_INIT:
         c.execute(statement);
     db.commit()
+    db.close()
     app.run(host="0.0.0.0", debug=True)
     # app.run(host="0.0.0.0", threaded=True)
