@@ -36,14 +36,14 @@ SheetSectionPositions = {"half": {
         "question": [(i, 1, 1, 5) for i in range(15, 25)] + [(i, 8, 1, 5) for i in range(25)],
         "choice_num" : [5] * 35
 }, "makesi": {
-        "name": (2, 0, 2, 11),
-        "class": (5, 0, 2, 11),
+        "name": (2, 0, 2, 12),
+        "class": (5, 0, 2, 12),
         "id": [(4, 13 + i * 2, 10, 2) for i in range(10)],
         "question": list(chain(*[getBlockProblemPositions(19 + r * 6, 1 + c * 11, 1, 2, 5, 4) for c in range(2) for r in range(4)])) \
             + list(chain(*[getBlockProblemPositions(19, 24, 1, 2, 5, 4)])) \
             + list(chain(*[getBlockProblemPositions(28 + r * 6, 26, 1, 2, 5, 2) for r in range(2)])),
         "choice_num": [4] * 45 + [2] * 10
-}, "english": {
+}, "gk_english": {
         "name": (1, 0, 2, 8),
         "id": [(3, 9 + 2 * i, 10, 2) for i in range(12)],
         "question": list(chain(*[getBlockProblemPositions(16, 0 + c * 11, 1, 2, 5, 3, False) for c in range(3)])) \
@@ -54,6 +54,12 @@ SheetSectionPositions = {"half": {
             + getBlockProblemPositions(27, 22, 1, 2, 5, 7, False) \
             + list(chain(*[getBlockProblemPositions(36, 0 + c * 11, 1, 2, 5, 4, False) for c in range(3)])),
         "choice_num": [3] * 20 + [4] * 15 + [7] * 5 + [4] * 20
+}, "full_4option": {
+        "name": (1, 0, 2, 9),
+        "id": [(3, 9 + 2 * i, 10, 2) for i in range(10)],
+        "question": list(chain(*[getBlockProblemPositions(14 + r * 6, 1 + c * 10, 1, 2, 5, 4) for c in range(3) for r in range(5)])),
+        # be careful, itertools can be used only once
+        "choice_num": [4] * 75
 }}
 
 

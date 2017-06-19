@@ -397,7 +397,8 @@ def upload_file():
                                                                             'full_old',
                                                                             'half_old',
                                                                             'makesi',
-                                                                            'english']:
+                                                                            'gk_english',
+                                                                            'full_4option']:
         success = True
         task_dir = os.path.join(app.config['UPLOAD_FOLDER'], token)
 
