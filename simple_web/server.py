@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
 import os
+import subprocess
 from flask import Flask, request, url_for, send_from_directory, render_template, make_response
 #from werkzeug import secure_filename
 import sqlite3
@@ -18,6 +19,7 @@ import re
 import utility.excel
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
+table_list = ['standard', 'answer', 'status', 'error_list']
 from processor.interface import recognizeJPG
 from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
@@ -306,6 +308,42 @@ def getAssets(filename):
     file_name = os.path.basename(path)
     return send_from_directory(dirname, file_name)
 
+@app.route('/delete/<token>', methods=["POST"])
+def deleteFolder(token):
+    if not isValidToken(token):
+        return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
+    os.system("rm -rf {}".format(os.path.join(app.config['UPLOAD_FOLDER'], token)))
+    db = get_db()
+    cur = db.cursor()
+    for table in table_list:
+        cur.execute('delete from {} where token = %s;'.format(table), (token,))
+    db.commit()
+    db.close()
+    return json.dumps({"status": "success"}), 200
+
+@app.route('/clear')
+def clearFolder():
+    db = get_db()
+    cur = db.cursor()
+    cur.execute("select token from status;")
+    t = cur.fetchall()
+    tokens = set([x[0] for x in t])
+    folder_names = [os.path.basename(os.path.normpath(name)) \
+                    for name in glob.glob(app.config['UPLOAD_FOLDER'] + "/*/")]
+    print (folder_names, tokens)
+    for name in folder_names:
+        if name not in tokens:
+            os.system("rm -rf {}".format(os.path.join(app.config['UPLOAD_FOLDER'], name)))
+            print ("deleted {}".format(os.path.join(app.config['UPLOAD_FOLDER'], name)))
+
+    for token in tokens:
+        if token not in folder_names:
+            for table in table_list:
+                cur.execute('delete from {} where token = %s;'.format(table), (token,))
+    db.commit()
+    db.close()
+    return json.dumps({"status": "success"}), 200
+
 
 @app.route('/results/<token>')
 def get_results(token):
@@ -324,8 +362,10 @@ def get_results(token):
                 请把此网页链接及原始文件发送给网站管理员，以便改进。\
                  <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>" \
                  + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
-
-                # + t['message'] + u"</pre>"
+    else:
+        return render_template('redirect.html', message=[u'结果不存在，地址有误或记录已被删除'],
+                               url = '/',
+                               time=5)
     cur.execute("select processed, total from status where token = %s;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)
