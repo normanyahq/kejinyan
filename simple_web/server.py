@@ -139,6 +139,16 @@ def render_result(standard, answer):
         result.append(''.format(color, student_choice[i].replace('-', "?")))
     return result
 
+@app.route('/history')
+def getHistory():
+    db = get_db()
+    cur = db.cursor()
+    cur.execute('select * from status;')
+    records = cur.fetchall()
+    db.close()
+    return render_template('history.html', records=records)
+
+
 @app.route('/table/<token>/result.xlsx')
 def returnTable(token):
     if not isValidToken(token):
