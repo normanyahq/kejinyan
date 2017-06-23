@@ -144,6 +144,7 @@ def render_result(standard, answer):
 
 @app.route('/history')
 def getHistory():
+    return
     db = get_db()
     cur = db.cursor()
     cur.execute('select * from status;')
@@ -323,6 +324,7 @@ def getAssets(filename):
 
 @app.route('/delete/<token>', methods=["POST"])
 def deleteFolder(token):
+    return 
     if not isValidToken(token):
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
     os.system("rm -rf {}".format(os.path.join(app.config['UPLOAD_FOLDER'], token)))
@@ -336,6 +338,7 @@ def deleteFolder(token):
 
 @app.route('/clear', methods=["POST"])
 def clearFolder():
+    return 
     db = get_db()
     cur = db.cursor()
     cur.execute("select token from status;")
