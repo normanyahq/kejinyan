@@ -51,30 +51,46 @@
         <div class="doc-wrapper">
             <div class="container">
                 <div class="doc-body">
-                  <table class="table">
-                  <thead>
-                      <th class="text-center">ID</th>
-                      <th class="text-center">已处理 / 总数</th>
-                      <th class="text-center">操作</th>
-                  </thead>
-                  <tbody>
-                    {% for t in records %}
-                    <tr>
-                      <td class='text-center'><a href="/results/{{t[0]}}" target="_blank">{{t[0]}}</a></td>
-                      <td class='text-center'>{{t[1]}} / {{t[2]}}</td>
-                      <td class='text-center'>
-                        <a role="button" class="btn btn-info" target="_blank" href="/results/{{t[0]}}">查看</a>
-                        {% if t[1] == t[2] %}
-                          <button type="button" class="deleteRecord btn btn-danger" token="{{t[0]}}">删除</button>
-                        {% else %}
-                          <button type="button" class="deleteRecord btn btn-danger" token="{{t[0]}}" disabled>删除</button>
-                        {% endif %}
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                  </table>
-
+                  <div class="row">
+                    <div class="progress-wrapper col-md-6 col-md-offset-2">
+                      <div class="progress">
+                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{diskUsage}}"
+                        aria-valuemin="0" aria-valuemax="100" style="width:{{diskUsage}}%">
+                          存储空间已使用：{{diskUsage}}%
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <button type="button" class="btn btn-xs btn-success clearStorage">清理垃圾</button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="table-container col-md-10 col-md-offset-1">
+                      <table class="table">
+                      <thead>
+                          <th class="text-center">ID</th>
+                          <th class="text-center">已处理 / 总数</th>
+                          <th class="text-center">操作</th>
+                      </thead>
+                      <tbody>
+                        {% for t in records %}
+                        <tr>
+                          <td class='text-center'><a href="/results/{{t[0]}}" target="_blank">{{t[0]}}</a></td>
+                          <td class='text-center'>{{t[1]}} / {{t[2]}}</td>
+                          <td class='text-center'>
+                            <a role="button" class="btn btn-info" target="_blank" href="/results/{{t[0]}}">查看</a>
+                            {% if t[1] == t[2] %}
+                              <button type="button" class="deleteRecord btn btn-danger" token="{{t[0]}}">删除</button>
+                            {% else %}
+                              <button type="button" class="deleteRecord btn btn-danger" token="{{t[0]}}" disabled>删除</button>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div><!--//doc-body-->
             </div><!--//container-->
         </div><!--//doc-wrapper-->
@@ -103,7 +119,7 @@
     <script type="text/javascript" src="/assets/js/main.js"></script>
     <script>
         function deleteRecord(token) {
-          var confirmed = confirm("确定要删除吗？");
+          var confirmed = confirm("确定要删除该条记录吗？");
           if (confirmed == true) {
             $.post("/delete/" + token, function (data) {
               console.log(data.status);
@@ -114,9 +130,22 @@
           }
         }
 
+        function clearStorage() {
+          $.post("/clear", function (data) {
+            if (data.status === "success") {
+              location.reload();
+            }
+          }, 'json');
+        }
         $(document).ready(function(){
           $(".deleteRecord").click(function () {
             deleteRecord($(this).attr("token"));
+          });
+          $(".clearStorage").click(function () {
+            var confirmed = confirm("确定要清理垃圾吗？");
+            if (confirmed == true) {
+              clearStorage();
+            }
           });
         });
 

@@ -30,6 +30,9 @@ DATABASE_INIT = ['create table if not exists standard (token text, value text);'
 
 ANSWER_FILE_NAME = "standard.pdf"
 
+def getDiskUsage():
+    command = '''df -t $PWD | grep -v "Capacity" | awk {'print $5'}'''
+    return int(float(os.popen(command).read().strip().strip("%")))
 
 def countQuestion(standard):
     # print standard
@@ -146,7 +149,7 @@ def getHistory():
     cur.execute('select * from status;')
     records = cur.fetchall()
     db.close()
-    return render_template('history.html', records=records)
+    return render_template('history.html', records=records, diskUsage=getDiskUsage())
 
 
 @app.route('/table/<token>/result.xlsx')
@@ -331,7 +334,7 @@ def deleteFolder(token):
     db.close()
     return json.dumps({"status": "success"}), 200
 
-@app.route('/clear')
+@app.route('/clear', methods=["POST"])
 def clearFolder():
     db = get_db()
     cur = db.cursor()
@@ -373,9 +376,12 @@ def get_results(token):
                  <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>" \
                  + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
     else:
-        return render_template('redirect.html', message=[u'结果不存在，地址有误或记录已被删除'],
-                               url = '/',
-                               time=5)
+        cur.execute("select * from status where token = %s;", (token,))
+        t = cur.fetchone()
+        if not t:
+            return render_template('redirect.html', message=[u'结果不存在，地址有误或记录已被删除'],
+                                   url = '/',
+                                   time=5)
     cur.execute("select processed, total from status where token = %s;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)
@@ -465,6 +471,11 @@ def upload_file():
         except IndexError:
             success = False
             message.append("没有有效的标准答案文件，请检查后重新上传")
+        db = get_db()
+        c = db.cursor()
+        c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
+            (token, 1))
+        db.commit()
         student_files = glob.glob("{}/*.pdf".format(student_filedir))
         student_page_nums = getPageNumList(student_files)
         total_page_num = sum(student_page_nums)
@@ -473,12 +484,8 @@ def upload_file():
                 args=(token,
                     [teacher_filepath] + student_files,
                     request.values['answersheettype']))
-            db = get_db()
-            c = db.cursor()
-            c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
-                (token, total_page_num))
-            db.commit()
-            db.close()
+            c.execute("update status set total = %s where token = %s;",
+                (total_page_num, token))
             p.start()
             message.append(u"答题卡上传成功，正在处理中……")
             invalid_file_count = student_page_nums.count(0)
@@ -491,6 +498,10 @@ def upload_file():
             # reserve only error message
 
         pause_time = 3 if success else 5
+
+        db.commit()
+        db.close()
+
         return render_template('redirect.html', message=message, url = '/' if not success else '/results/{}'.format(token),
             time=pause_time)
     else:
