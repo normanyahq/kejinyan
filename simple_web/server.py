@@ -31,7 +31,7 @@ DATABASE_INIT = ['create table if not exists standard (token text, value text);'
 ANSWER_FILE_NAME = "standard.pdf"
 
 def getDiskUsage():
-    command = '''df -t $PWD | grep -v "Capacity" | awk {'print $5'}'''
+    command = '''df $PWD | tail -n 1 | awk {'print $5'}'''
     return int(float(os.popen(command).read().strip().strip("%")))
 
 def countQuestion(standard):
