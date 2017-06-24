@@ -46,14 +46,12 @@
                 </div><!--//branding-->
                 <div class="tagline">
                     <p> 假氪金者，如神助也，而阅万卷。 </p>
-                    <p> 谨以此系统献给爸爸妈妈，</p>
-                    <p> 越来越懒只想铲屎的集翔吴，</p>
-                    <p> 和与他们一样战斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
+                    <p> 谨以此系统献给奋斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
                     <p></p>
                 </div><!--//tagline-->
                 <div class="social-container">
                     <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#downloadSheet">
-                          功能简介
+                          功能与答题卡
                     </button>
                     <!--<button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#scannerIntroduction">
                           了解扫描仪
@@ -65,9 +63,9 @@
 
         <section class="cards-section text-center">
             <div class="container">
-                <h2 class="title">系统正在免费测试！</h2>
+                <h2 class="title">欢迎提供反馈</h2>
                 <div class="intro">
-                    <p>欢迎使用我设计的自动阅卷系统！<br/>目前功能和界面都比较简单，待核心功能完善之后，会重新设计界面并加入新功能，欢迎提供您的宝贵意见。</p>
+                    <p>系统仍然在完善中，欢迎提供您的宝贵意见。联系邮箱：admin@kejinyan.com</p>
                     <div class="cta-container">
                         <!-- Button trigger modal -->
 
@@ -84,43 +82,36 @@
                               </div>
                               <div class="modal-body">
                                 <form method=post enctype=multipart/form-data>
-                                    <div class="radio">
-                                      <div class="row">
-                                      <label>
-                                        <input type="radio" name=answersheettype value="half" checked>
-                                        半页答题卡（35题）
-                                      </label>
-                                      <label>
-                                        <input type="radio" name=answersheettype value="full">
-                                        全页答题卡（75题）
-                                      </label>
-                                    </div>
-                                    <div class="row">
-                                    <label>
-                                      <input type="radio" name=answersheettype value="gk_english">
-                                      高考英语专用答题卡
-                                    </label>
-                                    <div class="row">
-                                    <label>
-                                      <input type="radio" name=answersheettype value="full_4option">
-                                      河池学院大学英语考试专用答题卡
-                                    </label>
+
+                                  <div class="form-group">
+                                    <label for="answersheetType">答题卡类型</label>
+                                    <select class="form-control" name="answersheettype" id="answersheetType">
+                                      <option value="half">半页答题卡（35题）</option>
+                                      <option value="full">全页答题卡（75题）</option>
+                                      <option value="gk_english">高考英语专用答题卡</option>
+                                      <option value="full_4option">河池学院大学英语考试专用答题卡</option>
+                                      <option value="makesi">河池学院马克思主义学院考试专用答题卡</option>
+                                    </select>
                                   </div>
+                                  <div class="form-group">
+                                    <label for="judgeMode">评分方式</label>
+                                    <select class="form-control" name="judgeMode" id="judgeMode">
+                                      <option value="exact_match">普通模式：与标准答案完全一致得满分</option>
+                                      <option value="partial_credit">高考模式：单选、多选题，与答案一致得满分；多选题，少选得一半分、多选不得分</option>
+                                    </select>
                                   </div>
-                                    <div class="row">
-                                    <label>
-                                      <input type="radio" name=answersheettype value="makesi">
-                                      河池学院马克思主义学院考试专用答题卡
-                                    </label>
+                                  <div class="form-group">
+                                    <label for="testNote">备注（选填）</label>
+                                    <input class="form-control" id="testNote" name="note" placeholder="在这里填写考试备注" />
+
                                   </div>
-                                      <input type="hidden" name="token" value="{{token}}">
+                                      <input type="hidden" name="token" value="{{token}}"/>
 
                                       <!--
                                       <label>
                                         <input type="radio" name=answersheettype value="handwriting" disabled>
                                         手写答题卡
                                       </label>-->
-                                    </div>
 
                                     <div class="form-group">
                                          <!--<label for='standard'>标准答案答题卡</label>-->
@@ -311,9 +302,9 @@
                               <i class="icon glyphicon glyphicon-sunglasses
 "></i>
                           </div><!--//icon-holder-->
-                          <h3 class="title">结果样例</h3>
-                          <p class="intro">进入示例结果界面，查看各个学生的成绩、卷面分析并下载成绩表。</p>
-                          <a class="link" href="/results/201705110701528adiZB6KV0"><span></span></a>
+                          <h3 class="title">管理界面</h3>
+                          <p class="intro">管理界面，查看已提交的考试</p>
+                          <a class="link" href="/history"><span></span></a>
                       </div><!--//item-inner-->
                   </div><!--//item-->
                   <div class="item item-blue col-md-4 col-sm-6 col-xs-6">
@@ -351,7 +342,7 @@
     <footer class="footer text-center">
         <div class="container">
             <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
-            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers, modified by <a href="http://heqing.me/" target="_blank">Heqing Ya</a></small>.
+            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers, modified by <a href="#" >上海穆伦信息科技有限公司</a></small>.
 
         </div><!--//container-->
     </footer><!--//footer-->

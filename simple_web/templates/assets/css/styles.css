@@ -23,6 +23,8 @@ body {
   min-height: 100%;
   /* equal to footer height */
   margin-bottom: -50px;
+  background: #f9f9fb;
+
 }
 .page-wrapper:after {
   content: "";
@@ -268,9 +270,6 @@ input[type="submit"],
 input[type="button"],
 textarea,
 select {
-  appearance: none;
-  /* for mobile safari */
-  -webkit-appearance: none;
 }
 #topcontrol {
   background: #40babd;
@@ -407,7 +406,7 @@ select {
   color: #EA5395;
 }
 /* ======= Doc Styling ======= */
-.doc-wrapper {
+.doc-wrapper{
   padding: 45px 0;
   background: #f9f9fb;
 }

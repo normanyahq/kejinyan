@@ -19,14 +19,14 @@ import re
 import utility.excel
 
 os.environ["PYTHONPATH"] = os.environ.get("PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
-table_list = ['standard', 'answer', 'status', 'error_list']
+table_list = ['standard', 'answer', 'testInfo', 'errorInfo']
 from processor.interface import recognizeJPG
 from processor.utility.ocr import pdf2jpg, getPDFPageNum
 
-DATABASE_INIT = ['create table if not exists standard (token text, value text);',
+DATABASE_INIT = ['create table if not exists standard (token text primary key, value text);',
     'create table if not exists answer (token text, value text);',
-    'create table if not exists status (token text, processed int, total int);',
-    'create table if not exists error_list (token text, path text, message text);' ]
+    'create table if not exists testInfo (token text primary key, processed int, total int, type text, time timestamp default current_timestamp, note text default \'\', number serial, judgeMode text);',
+    'create table if not exists errorInfo (token text, path text, message text);' ]
 
 ANSWER_FILE_NAME = "standard.pdf"
 
@@ -114,14 +114,14 @@ def convert_and_recognize(token, paths, answersheet_type):
     db.commit()
 
     if standard['status'] == "error":
-        c.execute("insert into error_list values (%s, %s, %s);", (token, standard['path'], standard['message']))
+        c.execute("insert into errorInfo values (%s, %s, %s);", (token, standard['path'], standard['message']))
         db.commit()
     for i, f in enumerate(student_files):
         result = recognizeJPG(f, answersheet_type, os.path.join(app.config['UPLOAD_FOLDER'], token, 'name'))
         c.execute('insert into answer values (%s, %s);', (token, json.dumps(result)))
         if result['status'] =='error':
-            c.execute("insert into error_list values (%s, %s, %s);", (token, result['path'], result['message']))
-        c.execute('update status set processed=%s where token=%s;', (i+1, token))
+            c.execute("insert into errorInfo values (%s, %s, %s);", (token, result['path'], result['message']))
+        c.execute('update testInfo set processed=%s where token=%s;', (i+1, token))
         db.commit()
     db.close()
 
@@ -146,9 +146,15 @@ def render_result(standard, answer):
 def getHistory():
     db = get_db()
     cur = db.cursor()
-    cur.execute('select * from status;')
+    cur.execute('select * from testInfo order by time desc;')
     records = cur.fetchall()
     db.close()
+    records = [{'order': t[6],
+                'token': t[0],
+                'processed': t[1],
+                'total': t[2],
+                'time': t[4],
+                'note': t[5]} for t in records]
     return render_template('history.html', records=records, diskUsage=getDiskUsage())
 
 
@@ -185,7 +191,7 @@ def returnFavicon():
 def getProgress(token):
     db = get_db()
     cur = db.cursor()
-    cur.execute("select processed, total from status where token = %s;", (token, ))
+    cur.execute("select processed, total from testInfo where token = %s;", (token, ))
     t = cur.fetchone()
     db.close()
     processed, total = t if t else (0, 1)
@@ -258,7 +264,7 @@ def renderResults(token):
         t = filter(lambda x: "result" in x, t)
         _answers = list(map(lambda x: x['result'], t))
 
-        cur.execute("select path from error_list where token = %s;", (token,))
+        cur.execute("select path from errorInfo where token = %s;", (token,))
         t = cur.fetchall()
         _paths = [u"<li><a target=\"_blank\" href=\"/answersheet/{}/{}\">点击查看</a></li>".format(token, os.path.basename(x[0])) for x in t if x]
 
@@ -338,7 +344,7 @@ def deleteFolder(token):
 def clearFolder():
     db = get_db()
     cur = db.cursor()
-    cur.execute("select token from status;")
+    cur.execute("select token from testInfo;")
     t = cur.fetchall()
     tokens = set([x[0] for x in t])
     folder_names = [os.path.basename(os.path.normpath(name)) \
@@ -371,18 +377,18 @@ def get_results(token):
         t = json.loads(t[0])
         status = t['status']
         if status == "error":
-            return u"标准答案识别出错，请确认答题卡扫描件的三个定位块完整清晰，可尝试重新扫描。如仍有问题，\
+            return u"标准答案识别出错，请确认答题卡类型选择正确，同时扫描件的三个定位块完整清晰。可尝试重新扫描。如仍有问题，\
                 请把此网页链接及原始文件发送给网站管理员，以便改进。\
                  <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>" \
                  + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
     else:
-        cur.execute("select * from status where token = %s;", (token,))
+        cur.execute("select * from testInfo where token = %s;", (token,))
         t = cur.fetchone()
         if not t:
             return render_template('redirect.html', message=[u'结果不存在，地址有误或记录已被删除'],
                                    url = '/',
                                    time=5)
-    cur.execute("select processed, total from status where token = %s;", (token, ))
+    cur.execute("select processed, total from testInfo where token = %s;", (token, ))
     t = cur.fetchone()
     processed, total = t if t else (0, 1)
     if processed:
@@ -450,14 +456,14 @@ def upload_file():
         return render_template("index.html", token=token, popover=True)
     elif request.method == 'POST' and request.values['answersheettype'] in ['full',
                                                                             'half',
-                                                                            'full_old',
-                                                                            'half_old',
+                                                                            # 'full_old',
+                                                                            # 'half_old',
                                                                             'makesi',
                                                                             'gk_english',
                                                                             'full_4option']:
         success = True
         task_dir = os.path.join(app.config['UPLOAD_FOLDER'], token)
-
+        note = request.values.get('note', '')
         teacher_filepath = os.path.join(task_dir, 'teacher', ANSWER_FILE_NAME)
         student_filedir = os.path.join(task_dir, 'student')
         try:
@@ -473,8 +479,12 @@ def upload_file():
             message.append("没有有效的标准答案文件，请检查后重新上传")
         db = get_db()
         c = db.cursor()
-        c.execute("insert into status (token, processed, total) values (%s, 0, %s);",
-            (token, 1))
+        c.execute("select * from testInfo where token = %s;", (token, ))
+        t = c.fetchone()
+        if t:
+            return json.dumps({"status": 403, "message": "考试记录已存在，请尝试回到主页刷新重新上传。"}), 403
+        c.execute("insert into testInfo (token, processed, total, type, note, judgeMode) values (%s, 0, %s, %s, %s, %s);",
+            (token, 1, request.values['answersheettype'], note, request.values['judgeMode']))
         db.commit()
         student_files = glob.glob("{}/*.pdf".format(student_filedir))
         student_page_nums = getPageNumList(student_files)
@@ -484,7 +494,7 @@ def upload_file():
                 args=(token,
                     [teacher_filepath] + student_files,
                     request.values['answersheettype']))
-            c.execute("update status set total = %s where token = %s;",
+            c.execute("update testInfo set total = %s where token = %s;",
                 (total_page_num, token))
             p.start()
             message.append(u"答题卡上传成功，正在处理中……")
