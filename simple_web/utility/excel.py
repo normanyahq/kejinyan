@@ -54,9 +54,17 @@ def getMaxAnswerOption(student_info):
             "id": a string of digits, the number of students
             "answer": a list of strings, the student's answers
     '''
+    def getMaxChar(obj):
+        if isinstance(obj, unicode) or isinstance(obj, str):
+            return max(obj)
+        elif isinstance(obj, list):
+            return max([getMaxChar(c) for c in obj])
+        else:
+            pass
+
     result = 'A'
     for info in student_info:
-        result = max(result, *info['answer'])
+        result = max(result, getMaxChar(info['answer']))
     return result
 
 def generateXlsx(output, standard_answers, student_info, credits=None):

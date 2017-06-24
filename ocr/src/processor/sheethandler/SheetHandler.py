@@ -46,13 +46,13 @@ SheetSectionPositions = {"half": {
 }, "gk_english": {
         "name": (1, 0, 2, 8),
         "id": [(3, 9 + 2 * i, 10, 2) for i in range(12)],
-        "question": list(chain(*[getBlockProblemPositions(16, 0 + c * 11, 1, 2, 5, 3, False) for c in range(3)])) \
+        "question": list(chain(*[getBlockProblemPositions(15, 0 + c * 11, 1, 2, 5, 3, False) for c in range(3)])) \
             + getBlockProblemPositions(21, 0, 1, 2, 5, 3, False) \
             + list(chain(*[getBlockProblemPositions(21, 11 + c * 11, 1, 2, 5, 4, False) for c in range(2)])) \
-            + getBlockProblemPositions(27, 0, 1, 2, 5, 4, False) \
-            + getBlockProblemPositions(27, 11, 1, 2, 5, 7, False) \
-            + getBlockProblemPositions(27, 22, 1, 2, 5, 7, False) \
-            + list(chain(*[getBlockProblemPositions(36, 0 + c * 11, 1, 2, 5, 4, False) for c in range(3)])),
+            + getBlockProblemPositions(28, 0, 1, 2, 5, 4, False) \
+            + getBlockProblemPositions(28, 11, 1, 2, 5, 7, False) \
+            + getBlockProblemPositions(28, 22, 1, 2, 5, 7, False) \
+            + list(chain(*[getBlockProblemPositions(38, 0 + c * 11, 1, 2, 5, 4, False) for c in range(3)])),
         "choice_num": [3] * 20 + [4] * 15 + [7] * 5 + [4] * 20
 }, "full_4option": {
         "name": (1, 0, 2, 9),
