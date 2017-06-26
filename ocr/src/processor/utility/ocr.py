@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 
 import cv2
-import wand.image
+# import wand.image
 import PIL.Image
 import numpy as np
 import subprocess
@@ -55,18 +55,18 @@ def getPDFPageNum(file_path):
 
 # deprecated, will hang when the malformated file
 # is relatively large
-def _getPDFPageNum(file_path):
-    '''
-    given a file path, return the number of pages of pdf
-    if the pdf file is invalid, return 0
-    '''
-    try:
-        pdf = PdfFileReader(open(file_path, 'rb'))
-        return pdf.getNumPages()
-    except:
-        import traceback
-        traceback.print_exc()
-        return 0
+# def _getPDFPageNum(file_path):
+#     '''
+#     given a file path, return the number of pages of pdf
+#     if the pdf file is invalid, return 0
+#     '''
+#     try:
+#         pdf = PdfFileReader(open(file_path, 'rb'))
+#         return pdf.getNumPages()
+#     except:
+#         import traceback
+#         traceback.print_exc()
+#         return 0
 
 
 
@@ -93,18 +93,18 @@ def pdf2jpg(file_path, resolution=300, save_path=None):
 
 # deprecated, 10x slower than current version
 # remain for potential use in AWS lambda
-def _pdf2jpg(file_path, resolution=300, save_path=None):
-    '''
-    convert pdf into jpg.
-    if the pdf file, for example, a.pdf has more than one pages,
-    the output filenames will be named as:
-    a-0.jpg, a-1.jpg, a-2.jpg, ...
-    '''
-    with wand.image.Image(filename=file_path, resolution=resolution) as img:
-        if not save_path:
-            save_path = file_path.replace(".pdf", ".jpg")
-        print ('Save file to:', save_path)
-        img.save(filename=save_path)
+# def _pdf2jpg(file_path, resolution=300, save_path=None):
+#     '''
+#     convert pdf into jpg.
+#     if the pdf file, for example, a.pdf has more than one pages,
+#     the output filenames will be named as:
+#     a-0.jpg, a-1.jpg, a-2.jpg, ...
+#     '''
+#     with wand.image.Image(filename=file_path, resolution=resolution) as img:
+#         if not save_path:
+#             save_path = file_path.replace(".pdf", ".jpg")
+#         print ('Save file to:', save_path)
+#         img.save(filename=save_path)
 
 def getLastCorner(centers):
     '''

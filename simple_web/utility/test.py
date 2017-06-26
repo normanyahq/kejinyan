@@ -1,7 +1,7 @@
 import excel
 
 output = "./test.xlsx"
-standard_answers = ['A', 'B', 'C', 'D']
+standard_answers = ['A', 'AB', 'AC', 'ACD']
 student_info = [{"id": "21", "answer": ['A', 'B', 'C', 'D']},
                 {"id": "12", "answer": list("ABAB")},
                 {"id": "13", "answer": list("AAAA")}]

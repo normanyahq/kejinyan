@@ -270,6 +270,9 @@ input[type="submit"],
 input[type="button"],
 textarea,
 select {
+  /*appearance: none;*/
+  /* for mobile safari */
+  /*-webkit-appearance: none;*/
 }
 #topcontrol {
   background: #40babd;
