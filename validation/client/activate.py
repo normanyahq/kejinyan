@@ -42,9 +42,9 @@ def generateEncryptFile(message):
 
 
 def postEncryptedFile(messageFilePath):
-    validationUrlFilePath = getConfig('validationUrl')
+    validationUrl = getConfig('validationUrl')
     commandTemplate = '''curl -X POST -H "Content-Type: multipart/form-data"  -F "message=@{}" {}'''
-    command = commandTemplate.format(messageFilePath, validationUrlFilePath)
+    command = commandTemplate.format(messageFilePath, validationUrl)
     result = os.popen(command).read()
     return result
 

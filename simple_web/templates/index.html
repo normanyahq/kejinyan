@@ -46,7 +46,7 @@
                 </div><!--//branding-->
                 <div class="tagline">
                     <p> 假氪金者，如神助也，而阅万卷。 </p>
-                    <p> 谨以此系统献给奋斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
+                    <p> 此系统献给奋斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
                     <p></p>
                 </div><!--//tagline-->
                 <div class="social-container">
@@ -89,8 +89,9 @@
                                       <option value="half">半页答题卡（35题）</option>
                                       <option value="full">全页答题卡（75题）</option>
                                       <option value="gk_english">高考英语专用答题卡</option>
+                                      <!--
                                       <option value="full_4option">河池学院大学英语考试专用答题卡</option>
-                                      <option value="makesi">河池学院马克思主义学院考试专用答题卡</option>
+                                      <option value="makesi">河池学院马克思主义学院考试专用答题卡</option>-->
                                     </select>
                                   </div>
                                   <div class="form-group">
@@ -145,14 +146,22 @@
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">下载已填涂答题卡</h4>
+                                <h4 class="modal-title" id="myModalLabel">使用说明</h4>
                               </div>
                               <div class="modal-body">
-                                    <p class="text-left">为了方便您试用本系统，我们已经为你准备好了两份已经填涂的文件，分别是一页的标准答案答题卡和五页的学生答卷扫描件。</p>
-                                    <p class="text-left">点击下载，并回到首页点击“上传答题卡”按钮进行上传吧，即可看到评卷结果。</p>
-                                    <p class="text-left">                                                    <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-info btn-xs">标准答案</a>
+                                    <p class="text-left">使用步骤：
+                                      <ul>
+                                        <li class="text-left">下载、打印答题卡</li>
+                                        <li class="text-left">填涂并扫描答题卡</li>
+                                        <li class="text-left">上传答题卡得到结果</li>
+                                      </ul>
+                                    </p>
+                                    <p class="text-left">以下为两张填涂示例，可下载保存，回到首页上传，并选择“半页答题卡”提交，体验使用流程。</p>
+                                    <p class="text-left">
+                                      <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-info btn-xs">标准答案</a>
                                       <a href="/static/half_example.pdf" target="_blank" role="button" class="btn btn-info btn-xs">学生答卷</a>
                                     </p>
+                                    <p>使用视频教程制作中，目前可参阅使用手册查看功能详解：<a href="/static/manual.pdf" target="_blank" class="btn btn-default btn-xs">使用手册</a></p>
                                     <!--<p class="text-left">下载后请回到首页进行提交。进入结果页面后，您可以在导航栏中选择查看学生作答情况、试卷统计信息和学生原始选项等信息。</p>-->
 
                               </div>
@@ -295,22 +304,21 @@
 
 
                 <div id="cards-wrapper" class="cards-wrapper row">
-                  <div class="item item-purple col-md-4 col-sm-6 col-xs-6">
+                  <div class="item item-pink col-md-4 col-sm-6 col-xs-6">
                       <div class="item-inner">
                           <div class="icon-holder">
-                              <i class="icon glyphicon glyphicon-sunglasses
-"></i>
+                              <i class="icon glyphicon glyphicon-check"></i>
                           </div><!--//icon-holder-->
-                          <h3 class="title">管理界面</h3>
-                          <p class="intro">管理界面，查看已提交的考试</p>
-                          <a class="link" href="/history"><span></span></a>
+                          <h3 class="title">使用说明</h3>
+                          <p class="intro">下载使用手册，观看使用视频</p>
+                          <a class="link" href="" data-toggle="modal" data-target="#haveATry"><span></span></a>
                       </div><!--//item-inner-->
                   </div><!--//item-->
+
                   <div class="item item-blue col-md-4 col-sm-6 col-xs-6">
                       <div class="item-inner">
                           <div class="icon-holder">
-                              <i class="icon glyphicon glyphicon-print
-"></i>
+                              <i class="icon glyphicon glyphicon-print"></i>
                           </div><!--//icon-holder-->
                           <h3 class="title">了解扫描仪</h3>
                           <p class="intro">自动进纸扫描的馈纸式扫描仪</p>
@@ -318,18 +326,16 @@
                       </div><!--//item-inner-->
                   </div><!--//item-->
 
-                  <div class="item item-pink col-md-4 col-sm-6 col-xs-6">
+                  <div class="item item-purple col-md-4 col-sm-6 col-xs-6">
                       <div class="item-inner">
                           <div class="icon-holder">
-                              <i class="icon glyphicon glyphicon-check
-"></i>
+                              <i class="icon glyphicon glyphicon-sunglasses"></i>
                           </div><!--//icon-holder-->
-                          <h3 class="title">立即尝试</h3>
-                          <p class="intro">下载已填涂好的答题卡，体验提交流程并查看结果</p>
-                          <a class="link" href="" data-toggle="modal" data-target="#haveATry"><span></span></a>
+                          <h3 class="title">管理界面</h3>
+                          <p class="intro">管理界面，查看已提交的考试</p>
+                          <a class="link" href="/history"><span></span></a>
                       </div><!--//item-inner-->
                   </div><!--//item-->
-
 
 
                 </div><!--//cards-->

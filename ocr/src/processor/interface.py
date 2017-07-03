@@ -2,6 +2,7 @@
 from sheethandler.SheetHandler import recognizeSheet
 import traceback
 
+
 def recognizeJPG(path, sheet_type, name_dir='/tmp'):
     '''
     given path and type, return the recognition result in dictionary format:

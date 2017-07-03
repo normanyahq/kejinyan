@@ -6,10 +6,13 @@
 
     </td>
 
-    <td class="text-center" style="vertical-align: middle;">{{i[1]}} ( {{i[2]}} ) </td>
-    <td class="text-center" style="vertical-align: middle;"> {{(100*i[1]/i[2]) | round(1, 'common')}}%</td>
+    <td class="text-center" style="vertical-align: middle; min-width:200px;">{{i[1]}} ( {{i[2]}} ) </td>
+    <td class="text-center" style="vertical-align: middle; min-width:100px;"> {{(100*i[1]/i[2]) | round(1, 'common')}}%</td>
     <td class="text-center" style="vertical-align: middle;">
         {{i[3]}}
+    </td>
+    <td class="text-center" style="vertical-align: middle; min-width:80px;">
+      <a href="/answersheet/{{token}}/{{i[5]}}" class="btn btn-success" target="_blank">查看</a>
     </td>
 </tr>
 {% endfor %}

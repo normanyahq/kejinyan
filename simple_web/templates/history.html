@@ -65,25 +65,40 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="table-container col-md-10 col-md-offset-1">
+                    <div class="table-container col-md-12">
                       <table class="table">
                       <thead>
                           <th class="text-center">序号</th>
+                          <th class="text-center">类型 / 模式</th>
                           <th class="text-center">已处理 / 总数</th>
                           <th class="text-center">上传时间</th>
                           <th class="text-center">备注</th>
+                          <th class="text-center">识别错误</th>
                           <th class="text-center">操作</th>
                       </thead>
                       <tbody>
                         {% for t in records %}
                         <tr>
                           <td class='text-center'><a href="/results/{{t['token']}}" target="_blank">{{t['order']}}</a></td>
+                          <td class='text-center'>{{t['type']}} / {{t['judgeMode']}}</td>
+
                           <td class='text-center'>{{t['processed']}} / {{t['total']}}</td>
-                          <td class='text-center'>{{t['time']}}</td>
+                          <td class='text-center'>{{t['time'].strftime("%Y-%m-%d %H:%M:%S")}}</td>
                           <td class='text-center'>{{t['note']}}</td>
                           <td class='text-center'>
+                            {% if t['errorCount'] == 0 %}
+                              <font color="green">
+                                <strong>{{t['errorCount']}}</strong>
+                              </font>
+                            {% else %}
+                              <font color="red">
+                                <strong>{{t['errorCount']}}</strong>
+                              </font>
+                            {% endif %}
+                          </td>
+                          <td class='text-center'>
                             <a role="button" class="btn btn-info" target="_blank" href="/results/{{t['token']}}">查看</a>
-                            {% if t[1] == t[2] %}
+                            {% if t['processed'] == t['total'] %}
                               <button type="button" class="deleteRecord btn btn-danger" token="{{t['token']}}">删除</button>
                             {% else %}
                               <button type="button" class="deleteRecord btn btn-danger" token="{{t['token']}}" disabled>删除</button>

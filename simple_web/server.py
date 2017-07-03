@@ -15,6 +15,7 @@ import traceback
 import json
 import time
 from psycopg2 import connect
+from settings import modeDictionary
 
 # Fix the disgusting code problem
 # We should consider about python3
@@ -126,6 +127,22 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
+def recognizeAnswersheet(token, answersheetPath, answersheetType):
+    db = getDb()
+    c = db.cursor()
+    result = recognizeJPG(answersheetPath, answersheetType, os.path.join(
+        app.config['UPLOAD_FOLDER'], token, 'name'))
+    c.execute('insert into answer values (%s, %s);',
+              (token, json.dumps(result)))
+    if result['status'] == 'error':
+        c.execute("insert into errorInfo values (%s, %s, %s);",
+                  (token, result['path'], result['message']))
+    c.execute('update testInfo set processed=processed+1 where token=%s;',
+              (token, ))
+    db.commit()
+    db.close()
+
+
 def convert_and_recognize(token, paths, answersheet_type):
     db = getDb()
     c = db.cursor()
@@ -151,18 +168,13 @@ def convert_and_recognize(token, paths, answersheet_type):
         c.execute("insert into errorInfo values (%s, %s, %s);",
                   (token, standard['path'], standard['message']))
         db.commit()
-    for i, f in enumerate(student_files):
-        result = recognizeJPG(f, answersheet_type, os.path.join(
-            app.config['UPLOAD_FOLDER'], token, 'name'))
-        c.execute('insert into answer values (%s, %s);',
-                  (token, json.dumps(result)))
-        if result['status'] == 'error':
-            c.execute("insert into errorInfo values (%s, %s, %s);",
-                      (token, result['path'], result['message']))
-        c.execute('update testInfo set processed=%s where token=%s;',
-                  (i + 1, token))
-        db.commit()
     db.close()
+    pool = [Process(target=recognizeAnswersheet, args=(
+        token, path, answersheet_type)) for path in student_files]
+    maxPoolSize = 1
+    i = 0
+    for path in student_files:
+        recognizeAnswersheet(token, path, answersheet_type)
 
 
 def getPageNumList(filepath_list):
@@ -190,14 +202,21 @@ def getHistory():
     cur = db.cursor()
     cur.execute('select * from testInfo order by time desc;')
     records = cur.fetchall()
-    db.close()
-    print type(records[0][5])
     records = [{'order': t[6],
                 'token': t[0],
                 'processed': t[1],
                 'total': t[2],
                 'time': t[4],
-                'note': t[5]} for t in records]
+                'note': t[5],
+                'type': modeDictionary[t[3]],
+                'judgeMode': modeDictionary[t[7]]} for t in records]
+    for record in records:
+        cur.execute('select count(*) from errorInfo where token = %s',
+                    (record['token'],))
+        errorCount = cur.fetchone()
+        errorCount = errorCount[0] if errorCount else 0
+        record['errorCount'] = errorCount
+    db.close()
     return render_template('history.html', records=records, diskUsage=getDiskUsage())
 
 
@@ -360,7 +379,8 @@ def renderResults(token):
                                     num_correct,
                                     num_question,
                                     err_list,
-                                    os.path.basename(student['name_image'])))
+                                    os.path.basename(student['name_image']),
+                                    os.path.basename(student['file_path'])))
             correctness.sort()
         db.close()
         # print render_ratio(correct_ratio, num_question)
@@ -437,14 +457,18 @@ def get_results(token):
     cur = db.cursor()
     cur.execute("select value from standard where token = %s;", (token,))
     t = cur.fetchone()
+    cur.execute(
+        "select type, judgeMode from testInfo where token = %s;", (token, ))
+    mode = cur.fetchone()
     if t:
         t = json.loads(t[0])
         status = t['status']
         if status == "error":
-            return u"标准答案识别出错，请确认答题卡类型选择正确，同时扫描件的三个定位块完整清晰。可尝试重新扫描。如仍有问题，\
-                请把此网页链接及原始文件发送给网站管理员，以便改进。\
-                 <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>" \
-                 + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
+            return u"标准答案识别出错，请确认答题卡类型选择正确：<br/><ul><li>答题卡类型：{}</li><li>评分模式：{}</li></ul><br/>同时请确保扫描件的三个定位块完整清晰，可尝试重新扫描。<br/>如仍有问题，\
+                请把此网页链接及原始文件发送给客服，以便改进。\
+                 <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>".format(modeDictionary[
+                mode[0]], modeDictionary[mode[1]]) \
+                + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
     else:
         cur.execute("select * from testInfo where token = %s;", (token,))
         t = cur.fetchone()
