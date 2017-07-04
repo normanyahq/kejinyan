@@ -99,6 +99,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None):
     center = workbook.add_format({'align': 'center'})
     format_wrong = workbook.add_format({'align': 'center',
                                    'bg_color': '#FFC7CE',
+                                   'border': 1
                                    })
     format_correct = workbook.add_format({'align': 'center',
                                  'bg_color': '#C6EFCE',
