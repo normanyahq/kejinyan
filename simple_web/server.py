@@ -511,12 +511,20 @@ def get_results(token):
 # def uploaded_file(filename):
 #     return send_from_directory(app.config['UPLOAD_FOLDER'],
 #                                filename)
+def tokenExists(token):
+    db = getDb()
+    c = db.cursor()
+    c.execute("select count(*) from testInfo where token = %s;", (token,))
+    result = c.fetchone()[0]
+    db.close()
+    return result != 0
+
 
 @app.route('/upload/', methods=['POST'])
 def upload():
     token = request.form['token']
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], token)
-    if not isValidToken(token):
+    if not isValidToken(token) or tokenExists(token):
         return json.dumps({"status": 403, "message": "Don't try to hack me."}), 403
 
     if 'standard' in request.files:

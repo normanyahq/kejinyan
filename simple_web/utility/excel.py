@@ -132,11 +132,13 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
     center = workbook.add_format({'align': 'center'})
     format_wrong = workbook.add_format({'align': 'center',
                                         'bg_color': '#FFC7CE',
-                                        'font_color': '#9C0006'
+                                        'font_color': '#9C0006',
+                                        'bottom': 1
                                         })
     format_partial = workbook.add_format({'align': 'center',
                                           'bg_color': '#FFEB9C',
-                                          'font_color': '#9C6500'
+                                          'font_color': '#9C6500',
+                                          'bottom': 3
                                           })
     format_correct = workbook.add_format({'align': 'center',
                                           'bg_color': '#C6EFCE',
