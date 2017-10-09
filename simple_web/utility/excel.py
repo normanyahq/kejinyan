@@ -353,7 +353,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
     note_sheet.merge_range(
         "A3:Z3", u"3、在“学号与姓名”表中填入学生学号与姓名的对应关系，并在“学生成绩”表中右键取消隐藏A列，或拖动B列左侧边缘使其显示，即可看到学生对应学生的学号。")
     note_sheet.merge_range(
-        "A4:Z4", u"4、可在“学生成绩”一表修改学生答案，相关数据会自动更新。如果有识别错误（虽然不太可能发生），请把相应的答题卡文件发送到psdn@qq.com以便我分析改进。")
+        "A4:Z4", u"4、可在“学生成绩”一表修改学生答案，相关数据会自动更新。如果有识别错误（虽然不太可能发生），请把相应的答题卡文件发送到admin@kejinyan.com以便我分析改进。")
     note_sheet.merge_range("A5:Z5", u"5、若有不清楚的地方，欢迎发邮件咨询或下载相应的功能演示视频观看操作流程。")
 
     workbook.close()
