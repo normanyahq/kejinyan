@@ -466,7 +466,7 @@ def get_results(token):
         if status == "error":
             return u"标准答案识别出错，请确认答题卡类型选择正确：<br/><ul><li>答题卡类型：{}</li><li>评分模式：{}</li></ul><br/>同时请确保扫描件的三个定位块完整清晰，可尝试重新扫描。<br/>如仍有问题，\
                 请把此网页链接及原始文件发送给客服，以便改进。\
-                 <br /><pre>Email: admin@kejinyan.com QQ: 793048 </pre><br/><pre>".format(modeDictionary[
+                 <br /><pre>Email: 793048@qq.com QQ: 793048 </pre><br/><pre>".format(modeDictionary[
                 mode[0]], modeDictionary[mode[1]]) \
                 + u"</pre><br/><img src=/standardanswer/{} width=50%/>".format(token)
     else:
