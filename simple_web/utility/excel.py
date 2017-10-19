@@ -207,7 +207,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
         #                           'y_scale': 40 / h,
         #                           'x_scale': 40 / w})
         score_sheet.write_formula(
-            i + 1, 0, u"=VLOOKUP(B{}, 学号与姓名!A:B, 2)".format(i + 2), center)
+            i + 1, 0, u"=VLOOKUP(B{}, 学号与姓名!A:B, 2, false)".format(i + 2), center)
         score_sheet.write_string(i + 1, 1, student_info[i]['id'], center)
         score_encode.write_formula(i + 1, 1, u"=学生成绩!B{}".format(i + 2), center)
         student_points.write_formula(
