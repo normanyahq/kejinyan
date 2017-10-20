@@ -52,7 +52,7 @@ SheetSectionPositions = {"half": {
     + list(chain(*[getBlockProblemPositions(21, 11 + c * 11, 1, 2, 5, 4, False) for c in range(2)])) \
     + getBlockProblemPositions(28, 0, 1, 2, 5, 4, False) \
     + getBlockProblemPositions(28, 11, 1, 2, 5, 7, False) \
-    + getBlockProblemPositions(28, 22, 1, 2, 5, 7, False) \
+    + getBlockProblemPositions(28, 22, 1, 2, 5, 4, False) \
     + list(chain(*[getBlockProblemPositions(38, 0 + c * \
                                             11, 1, 2, 5, 4, False) for c in range(3)])),
     "choice_num": [3] * 20 + [4] * 15 + [7] * 5 + [4] * 20

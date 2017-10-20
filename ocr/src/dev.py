@@ -7,7 +7,8 @@ import time
 for i in range(0, 1):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
     # grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
-    grayscale_image = cv2.imread('t1.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+    grayscale_image = cv2.imread(
+        'answer_missing.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
 
     binary_image = binarizeImage(grayscale_image)
     cv2.imwrite('tmp/binarized.jpg'.format(i), binary_image)
@@ -17,24 +18,28 @@ for i in range(0, 1):
     cv2.imwrite('tmp/morphologyEx.jpg'.format(i), binary_image)
     binary_image, original_image, centers = adjustOrientation(
         binary_image, grayscale_image, 'tmp/detect_{}.jpg'.format(i))
+    print centers
     contours = getQRCornerContours(binary_image, True)
+
     cv2.imwrite('tmp/handwritten.jpg', original_image)
     h, w = binary_image.shape
     cv2.imwrite('tmp/binary_image.jpg', binary_image)
     horizontal_pos, vertical_pos = getGridlinePositions(
         binary_image, contours, centers)
 
+    print recognizeJPG('answer_missing.jpg', 'gk_english')
+
     t = time.time()
     print "\n\nstart standard recognition...\n\n"
-    print recognizeJPG('t1.jpg', 'full_4option')
+    # print recognizeJPG('t1.jpg', 'full_4option')
     print time.time() - t
 
     t = time.time()
     print "\n\nstart standard recognition...\n\n"
-    print recognizeJPG('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg', 'full')
+    # print
+    # recognizeJPG('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/full.jpg',
+    # 'full')
     print time.time() - t
-
-    print recognizeJPG('/Users/Norman/git/Answer-Sheet-OCR/simple_web/file_storage/20170312033136MnFnT0hRlA/student/full.jpg', 'full')
 
     color_image = cv2.cvtColor(binary_image, cv2.COLOR_GRAY2BGR)
     cv2.drawContours(color_image, contours, -1, (0, 255, 0), thickness=10)
@@ -45,6 +50,7 @@ for i in range(0, 1):
         cv2.line(color_image, (0, r), (w - 1, r), (0, 255, 0), thickness=10)
 
     color_image = cv2.resize(color_image, (w // 3, h // 3))
+    cv2.imwrite('tmp/grids.jpg', color_image)
     import matplotlib.pyplot as plt
     plt.imshow(color_image)
     # cv2.imshow('gray', color_image)

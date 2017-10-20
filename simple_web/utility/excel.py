@@ -27,6 +27,7 @@ def encodeAnswer(cell):
 
 
 def calculateScore(stdAnswerCell, studentAnswerCell, partialCredit=False):
+    # directly do minus, if there is a 9 in result, return it has wrong answer
     template = u'=IF({}={}, 1, IF(AND({}>{}, NOT(ISNUMBER(SEARCH("9", TEXT({}-{}, 0))))), {}, 0))'
     return template.format(stdAnswerCell,
                            studentAnswerCell,
@@ -260,15 +261,22 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
     # sometimes students forget to fill in their number,
     # column C is better in this case
     stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生成绩!C:C)-1', center)
+    stats_sheet.write_string(0, 2, u"平均分", bold)
+    stats_sheet.write_formula(
+        0, 3, u"=SUBTOTAL(101, 学生成绩!C2:C{})".format(num_student + 1), center)
 
     stats_sheet.write_string(1, 0, u"题号", bold)
     stats_sheet.write_string(1, 1, u"答案", bold)
     stats_sheet.write_string(1, 2, u"正确人数", bold)
     stats_sheet.write_string(1, 3, u"正确比例", bold)
+
+    problem_average_column = 0
     for i, v in enumerate(options):
         stats_sheet.write_string(1, 4 + i, u"选{}比例".format(v), bold)
+        problem_average_column = 4 + i + 1
         if v >= max_option:
             break
+    stats_sheet.write_string(1, problem_average_column, u"小题平均分", bold)
 
     for i in range(num_question):
         stats_sheet.write_number(i + 2, 0, i + 1, bold)
@@ -328,7 +336,10 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
                                                             getColName(i + 3),
                                                             num_student + 1),
                                       format_percentage)
-
+        problem_average_formula = u'=AVERAGE(student_points!{}2:{}{})*答案与分值!C{}'.format(
+            getColName(i + 3), getColName(i + 3), num_student + 1, i + 2)
+        stats_sheet.write_formula(
+            i + 2, problem_average_column, problem_average_formula)
         # for j, v in enumerate('ABCDE'):
         #     stats_sheet.write_formula(i+2,
         #                               j+4,
