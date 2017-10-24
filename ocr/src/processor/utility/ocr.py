@@ -436,7 +436,7 @@ def getGridlinePositions(binary_image, contours, centers):
 
     x1, y1, w1, h1 = bounding_rects[2]
     x2, y2, w2, h2 = x1, y, w, h  # use approximates here.
-    stripe = binary_image[y1 + h1: y2 - 1, x1 +
+    stripe = binary_image[y1 + h1 + 1: y2 - 1, x1 +
                           int(0.15 * (w1 + w2)): x1 + int(0.35 * (w1 + w2))]
     horizontal = list(map(lambda r: r + y1 + h1, _separateGrides(stripe)))
     # print ("stripe.shape:{}".format(stripe.shape))
