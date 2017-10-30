@@ -147,10 +147,11 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
                                           })
 
     note_sheet = workbook.add_worksheet(u"功能说明")
-    answer_sheet = workbook.add_worksheet(u"答案与分值")
-    score_sheet = workbook.add_worksheet(u"学生成绩")
+    answer_sheet = workbook.add_worksheet(u"标准答案与分值")
+    score_sheet = workbook.add_worksheet(u"学生答案")
     stats_sheet = workbook.add_worksheet(u"试卷统计")
     name_sheet = workbook.add_worksheet(u"学号与姓名")
+    detailed_score = workbook.add_worksheet(u"分数详情")
 
     name_sheet.write_string(0, 0, u"学号", bold)
     name_sheet.write_string(0, 1, u"姓名", bold)
@@ -177,13 +178,13 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
         answer_sheet.write_string(i + 1, 1, standard_answers[i], center)
         answer_sheet.write_number(i + 1, 2, credits[i], center)
         tranposed_answer_sheet.write_formula(
-            0, i + 1, u"=答案与分值!A{}".format(i + 2), bold)
+            0, i + 1, u"=标准答案与分值!A{}".format(i + 2), bold)
         tranposed_answer_sheet.write_formula(
-            1, i + 1, u"=答案与分值!B{}".format(i + 2), center)
+            1, i + 1, u"=标准答案与分值!B{}".format(i + 2), center)
         tranposed_answer_sheet.write_formula(
-            2, i + 1, u"=答案与分值!C{}".format(i + 2), center)
+            2, i + 1, u"=标准答案与分值!C{}".format(i + 2), center)
         tranposed_answer_sheet.write_formula(
-            3, i + 1, encodeAnswer(u"答案与分值!B{}".format(i + 2)), center)
+            3, i + 1, encodeAnswer(u"标准答案与分值!B{}".format(i + 2)), center)
 
     # set width of column for ID
 
@@ -192,12 +193,17 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
     score_sheet.write_string(0, 1, u"学号", bold)
     score_encode.write_string(0, 1, u"学号", bold)
     student_points.write_string(0, 1, u"学号", bold)
+    detailed_score.write_string(0, 0, u"姓名", bold)
+    detailed_score.write_string(0, 1, u"学号", bold)
+    detailed_score.write_string(0, 2, u"总分", bold)
+    detailed_score.write_string(0, 3, u"排名", bold)
     score_sheet.write_string(0, 2, u"总分", bold)
 
     for i in range(num_question):
         score_sheet.write_number(0, i + 3, i + 1, bold)
         score_encode.write_number(0, i + 3, i + 1, bold)
         student_points.write_number(0, i + 3, i + 1, bold)
+        detailed_score.write_number(0, i + 4, i + 1, bold)
 
     for i in range(num_student):
         # score_sheet.set_row(i+1, 10)
@@ -210,15 +216,23 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
         score_sheet.write_formula(
             i + 1, 0, u"=VLOOKUP(B{}, 学号与姓名!A:B, 2, false)".format(i + 2), center)
         score_sheet.write_string(i + 1, 1, student_info[i]['id'], center)
-        score_encode.write_formula(i + 1, 1, u"=学生成绩!B{}".format(i + 2), center)
+        score_encode.write_formula(i + 1, 1, u"=学生答案!B{}".format(i + 2), center)
         student_points.write_formula(
-            i + 1, 1, u"=学生成绩!B{}".format(i + 2), center)
+            i + 1, 1, u"=学生答案!B{}".format(i + 2), center)
+        detailed_score.write_formula(
+            i + 1, 0, u"=VLOOKUP(B{}, 学号与姓名!A:B, 2, false)".format(i + 2), center)
+        detailed_score.write_formula(
+            i + 1, 1, u"=学生答案!B{}".format(i + 2), center)
+        detailed_score.write_formula(
+            i + 1, 2, u"=学生答案!C{}".format(i + 2), center)
+        detailed_score.write_formula(
+            i + 1, 3, u"=RANK(C{}, C:C)".format(i + 2), center)
         for j in range(num_question):
             col_name = getColName(j + 3)
             score_sheet.write_string(
                 i + 1, j + 3, student_info[i]['answer'][j], center)
             score_encode.write_formula(
-                i + 1, j + 3, encodeAnswer(u'学生成绩!{}{}'.format(col_name, i + 2)), center)
+                i + 1, j + 3, encodeAnswer(u'学生答案!{}{}'.format(col_name, i + 2)), center)
             student_points.write_formula(i + 1,
                                          j + 3,
                                          calculateScore(u'ans_trans!{}4'.format(getColName(j + 1)),
@@ -226,17 +240,23 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
                                                             col_name, i + 2),
                                                         partialCredit),
                                          center)
+
+            detailed_score.write_formula(
+                i + 1, j + 4, u"=student_points!{}{}*标准答案与分值!C{}".format(
+                    getColName(j + 4), i + 2, j + 2
+                ), center
+            )
             score_sheet.conditional_format('{}{}'.format(col_name, i + 2),
                                            {'type': 'formula',
                                             'criteria': u'=student_points!{}{}=0.5'.format(getColName(j + 3), i + 2),
                                             'format': format_partial})
             score_sheet.conditional_format('{}{}'.format(col_name, i + 2),
                                            {'type': 'formula',
-                                            'criteria': u'=EXACT(答案与分值!$B${}, ${}${})'.format(j + 2, col_name, i + 2),
+                                            'criteria': u'=EXACT(标准答案与分值!$B${}, ${}${})'.format(j + 2, col_name, i + 2),
                                             'format': format_correct})
             score_sheet.conditional_format('{}{}'.format(col_name, i + 2),
                                            {'type': 'formula',
-                                            'criteria': u'=NOT(EXACT(答案与分值!$B${}, ${}${}))'.format(j + 2, col_name, i + 2),
+                                            'criteria': u'=NOT(EXACT(标准答案与分值!$B${}, ${}${}))'.format(j + 2, col_name, i + 2),
                                             'format': format_wrong})
         score_sheet.write_formula(i + 1,
                                   2,
@@ -249,8 +269,9 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
 
     score_sheet.write_string(0, 0, u"姓名", bold)
     score_sheet.set_column(0, 0, 0)
-
+    detailed_score.set_column(0, 0, 0)
     score_sheet.set_column(1, 1, 20)
+    detailed_score.set_column(1, 1, 20)
     # Excels' built-in format
     # Reference:
     # http://xlsxwriter.readthedocs.io/format.html#format-set-num-format
@@ -260,10 +281,10 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
     stats_sheet.write_string(0, 0, u"总人数", bold)
     # sometimes students forget to fill in their number,
     # column C is better in this case
-    stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生成绩!C:C)-1', center)
+    stats_sheet.write_formula(0, 1, u'=SUBTOTAL(103, 学生答案!C:C)-1', center)
     stats_sheet.write_string(0, 2, u"平均分", bold)
     stats_sheet.write_formula(
-        0, 3, u"=SUBTOTAL(101, 学生成绩!C2:C{})".format(num_student + 1), center)
+        0, 3, u"=SUBTOTAL(101, 学生答案!C2:C{})".format(num_student + 1), center)
 
     stats_sheet.write_string(1, 0, u"题号", bold)
     stats_sheet.write_string(1, 1, u"答案", bold)
@@ -280,12 +301,12 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
 
     for i in range(num_question):
         stats_sheet.write_number(i + 2, 0, i + 1, bold)
-        stats_sheet.write_formula(i + 2, 1, u'=答案与分值!B{}'.format(i + 2), bold)
+        stats_sheet.write_formula(i + 2, 1, u'=标准答案与分值!B{}'.format(i + 2), bold)
         # Extremely complicated, it took me 1 hour:
         # https://exceljet.net/formula/count-visible-rows-only-with-criteria
-        visible_correct = u'=SUMPRODUCT((--(学生成绩!{}2:{}{}=ans_trans!{}2))' + \
-            u'*(SUBTOTAL(103,OFFSET(学生成绩!{}2,ROW(学生成绩!{}2:{}{})' + \
-            u'-MIN(ROW(学生成绩!{}2:{}{})),0))))'
+        visible_correct = u'=SUMPRODUCT((--(学生答案!{}2:{}{}=ans_trans!{}2))' + \
+            u'*(SUBTOTAL(103,OFFSET(学生答案!{}2,ROW(学生答案!{}2:{}{})' + \
+            u'-MIN(ROW(学生答案!{}2:{}{})),0))))'
 
         # TODO: optimize this part
         stats_sheet.write_formula(i + 2,
@@ -305,7 +326,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
 
         # stats_sheet.write_formula(i+2,
         #                           2,
-        #                           u"=COUNTIF(学生成绩!{}2:{}{}, ans_trans!{}2)".format(getColName(i+2),
+        #                           u"=COUNTIF(学生答案!{}2:{}{}, ans_trans!{}2)".format(getColName(i+2),
         #                                                                            getColName(i+2),
         #                                                                            num_student+1,
         #                                                                            getColName(i+1)),
@@ -314,9 +335,9 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
         # the number of visible students who chose choice_k
         # shit, it's even more absurdfuckingly complicated
         # I don't expect I can understand it in the future
-        visible_choose = u'=SUMPRODUCT((ISNUMBER(SEARCH("{}", 学生成绩!{}2:{}{})))' + \
-            u'*(SUBTOTAL(103,OFFSET(学生成绩!{}2,ROW(学生成绩!{}2:{}{})' + \
-            u'-MIN(ROW(学生成绩!{}2:{}{})),0))))/B1'
+        visible_choose = u'=SUMPRODUCT((ISNUMBER(SEARCH("{}", 学生答案!{}2:{}{})))' + \
+            u'*(SUBTOTAL(103,OFFSET(学生答案!{}2,ROW(学生答案!{}2:{}{})' + \
+            u'-MIN(ROW(学生答案!{}2:{}{})),0))))/B1'
 
         # TODO: optimize this part
         for j, v in enumerate(options):
@@ -336,14 +357,14 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
                                                             getColName(i + 3),
                                                             num_student + 1),
                                       format_percentage)
-        problem_average_formula = u'=AVERAGE(student_points!{}2:{}{})*答案与分值!C{}'.format(
+        problem_average_formula = u'=AVERAGE(student_points!{}2:{}{})*标准答案与分值!C{}'.format(
             getColName(i + 3), getColName(i + 3), num_student + 1, i + 2)
         stats_sheet.write_formula(
             i + 2, problem_average_column, problem_average_formula)
         # for j, v in enumerate('ABCDE'):
         #     stats_sheet.write_formula(i+2,
         #                               j+4,
-        #                               u'=COUNTIF(学生成绩!{}2:{}{}, "{}")/B1'.format(getColName(i+2),
+        #                               u'=COUNTIF(学生答案!{}2:{}{}, "{}")/B1'.format(getColName(i+2),
         #                                                                                getColName(i+2),
         #                                                                                num_student+1,
         #                                                                                v),
@@ -358,13 +379,13 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
                                    {'type': '3_color_scale',
                                     'maximum': 1,
                                     'minimum': 0})
-    note_sheet.merge_range("A1:Z1", u"1、在“答案与分值”表中修改每题对应分值，学生成绩会自动更新。")
+    note_sheet.merge_range("A1:Z1", u"1、在“标准答案与分值”表中修改每题对应分值，学生成绩会自动更新。")
     note_sheet.merge_range(
-        "A2:Z2", u"2、在“学生成绩”表中使用筛选功能筛选学生（如根据学号筛选特定班级的学生），“试卷统计”中会自动更新为筛选出学生的成绩统计信息。")
+        "A2:Z2", u"2、在“学生答案”表中使用筛选功能筛选学生（如根据学号筛选特定班级的学生），“试卷统计”中会自动更新为筛选出学生的成绩统计信息。")
     note_sheet.merge_range(
-        "A3:Z3", u"3、在“学号与姓名”表中填入学生学号与姓名的对应关系，并在“学生成绩”表中右键取消隐藏A列，或拖动B列左侧边缘使其显示，即可看到学生对应学生的学号。")
+        "A3:Z3", u"3、在“学号与姓名”表中填入学生学号与姓名的对应关系，并在“学生答案”表中右键取消隐藏A列，或拖动B列左侧边缘使其显示，即可看到学生对应学生的学号。")
     note_sheet.merge_range(
-        "A4:Z4", u"4、可在“学生成绩”一表修改学生答案，相关数据会自动更新。如果有识别错误（虽然不太可能发生），请把相应的答题卡文件发送到793048@qq.com以便我分析改进。")
+        "A4:Z4", u"4、可在“学生答案”一表修改学生答案，相关数据会自动更新。如果有识别错误（虽然不太可能发生），请把相应的答题卡文件发送到793048@qq.com以便我分析改进。")
     note_sheet.merge_range("A5:Z5", u"5、若有不清楚的地方，欢迎发邮件咨询或下载相应的功能演示视频观看操作流程。")
 
     workbook.close()
