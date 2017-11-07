@@ -208,7 +208,8 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
     if testType == "gk_english":
         detailed_score.write_string(0, num_question + 4, u'听力分值(1-20)', bold)
         detailed_score.write_string(0, num_question + 5, u'选择题分值(21-40)', bold)
-        detailed_score.write_string(0, num_question + 6, u'听力分值(41-60)', bold)
+        detailed_score.write_string(0, num_question + 6, u'完型填空分值(41-60)', bold)
+        detailed_score.set_column('BM:BO', 20, center)
 
     for i in range(num_student):
         # score_sheet.set_row(i+1, 10)
