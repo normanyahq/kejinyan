@@ -230,9 +230,10 @@ def returnTable(token):
         db = getDb()
         cur = db.cursor()
         cur.execute(
-            "select judgeMode from testInfo where token = %s;", (token, ))
+            "select judgeMode, type from testInfo where token = %s;", (token, ))
         t = cur.fetchone()
         partialCredit = t[0] == u'partial'
+        testType = t[1]
         cur.execute("select value from answer where token = %s;", (token,))
         t = cur.fetchall()
         t = list(map(lambda x: json.loads(x[0]), t))
@@ -246,7 +247,7 @@ def returnTable(token):
             t -= 1
         standard['answer'] = standard['answer'][:t + 1]
         utility.excel.generateXlsx(
-            xlsx_path, standard['answer'], answers, partialCredit=partialCredit)
+            xlsx_path, standard['answer'], answers, partialCredit=partialCredit, testType=testType)
         db.close()
     return send_from_directory(os.path.join(app.config['UPLOAD_FOLDER'], token), 'table.xlsx')
 

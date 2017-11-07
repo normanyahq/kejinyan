@@ -101,7 +101,7 @@ def getMaxAnswerOption(student_info):
     return result
 
 
-def generateXlsx(output, standard_answers, student_info, credits=None, partialCredit=True):
+def generateXlsx(output, standard_answers, student_info, credits=None, partialCredit=True, testType=None):
     '''
     generate an xlsx files to output path. the files has two sheets:
         1. statistics of questions
@@ -205,6 +205,11 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
         student_points.write_number(0, i + 3, i + 1, bold)
         detailed_score.write_number(0, i + 4, i + 1, bold)
 
+    if testType == "gk_english":
+        detailed_score.write_string(0, num_question + 4, u'听力分值(1-20)', bold)
+        detailed_score.write_string(0, num_question + 5, u'选择题分值(21-40)', bold)
+        detailed_score.write_string(0, num_question + 6, u'听力分值(41-60)', bold)
+
     for i in range(num_student):
         # score_sheet.set_row(i+1, 10)
         # h, w = cv2.imread(student_info[i]['name_image'], cv2.IMREAD_GRAYSCALE).shape
@@ -227,6 +232,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
             i + 1, 2, u"=学生答案!C{}".format(i + 2), center)
         detailed_score.write_formula(
             i + 1, 3, u"=RANK(C{}, C:C)".format(i + 2), center)
+
         for j in range(num_question):
             col_name = getColName(j + 3)
             score_sheet.write_string(
@@ -243,7 +249,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
 
             detailed_score.write_formula(
                 i + 1, j + 4, u"=student_points!{}{}*标准答案与分值!C{}".format(
-                    getColName(j + 4), i + 2, j + 2
+                    getColName(j + 3), i + 2, j + 2
                 ), center
             )
             score_sheet.conditional_format('{}{}'.format(col_name, i + 2),
@@ -258,6 +264,15 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
                                            {'type': 'formula',
                                             'criteria': u'=NOT(EXACT(标准答案与分值!$B${}, ${}${}))'.format(j + 2, col_name, i + 2),
                                             'format': format_wrong})
+
+        if testType == "gk_english":
+            detailed_score.write_formula(
+                i + 1, num_question + 4, u'=SUM(E{}:X{})'.format(i + 2, i + 2))
+            detailed_score.write_formula(
+                i + 1, num_question + 5, u'=SUM(Y{}:AR{})'.format(i + 2, i + 2))
+            detailed_score.write_formula(
+                i + 1, num_question + 6, u'=SUM(AS{}:BL{})'.format(i + 2, i + 2))
+
         score_sheet.write_formula(i + 1,
                                   2,
                                   u'=SUMPRODUCT(--(student_points!D{}:{}{}), ans_trans!B3:{}3)'.format(
