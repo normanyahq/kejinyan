@@ -243,7 +243,7 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
 
             detailed_score.write_formula(
                 i + 1, j + 4, u"=student_points!{}{}*标准答案与分值!C{}".format(
-                    getColName(j + 4), i + 2, j + 2
+                    getColName(j + 3), i + 2, j + 2
                 ), center
             )
             score_sheet.conditional_format('{}{}'.format(col_name, i + 2),
