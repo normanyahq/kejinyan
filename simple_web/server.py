@@ -37,7 +37,7 @@ ANSWER_FILE_NAME = "standard.pdf"
 
 
 def getDiskUsage():
-    command = '''df $PWD | tail -n 1 | awk {'print $5'}'''
+    command = '''df $PWD/file_storage | tail -n 1 | awk {'print $5'}'''
     return int(float(os.popen(command).read().strip().strip("%")))
 
 
