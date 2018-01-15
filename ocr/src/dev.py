@@ -8,7 +8,7 @@ for i in range(0, 1):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
     # grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     grayscale_image = cv2.imread(
-        'error_offset.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+        'error_examples/1.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
 
     binary_image = binarizeImage(grayscale_image)
     cv2.imwrite('tmp/binarized.jpg'.format(i), binary_image)
