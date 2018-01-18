@@ -2,13 +2,17 @@ from processor.utility.ocr import *
 import cv2
 from processor.interface import recognizeJPG
 import time
+import sys
 # from processor import recognizeJPG
 # pdf2jpg('../data/QR_2B_Answersheet.pdf')
+
+image_path = sys.argv[1] 
+
 for i in range(0, 1):
     # print ('loading ' + 'data/QR_2B_Answersheet-{}.jpg'.format(i))
     # grayscale_image = cv2.imread('/Users/Norman/git/Answer-Sheet-OCR/ocr/data/half-0.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
     grayscale_image = cv2.imread(
-        'error_examples/1.jpg'.format(i), cv2.IMREAD_GRAYSCALE)
+        image_path, cv2.IMREAD_GRAYSCALE)
 
     binary_image = binarizeImage(grayscale_image)
     cv2.imwrite('tmp/binarized.jpg'.format(i), binary_image)
@@ -31,7 +35,7 @@ for i in range(0, 1):
 
     t = time.time()
     print "\n\nstart standard recognition...\n\n"
-    # print recognizeJPG('t1.jpg', 'full_4option')
+    print recognizeJPG(image_path, 'gk_english')
     print time.time() - t
 
     t = time.time()

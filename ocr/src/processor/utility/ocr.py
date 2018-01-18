@@ -30,7 +30,7 @@ def binarizeImage(gray_image):
 
     rescale = lambda x: (25.5 * np.sqrt(x / 2.55))
 
-    gray_image = cv2.GaussianBlur(gray_image, (3, 3), 0)
+    gray_image = cv2.GaussianBlur(gray_image, (3, 3), 1)
     ret3, th3 = cv2.threshold(
         gray_image, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     ret3, th3 = cv2.threshold(gray_image, rescale(
