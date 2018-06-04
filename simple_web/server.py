@@ -586,7 +586,8 @@ def upload_file():
                                                                             'half',
                                                                             # 'full_old',
                                                                             # 'half_old',
-                                                                            'makesi',
+                                                                            # 'makesi',
+                                                                            'makesi_new',
                                                                             'gk_english',
                                                                             'full_4option']:
         success = True

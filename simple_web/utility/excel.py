@@ -7,6 +7,7 @@ import cv2
 
 getColName = xlsxwriter.utility.xl_col_to_name
 options = 'ABCDEFG'
+creditValues = {"makesi_new": [1] * 35 + [2] * 5 + [1] * 10}
 
 
 def encodeAnswer(cell):
@@ -101,7 +102,7 @@ def getMaxAnswerOption(student_info):
     return result
 
 
-def generateXlsx(output, standard_answers, student_info, credits=None, partialCredit=True, testType=None):
+def generateXlsx(output, standard_answers, student_info, partialCredit=True, testType=None):
     '''
     generate an xlsx files to output path. the files has two sheets:
         1. statistics of questions
@@ -116,8 +117,11 @@ def generateXlsx(output, standard_answers, student_info, credits=None, partialCr
             default
         partialCredit: give half points if partially correct
     '''
-    if not credits:
-        credits = [1 if ans != '-' else 0 for ans in standard_answers]
+
+    credits = [1 if ans != '-' else 0 for ans in standard_answers]
+    if testType in creditValues:
+        credits = creditValues[testType]
+
     assert len(standard_answers) == len(credits)
 
     student_info.sort(key=lambda x: x['id'])

@@ -44,6 +44,15 @@ SheetSectionPositions = {"half": {
     + list(chain(*[getBlockProblemPositions(28 + r * \
                                             6, 26, 1, 2, 5, 2) for r in range(2)])),
     "choice_num": [4] * 45 + [2] * 10
+}, "makesi_new": {
+    "name": (2, 0, 2, 12),
+    "class": (5, 0, 2, 12),
+    "id": [(4, 13 + i * 2, 10, 2) for i in range(10)],
+    "question": list(chain(*[getBlockProblemPositions(19 + r * 6, 1 + c * 11, 1, 2, 5, 4) for c in range(2) for r in range(4) if (c, r) != (1, 3)])) \
+    + list(chain(*[getBlockProblemPositions(19, 24, 1, 2, 5, 4)])) \
+    + list(chain(*[getBlockProblemPositions(28 + r * \
+                                            6, 26, 1, 2, 5, 2) for r in range(2)])),
+    "choice_num": [4] * 40 + [2] * 10
 }, "gk_english": {
     "name": (1, 0, 2, 8),
     "id": [(3, 9 + 2 * i, 10, 2) for i in range(12)],
