@@ -31,7 +31,7 @@ os.environ["PYTHONPATH"] = os.environ.get(
     "PYTHONPATH", "") + ":{}/../ocr/src/".format(os.path.dirname(__file__))
 table_list = ['standard', 'answer', 'testInfo', 'errorInfo']
 from processor.interface import recognizeJPG
-from processor.utility.ocr import pdf2jpg, getPDFPageNum
+from processor.sheethandler.SheetHandler import pdf2jpg, getPDFPageNum
 
 ANSWER_FILE_NAME = "standard.pdf"
 
@@ -106,7 +106,7 @@ def setConfig(key, value):
 
 def generateToken():
     return datetime.datetime.now().strftime("%Y%m%d%H%M%S") \
-        + "".join([random.choice(string.uppercase + string.lowercase + string.digits)
+        + "".join([random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits)
                    for i in range(0, 10)])
 
 ALLOWED_EXTENSIONS = set(['pdf'])
@@ -171,7 +171,6 @@ def convert_and_recognize(token, paths, answersheet_type):
     db.close()
     pool = [Process(target=recognizeAnswersheet, args=(
         token, path, answersheet_type)) for path in student_files]
-    maxPoolSize = 1
     i = 0
     for path in student_files:
         recognizeAnswersheet(token, path, answersheet_type)
@@ -375,7 +374,7 @@ def renderResults(token):
                         err_list.append(i + 1)
                     else:
                         num_correct += 1
-                err_list = u", ".join(map(lambda x: unicode(x), err_list))
+                err_list = u", ".join(map(lambda x: str(x), err_list))
                 correctness.append((student['id'],
                                     num_correct,
                                     num_question,
@@ -672,5 +671,5 @@ def init():
 
 if __name__ == '__main__':
     init()
-    app.run(host="0.0.0.0", port=3389, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)
     # app.run(host="0.0.0.0", threaded=True)
