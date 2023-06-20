@@ -15,5 +15,7 @@ daemon: image
 	docker run \
 		-it \
 		--name kejinyan \
-		--rm -p7777:8000 \
+		--rm \
+		-p7777:8000 \
+		-d \
 		kejinyan

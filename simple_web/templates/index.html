@@ -1,30 +1,32 @@
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
 <!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
-<!--[if !IE]><!--> <html lang="zh-cn"> <!--<![endif]-->
+<!--[if !IE]><!-->
+<html lang="zh-cn"> <!--<![endif]-->
+
 <head>
-    <title>氪金眼答题卡识别系统</title>
-    <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="favicon.ico">
-    <link href='assets/css/fonts.css' rel='stylesheet' type='text/css'>
-    <!-- Global CSS -->
-    <link rel="stylesheet" href="assets/css/uploadifive.css">
+  <title>氪金眼答题卡识别系统</title>
+  <!-- Meta -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link href='assets/css/fonts.css' rel='stylesheet' type='text/css'>
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="assets/css/uploadifive.css">
 
-    <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
-    <!-- Plugins CSS -->
-    <link rel="stylesheet" href="assets/plugins/font-awesome/css/font-awesome.css">
-    <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
+  <link rel="stylesheet" href="assets/plugins/bootstrap/css/bootstrap.min.css">
+  <!-- Plugins CSS -->
+  <link rel="stylesheet" href="assets/plugins/font-awesome/css/font-awesome.css">
+  <link rel="stylesheet" href="assets/plugins/elegant_font/css/style.css">
 
-    <!-- Theme CSS -->
-    <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
+  <!-- Theme CSS -->
+  <link id="theme-style" rel="stylesheet" href="assets/css/styles.css">
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
@@ -33,196 +35,209 @@
 <body class="landing-page">
 
 
-    <div class="page-wrapper">
+  <div class="page-wrapper">
 
-        <!-- ******Header****** -->
-        <header class="header text-center">
-            <div class="container">
-                <div class="branding">
-                    <h1 class="logo">
-                        <span aria-hidden="true" class="glyphicon glyphicon-eye-open"></span>
-                        <span class="text-bold">氪金眼</span><span class="text-highlight">答题卡识别系统</span>
-                    </h1>
-                </div><!--//branding-->
-                <div class="tagline">
-                    <p> 假氪金者，如神助也，而阅万卷。 </p>
-                    <p> 此系统献给奋斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
-                    <p></p>
-                </div><!--//tagline-->
-                <div class="social-container">
-                    <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#downloadSheet">
-                          功能与答题卡
-                    </button>
-                    <!--<button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#scannerIntroduction">
+    <!-- ******Header****** -->
+    <header class="header text-center">
+      <div class="container">
+        <div class="branding">
+          <h1 class="logo">
+            <span aria-hidden="true" class="glyphicon glyphicon-eye-open"></span>
+            <span class="text-bold">氪金眼</span><span class="text-highlight">答题卡识别系统</span>
+          </h1>
+        </div><!--//branding-->
+        <div class="tagline">
+          <p> 假氪金者，如神助也，而阅万卷。 </p>
+          <p> 此系统献给奋斗在一线的园丁们 <i class="fa fa-heart"></i> </p>
+          <p></p>
+        </div><!--//tagline-->
+        <div class="social-container">
+          <button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#downloadSheet">
+            功能与答题卡
+          </button>
+          <!--<button type="button" class="btn btn-primary btn-mid" data-toggle="modal" data-target="#scannerIntroduction">
                           了解扫描仪
                     </button>-->
 
-                 </div><!--//social-container-->
-            </div><!--//container-->
-        </header><!--//header-->
+        </div><!--//social-container-->
+      </div><!--//container-->
+    </header><!--//header-->
 
-        <section class="cards-section text-center">
-            <div class="container">
-                <h2 class="title">免费试用版</h2>
-                <div class="intro">
-                    <p>当前系统正在免费试用，使用人数较多时可能会不稳定。</p>
-                    <p>个人VIP版（独立服务器）、企业版请联系 QQ: 793048 邮箱: 793048@qq.com</p>
-                    <p>系统仍然在完善中，欢迎提供您的宝贵意见。</p>
-                    <div class="cta-container">
-                        <!-- Button trigger modal -->
+    <section class="cards-section text-center">
+      <div class="container">
+        <h2 class="title">河池学院专用版</h2>
+        <div class="intro">
+          <div class="cta-container">
+            <!-- Button trigger modal -->
 
-                        <button type="button" id="uploadModalButton" class="btn btn-success btn-lg" data-toggle="modal" data-target="#uploadSheet">
-                          上传答题卡
-                        </button>
-                        <!-- Modal -->
-                        <div class="modal fade" id="uploadSheet" tabindex="-1" role="dialog" aria-labelledby="uploadSheetLabel" data-backdrop="static">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">上传答题卡</h4>
-                              </div>
-                              <div class="modal-body">
-                                <form method=post enctype=multipart/form-data>
+            <button type="button" id="uploadModalButton" class="btn btn-success btn-lg" data-toggle="modal"
+              data-target="#uploadSheet">
+              上传答题卡
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="uploadSheet" tabindex="-1" role="dialog" aria-labelledby="uploadSheetLabel"
+              data-backdrop="static">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">上传答题卡</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form method=post enctype=multipart/form-data>
 
-                                  <div class="form-group">
-                                    <label for="answersheetType">答题卡类型</label>
-                                    <select class="form-control" name="answersheettype" id="answersheetType">
-                                      <option value="half">半页答题卡（35题）</option>
-                                      <option value="full">全页答题卡（75题）</option>
-                                      <option value="gk_english">高考英语专用答题卡</option>
-                                      <option value="full_4option">河池学院大学英语考试专用答题卡</option>
-                                      <option value="makesi_new">河池学院马克思主义学院考试专用答题卡</option>
-                                    </select>
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="judgeMode">评分方式</label>
-                                    <select class="form-control" name="judgeMode" id="judgeMode">
-                                      <option value="exact">普通模式：与答案一致得满分；其余情况不得分</option>
-                                      <option value="partial">高考模式：单选、多选题，与答案一致得满分；多选题，少选得一半分、多选不得分</option>
-                                    </select>
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="testNote">备注（选填）</label>
-                                    <input class="form-control" id="testNote" name="note" placeholder="在这里填写考试备注" />
+                      <div class="form-group">
+                        <label for="answersheetType">答题卡类型</label>
+                        <select class="form-control" name="answersheettype" id="answersheetType">
+                          <option value="half">半页答题卡（35题）</option>
+                          <option value="full">全页答题卡（75题）</option>
+                          <option value="gk_english">高考英语专用答题卡</option>
+                          <option value="full_4option">河池学院大学英语考试专用答题卡</option>
+                          <option value="makesi_new">河池学院马克思主义学院考试专用答题卡</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="judgeMode">评分方式</label>
+                        <select class="form-control" name="judgeMode" id="judgeMode">
+                          <option value="exact">普通模式：与答案一致得满分；其余情况不得分</option>
+                          <option value="partial">高考模式：单选、多选题，与答案一致得满分；多选题，少选得一半分、多选不得分</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="testNote">备注（选填）</label>
+                        <input class="form-control" id="testNote" name="note" placeholder="在这里填写考试备注" />
 
-                                  </div>
-                                      <input type="hidden" name="token" value="{{token}}"/>
+                      </div>
+                      <input type="hidden" name="token" value="{{token}}" />
 
-                                      <!--
+                      <!--
                                       <label>
                                         <input type="radio" name=answersheettype value="handwriting" disabled>
                                         手写答题卡
                                       </label>-->
 
-                                    <div class="form-group">
-                                         <!--<label for='standard'>标准答案答题卡</label>-->
-                                         <label><input type=file name=standard id="standard" /></label>
+                      <div class="form-group">
+                        <!--<label for='standard'>标准答案答题卡</label>-->
+                        <label><input type=file name=standard id="standard" /></label>
 
 
-                                     </div>
+                      </div>
 
-                                    <div class="form-group">
-                                         <!--<label for='answers'>学生答题卡（可多选）</label>-->
-                                           <label><input type=file name=answers multiple id="answers" /></label>
-                                     </div>
-                                    <div class="form-group">
-                                         <input id="submit" type=submit value="提交" class="btn btn-primary" disabled/>
-                                         <a class="btn btn-default" href="/?upload=true">重置</a>
-                                     </div>
-                                </form>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div><!--End Modal-->
-
-
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="haveATry" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
-                          <div class="modal-dialog modal-md" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">使用说明</h4>
-                              </div>
-                              <div class="modal-body">
-                                    <p class="text-left">使用步骤：
-                                      <ul>
-                                        <li class="text-left">回到首页，点击“功能与答题卡”并根据需要下载、打印答题卡</li>
-                                        <li class="text-left">填涂并扫描答题卡</li>
-                                        <li class="text-left">上传答题卡得到结果</li>
-                                      </ul>
-                                    </p>
-                                    <p class="text-left">以下为两张填涂示例，可下载保存，回到首页上传，并选择“半页答题卡”提交，体验使用流程。</p>
-                                    <p class="text-left">
-                                      <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-info btn-xs">标准答案</a>
-                                      <a href="/static/half_example.pdf" target="_blank" role="button" class="btn btn-info btn-xs">学生答卷</a>
-                                    </p>
-                                    <p>使用视频教程制作中，目前可参阅使用手册查看功能详解：<a href="/static/manual.pdf" target="_blank" class="btn btn-default btn-xs">使用手册</a></p>
-                                    <!--<p class="text-left">下载后请回到首页进行提交。进入结果页面后，您可以在导航栏中选择查看学生作答情况、试卷统计信息和学生原始选项等信息。</p>-->
-
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div><!--End Modal-->
+                      <div class="form-group">
+                        <!--<label for='answers'>学生答题卡（可多选）</label>-->
+                        <label><input type=file name=answers multiple id="answers" /></label>
+                      </div>
+                      <div class="form-group">
+                        <input id="submit" type=submit value="提交" class="btn btn-primary" disabled />
+                        <a class="btn btn-default" href="/?upload=true">重置</a>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div><!--End Modal-->
 
 
 
+            <!-- Modal -->
+            <div class="modal fade" id="haveATry" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
+              <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">使用说明</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="text-left">使用步骤：
+                    <ul>
+                      <li class="text-left">回到首页，点击“功能与答题卡”并根据需要下载、打印答题卡</li>
+                      <li class="text-left">填涂并扫描答题卡</li>
+                      <li class="text-left">上传答题卡得到结果</li>
+                    </ul>
+                    </p>
+                    <p class="text-left">以下为两张填涂示例，可下载保存，回到首页上传，并选择“半页答题卡”提交，体验使用流程。</p>
+                    <p class="text-left">
+                      <a href="/static/half_standard.pdf" target="_blank" role="button"
+                        class="btn btn-info btn-xs">标准答案</a>
+                      <a href="/static/half_example.pdf" target="_blank" role="button"
+                        class="btn btn-info btn-xs">学生答卷</a>
+                    </p>
+                    <p>使用视频教程制作中，目前可参阅使用手册查看功能详解：<a href="/static/manual.pdf" target="_blank"
+                        class="btn btn-default btn-xs">使用手册</a></p>
+                    <!--<p class="text-left">下载后请回到首页进行提交。进入结果页面后，您可以在导航栏中选择查看学生作答情况、试卷统计信息和学生原始选项等信息。</p>-->
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="downloadSheet" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
-                          <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">功能简介</h4>
-                              </div>
-                              <div class="modal-body">
-                                    <p class="text-left">本系统配合<strong>自动馈纸式扫描仪</strong>使用非常简单，只需如下步骤：</p>
-                                    <ol>
-                                      <li><p class="text-left">下载合适的答题卡，用普通打印机打印。</p></li>
-                                      <table class="table table-bordered">
-                                          <thead>
-                                              <tr>
-                                                  <th class="text-center">答题卡类别</th>
-                                                  <th class="text-center">简介</th>
-                                                  <th class="text-center">下载地址</th>
-                                              </tr>
-                                          </thead>
-                                          <tbody>
-                                              <tr>
-                                                  <td>半页（35题）</td>
-                                                  <td>支持多选，可从中间裁开变为两张答题卡，节约纸张。</td>
-                                                  <td>
-                                                      <a href="/static/half_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
-                                                      <a href="/static/half_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div><!--End Modal-->
 
-                                                  </td>
-                                              </tr>
-                                              <tr>
-                                                  <td>全页（75题）</td>
-                                                  <td>支持多选，适合文综、理综等选择题比较多的科目。</td>
-                                                  <td>
-                                                      <a href="/static/full_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
-                                                      <a href="/static/full_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
-                                                  </td>
-                                              </tr>
-                                              <tr>
-                                                  <td>全国卷英语专用答题卡</td>
-                                                  <td>包含听力3选1，单项选择、完形填空4选1、阅读理解7选5等题型。</td>
-                                                  <td>
-                                                      <a href="/static/english_16k.pdf" target="_blank" role="button" class="btn btn-info btn-xs">16K</a>
-                                                      <a href="/static/english_a4.pdf" target="_blank" role="button" class="btn btn-success btn-xs">A4</a>
-                                                  </td>
-                                              </tr>
-                                              <!--
+
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="downloadSheet" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">功能简介</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="text-left">本系统配合<strong>自动馈纸式扫描仪</strong>使用非常简单，只需如下步骤：</p>
+                    <ol>
+                      <li>
+                        <p class="text-left">下载合适的答题卡，用普通打印机打印。</p>
+                      </li>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="text-center">答题卡类别</th>
+                            <th class="text-center">简介</th>
+                            <th class="text-center">下载地址</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>半页（35题）</td>
+                            <td>支持多选，可从中间裁开变为两张答题卡，节约纸张。</td>
+                            <td>
+                              <a href="/static/half_16k.pdf" target="_blank" role="button"
+                                class="btn btn-info btn-xs">16K</a>
+                              <a href="/static/half_a4.pdf" target="_blank" role="button"
+                                class="btn btn-success btn-xs">A4</a>
+
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>全页（75题）</td>
+                            <td>支持多选，适合文综、理综等选择题比较多的科目。</td>
+                            <td>
+                              <a href="/static/full_16k.pdf" target="_blank" role="button"
+                                class="btn btn-info btn-xs">16K</a>
+                              <a href="/static/full_a4.pdf" target="_blank" role="button"
+                                class="btn btn-success btn-xs">A4</a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>全国卷英语专用答题卡</td>
+                            <td>包含听力3选1，单项选择、完形填空4选1、阅读理解7选5等题型。</td>
+                            <td>
+                              <a href="/static/english_16k.pdf" target="_blank" role="button"
+                                class="btn btn-info btn-xs">16K</a>
+                              <a href="/static/english_a4.pdf" target="_blank" role="button"
+                                class="btn btn-success btn-xs">A4</a>
+                            </td>
+                          </tr>
+                          <!--
                                               <tr>
                                                   <td>手写（混合型）</td>
                                                   <td>使用深度学习和人工神经网络的可以识别手写字符的答题卡，<strong>评卷功能即将上线</strong>，敬请期待！</td>
@@ -234,142 +249,158 @@
 
                                               </tr> -->
 
-                                          </tbody>
+                        </tbody>
 
-                                      </table>
+                      </table>
 
-                                      <li>
-                                        <p class="text-left">
-                                          按照参考答案填涂一张答题卡，扫描并保存，学号可留空。
-                                          <a href="/static/half_standard.pdf" target="_blank" role="button" class="btn btn-default btn-xs">标准答案填涂示例</a>
-                                        </p>
-                                      </li>
+                      <li>
+                        <p class="text-left">
+                          按照参考答案填涂一张答题卡，扫描并保存，学号可留空。
+                          <a href="/static/half_standard.pdf" target="_blank" role="button"
+                            class="btn btn-default btn-xs">标准答案填涂示例</a>
+                        </p>
+                      </li>
 
-                                      <li><p class="text-left">在测验时将空白答题卡分发给学生，考试结束后收回，扫描并保存成一个或多个PDF文件。
-                                        <a href="/static/half_example.pdf" target="_blank" role="button" class="btn btn-default btn-xs">学生答卷填涂示例</a>
-                                        <br/>
-                                        <strong>本系统可以识别纸张朝向，无需手动调整。</strong></p></li>
-                                      <li><p class="text-left">单击首页“上传答题卡”按钮，分别上传答案文件和学生答卷文件。</p></li>
-                                      <li>
-                                        <p class="text-left">上传完成后单击“提交”，处理完毕后即可预览成绩，或下载详细统计表格。</p>
-                                      </li>
-                                    </ol>
-                                    <p class="text-left">想使用自定义分数、统计特定学生等高级功能，可下载<a href="/static/manual.pdf" target="_blank" class="btn btn-default btn-xs">使用手册</a></p>
-                                    <p class="text-left">想了解自动馈纸式扫描仪，回到首页底部，单击“了解扫描仪”。</p>
+                      <li>
+                        <p class="text-left">在测验时将空白答题卡分发给学生，考试结束后收回，扫描并保存成一个或多个PDF文件。
+                          <a href="/static/half_example.pdf" target="_blank" role="button"
+                            class="btn btn-default btn-xs">学生答卷填涂示例</a>
+                          <br />
+                          <strong>本系统可以识别纸张朝向，无需手动调整。</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p class="text-left">单击首页“上传答题卡”按钮，分别上传答案文件和学生答卷文件。</p>
+                      </li>
+                      <li>
+                        <p class="text-left">上传完成后单击“提交”，处理完毕后即可预览成绩，或下载详细统计表格。</p>
+                      </li>
+                    </ol>
+                    <p class="text-left">想使用自定义分数、统计特定学生等高级功能，可下载<a href="/static/manual.pdf" target="_blank"
+                        class="btn btn-default btn-xs">使用手册</a></p>
+                    <p class="text-left">想了解自动馈纸式扫描仪，回到首页底部，单击“了解扫描仪”。</p>
 
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div><!--End Modal-->
-
-
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="scannerIntroduction" tabindex="-1" role="dialog" aria-labelledby="downloadSheetLabel">
-                          <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">了解扫描仪</h4>
-                              </div>
-                              <div class="modal-body">
-                                    <p class="text-left"> 你对扫描仪的印象是否还停留在平板扫描仪？现在已经不是需要一张一张进纸扫描的时代了！</p>
-                                    <p class="text-left">使用自动馈纸式(Automatic Document Feeder) 扫描仪，你只需要把纸放在扫描仪纸槽内便可自动吸入扫描生成文件。 </p>
-                                    <p class="text-left">自动馈纸式扫描仪跟我们的系统能够完美结合，极大减少阅卷的人力成本。所以，我在这里特地向您推荐这种扫描仪。</p>
-                                    <p class="text-left">即便不是用来改卷，日常也可以用这种扫描仪便捷而迅速地扫描文档哦！</p>
-                                    <p class="text-left">我们主要测试了以下两款扫描仪：</p>
-                                    <div class="row">
-                                      <div class="col-md-6">
-                                        <img src="/static/ix500.jpeg" style="height:200px;"><h5>富士通 IX500 (Fujitsu ScanSnap iX500)：￥2500.00</h5>
-                                        </div>
-                                      <div class="col-md-6"><img src="/static/f20s.jpeg" style="height:200px;"/><h5>清华紫光 F20S： ￥1350.00</h5></div>
-                                    </div>
-                                    <p class="text-left">不同价格的扫描仪在扫描速度和寿命上稍有差别。当然，你可以选择其他类型的扫描仪。</p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div><!--End Modal-->
 
 
 
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div><!--End Modal-->
+            <!-- Modal -->
+            <div class="modal fade" id="scannerIntroduction" tabindex="-1" role="dialog"
+              aria-labelledby="downloadSheetLabel">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">了解扫描仪</h4>
+                  </div>
+                  <div class="modal-body">
+                    <p class="text-left"> 你对扫描仪的印象是否还停留在平板扫描仪？现在已经不是需要一张一张进纸扫描的时代了！</p>
+                    <p class="text-left">使用自动馈纸式(Automatic Document Feeder) 扫描仪，你只需要把纸放在扫描仪纸槽内便可自动吸入扫描生成文件。 </p>
+                    <p class="text-left">自动馈纸式扫描仪跟我们的系统能够完美结合，极大减少阅卷的人力成本。所以，我在这里特地向您推荐这种扫描仪。</p>
+                    <p class="text-left">即便不是用来改卷，日常也可以用这种扫描仪便捷而迅速地扫描文档哦！</p>
+                    <p class="text-left">我们主要测试了以下两款扫描仪：</p>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <img src="/static/ix500.jpeg" style="height:200px;">
+                        <h5>富士通 IX500 (Fujitsu ScanSnap iX500)：￥2500.00</h5>
+                      </div>
+                      <div class="col-md-6"><img src="/static/f20s.jpeg" style="height:200px;" />
+                        <h5>清华紫光 F20S： ￥1350.00</h5>
+                      </div>
+                    </div>
+                    <p class="text-left">不同价格的扫描仪在扫描速度和寿命上稍有差别。当然，你可以选择其他类型的扫描仪。</p>
 
 
-                    </div><!--//cta-container-->
-                </div><!--//intro-->
+
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div><!--End Modal-->
 
 
-                <div id="cards-wrapper" class="cards-wrapper row">
-                  <div class="item item-purple col-md-4 col-sm-6 col-xs-6">
-                      <div class="item-inner">
-                          <div class="icon-holder">
-                              <i class="icon glyphicon glyphicon-sunglasses"></i>
-                          </div><!--//icon-holder-->
-                          <h3 class="title">结果样例</h3>
-                          <p class="intro">点击查看评卷结果界面</p>
-                          <a class="link" href="/results/20171009070041l5aM7DuYji" ><span></span></a>
-                      </div><!--//item-inner-->
-                  </div><!--//item-->
+          </div><!--//cta-container-->
+        </div><!--//intro-->
 
-                  <div class="item item-blue col-md-4 col-sm-6 col-xs-6">
-                      <div class="item-inner">
-                          <div class="icon-holder">
-                              <i class="icon glyphicon glyphicon-print"></i>
-                          </div><!--//icon-holder-->
-                          <h3 class="title">了解扫描仪</h3>
-                          <p class="intro">自动进纸扫描的馈纸式扫描仪</p>
-                          <a class="link" href="" data-toggle="modal" data-target="#scannerIntroduction"><span></span></a>
-                      </div><!--//item-inner-->
-                  </div><!--//item-->
 
-                  <div class="item item-pink col-md-4 col-sm-6 col-xs-6">
-                      <div class="item-inner">
-                          <div class="icon-holder">
-                              <i class="icon glyphicon glyphicon-check
+        <div id="cards-wrapper" class="cards-wrapper row">
+          <div class="item item-purple col-md-4 col-sm-6 col-xs-6">
+            <div class="item-inner">
+              <div class="icon-holder">
+                <i class="icon glyphicon glyphicon-sunglasses"></i>
+              </div><!--//icon-holder-->
+              <h3 class="title">结果样例</h3>
+              <p class="intro">点击查看评卷结果界面</p>
+              <a class="link" href="/results/00000000000000AAAAAAAAAA"><span></span></a>
+            </div><!--//item-inner-->
+          </div><!--//item-->
+
+          <div class="item item-blue col-md-4 col-sm-6 col-xs-6">
+            <div class="item-inner">
+              <div class="icon-holder">
+                <i class="icon glyphicon glyphicon-print"></i>
+              </div><!--//icon-holder-->
+              <h3 class="title">了解扫描仪</h3>
+              <p class="intro">自动进纸扫描的馈纸式扫描仪</p>
+              <a class="link" href="" data-toggle="modal" data-target="#scannerIntroduction"><span></span></a>
+            </div><!--//item-inner-->
+          </div><!--//item-->
+
+          <div class="item item-pink col-md-4 col-sm-6 col-xs-6">
+            <div class="item-inner">
+              <div class="icon-holder">
+                <i class="icon glyphicon glyphicon-check
 "></i>
-                          </div><!--//icon-holder-->
-                          <h3 class="title">立即尝试</h3>
-                          <p class="intro">下载已填涂好的答题卡，体验提交流程并查看结果</p>
-                          <a class="link" href="" data-toggle="modal" data-target="#haveATry"><span></span></a>
-                      </div><!--//item-inner-->
-                  </div><!--//item-->
+              </div><!--//icon-holder-->
+              <h3 class="title">立即尝试</h3>
+              <p class="intro">下载已填涂好的答题卡，体验提交流程并查看结果</p>
+              <a class="link" href="" data-toggle="modal" data-target="#haveATry"><span></span></a>
+            </div><!--//item-inner-->
+          </div><!--//item-->
 
 
-                </div><!--//cards-->
+        </div><!--//cards-->
 
-            </div><!--//container-->
-        </section><!--//cards-section-->
-    </div><!--//page-wrapper-->
+      </div><!--//container-->
+    </section><!--//cards-section-->
+  </div><!--//page-wrapper-->
 
-    <footer class="footer text-center">
-        <div class="container">
-            <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
-            <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers, modified by <a href="#" >上海穆伦信息科技有限公司</a></small>.
+  <footer class="footer text-center">
+    <div class="container">
+      <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can check out other license options via our website: themes.3rdwavemedia.com */-->
+      <small class="copyright">Designed with <i class="fa fa-heart"></i> by <a href="http://themes.3rdwavemedia.com/"
+          target="_blank">Xiaoying Riley</a> for developers, modified by <a href="https://heqing.me">Heqing
+          Ya</a></small>.
 
-        </div><!--//container-->
-    </footer><!--//footer-->
+    </div><!--//container-->
+  </footer><!--//footer-->
 
 
-    <!-- Main Javascript -->
-    <script type="text/javascript" src="assets/plugins/jquery-1.12.3.min.js"></script>
-    <script type="text/javascript" src="assets/js/jquery.uploadifive.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
+  <!-- Main Javascript -->
+  <script type="text/javascript" src="assets/plugins/jquery-1.12.3.min.js"></script>
+  <script type="text/javascript" src="assets/js/jquery.uploadifive.min.js"></script>
+  <script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="assets/plugins/jquery-match-height/jquery.matchHeight-min.js"></script>
 
-    <script type="text/javascript" src="assets/js/main.js"></script>
-    <script type="text/javascript" src="assets/js/upload.js"></script>
-    <script type="text/javascript">
+  <script type="text/javascript" src="assets/js/main.js"></script>
+  <script type="text/javascript" src="assets/js/upload.js"></script>
+  <script type="text/javascript">
     $.token = "{{token}}";
     {% if popover == True %}
-      $("#uploadModalButton").click();
+    $("#uploadModalButton").click();
     {% endif %}
-  	</script>
+  </script>
 
 
 </body>
+
 </html>
