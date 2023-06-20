@@ -3,6 +3,10 @@
 image:
 	docker build -t kejinyan .
 
+hechi:
+	docker build -t kejinyan/kejinyan:hechi .
+	docker push kejinyan/kejinyan:hechi
+
 run:
 	docker run \
 		--rm \
