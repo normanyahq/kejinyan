@@ -583,6 +583,7 @@ def upload_file():
         return render_template("index.html", token=token, popover=True)
     elif request.method == 'POST' and request.values['answersheettype'] in ['full',
                                                                             'half',
+                                                                            'full_120',
                                                                             # 'full_old',
                                                                             # 'half_old',
                                                                             # 'makesi',
