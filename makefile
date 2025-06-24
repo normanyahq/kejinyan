@@ -3,9 +3,9 @@
 image:
 	docker build -t kejinyan .
 
-hechi:
-	docker build -t kejinyan/kejinyan:hechi .
-	docker push kejinyan/kejinyan:hechi
+hechi2:
+	docker build -t kejinyan/kejinyan:latest .
+	docker push kejinyan/kejinyan:latest
 
 run:
 	docker run \
