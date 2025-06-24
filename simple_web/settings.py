@@ -9,4 +9,5 @@ modeDictionary = {
     u"gk_english": u"全国卷高考英语专用答题卡",
     u"makesi": u"河池学院马克思主义学院考试专用答题卡",
     u"full_4option": u"河池学院大学英语考试专用答题卡",
+    u"makesi_new_2025_06": "马克思主义学院思想政治教育专业考试专用答题卡",
 }
